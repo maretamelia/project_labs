@@ -1,0 +1,60 @@
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* App Container */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* Main Content (Area di kanan sidebar) */
+.main-content {
+  flex: 1;
+  margin-left: 250px; /* Default: sidebar terbuka */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+/* Main Content ketika sidebar ditutup */
+.main-content.sidebar-closed {
+  margin-left: 0;
+}
+
+/* Main Content ketika sidebar terbuka */
+.main-content.sidebar-open {
+  margin-left: 250px;
+}
+
+/* Content Wrapper (Area di bawah navbar) */
+.content-wrapper {
+  flex: 1;
+  padding: 30px;
+  background-color: #f8f9fa;
+  overflow-y: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 70px; /* Sidebar jadi sempit di mobile */
+  }
+
+  .content-wrapper {
+    padding: 15px;
+  }
+}

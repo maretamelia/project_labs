@@ -1,0 +1,237 @@
+/* Container utama */
+.kategori-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Controls Section (Search + Add Button) */
+.kategori-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.btn-add {
+  padding: 12px 25px;
+  background-color: #b57edc;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.btn-add:hover {
+  background-color: #a06bc9;
+}
+
+/* Table Wrapper */
+.table-wrapper {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+/* Table Styling */
+.kategori-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.kategori-table thead {
+  background-color: #f8f9fa;
+}
+
+.kategori-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.kategori-table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s;
+}
+
+.kategori-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.kategori-table td {
+  padding: 15px;
+  color: #555;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-edit,
+.btn-delete {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.2s;
+}
+
+.btn-edit {
+  background-color: #ffc107;
+  color: white;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-edit:hover {
+  background-color: #ffb300;
+  transform: scale(1.05);
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: #c82333;
+  transform: scale(1.05);
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #b57edc 0%, #d89ee8 100%);
+  padding: 16px 20px;
+  color: white;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.modal-body {
+  padding: 24px 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-group label::after {
+  content: '*';
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #b57edc;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.btn-batal,
+.btn-tambah {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-batal {
+  background-color: #6b7280;
+  color: white;
+}
+
+.btn-batal:hover {
+  background-color: #4b5563;
+}
+
+.btn-tambah {
+  background: linear-gradient(135deg, #b57edc 0%, #d89ee8 100%);
+  color: white;
+}
+
+.btn-tambah:hover {
+  background: linear-gradient(135deg, #a06bc9 0%, #c88dd6 100%);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .kategori-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .kategori-table {
+    font-size: 12px;
+  }
+
+  .kategori-table th,
+  .kategori-table td {
+    padding: 10px;
+  }
+}
