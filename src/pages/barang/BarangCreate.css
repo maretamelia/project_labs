@@ -1,0 +1,83 @@
+/* Container form */
+.barang-create-container {
+  max-width: 500px;
+  margin: 20px auto;
+}
+
+/* Form */
+.barang-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Form group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+/* Upload gambar */
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px dashed #ccc;
+  padding: 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.image-upload input {
+  display: none;
+}
+
+.image-preview {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* Tombol Kembali & Simpan */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.btn-back {
+  background-color: #ccc;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-submit {
+  background-color: #6B46C1;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+/* Hover efek */
+.btn-back:hover {
+  background-color: #b3b3b3;
+}
+
+.btn-submit:hover {
+  background-color: #5a2fa0;
+}

@@ -1,6 +1,7 @@
 import "./BarangCard.css";
+import { Link } from "react-router-dom";
 
-export default function BarangCard({ barang }) {
+export default function BarangCard({ barang, onDelete }) { // <-- terima prop onDelete
   return (
     <div className="barang-card">
       <img
@@ -15,9 +16,18 @@ export default function BarangCard({ barang }) {
       </p>
 
       <div className="barang-actions">
-        <button className="btn-detail">Selengkapnya</button>
-        <button className="btn-edit">✏️</button>
-        <button className="btn-delete">🗑️</button>
+        <Link to={`/barang/${barang.id}`} className="btn-detail">
+          Selengkapnya
+        </Link>
+         <Link to={`/barang/edit/${barang.id}`} className="btn-edit">
+          ✏️
+        </Link>
+        <button 
+          className="btn-delete"
+          onClick={() => onDelete(barang.id)} // <-- panggil fungsi hapus
+        >
+          🗑️
+        </button>
       </div>
     </div>
   );

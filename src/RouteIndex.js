@@ -29,7 +29,7 @@ export default function RouteIndex() {
       <Route path="/kategori" element={<KategoriList />} />
 
       {/* Route barang */}
-      <Route path="/barang" element={<BarangList />} />
+      <Route path="/data-barang" element={<BarangList />} />
       <Route path="/barang/create" element={<BarangCreate />} />
       <Route path="/barang/edit/:id" element={<BarangEdit />} />
       <Route path="/barang/:id" element={<BarangDetail />} />

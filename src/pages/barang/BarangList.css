@@ -1,0 +1,133 @@
+/* Layout Utama */
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Page Wrapper */
+.page-wrapper {
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* Toolbar - Search dan Buttons */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+  width: 100%;
+}
+
+.toolbar-left {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  max-width: 600px;
+}
+
+.toolbar-left button {
+  padding: 10px 20px;
+  background-color: #a855f7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.toolbar-left button:hover {
+  background-color: #9333ea;
+}
+
+.btn-add {
+  padding: 10px 24px;
+  background-color: #a855f7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-add:hover {
+  background-color: #9333ea;
+}
+
+/* Barang Grid */
+.barang-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Responsive Design */
+@media (min-width: 1024px) {
+  .barang-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .barang-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .page-wrapper {
+    padding: 16px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar-left {
+    max-width: 100%;
+  }
+
+  .barang-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .btn-add {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-wrapper {
+    padding: 12px;
+  }
+
+  .toolbar {
+    gap: 12px;
+  }
+
+  .toolbar-left {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

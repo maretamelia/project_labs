@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import './BarangDetail.css';
 
 function BarangDetail() {
   const { id } = useParams();
@@ -36,32 +37,29 @@ function BarangDetail() {
   if (!barang) return <p>Barang tidak ditemukan</p>;
 
   return (
-    <div style={{ maxWidth: '600px', margin: '20px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
+    <div className="barang-detail-container">
       <h2>{barang.nama}</h2>
 
-      {/* Gambar */}
       {barang.gambar && (
         <img 
           src={barang.gambar} 
           alt={barang.nama} 
-          style={{ width: '300px', height: '200px', objectFit: 'cover', borderRadius: '8px', marginBottom: '15px' }}
+          className="barang-image"
         />
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div className="barang-info">
         <p><strong>Nama Gambar:</strong> {barang.gambarName}</p>
         <p><strong>Nama Barang:</strong> {barang.nama}</p>
+        <p><strong>Kategori:</strong> {barang.kategori}</p>
         <p><strong>Stok Tersedia:</strong> {barang.stokTersedia}</p>
         <p><strong>Stok Dipinjam:</strong> {barang.stokDipinjam}</p>
         <p><strong>Tanggal Dibuat:</strong> {barang.tanggalDibuat}</p>
         <p><strong>Deskripsi:</strong> {barang.deskripsi}</p>
       </div>
 
-      <Link 
-        to="/barang" 
-        style={{ marginTop: '20px', display: 'inline-block', backgroundColor: '#6B46C1', color: 'white', padding: '8px 12px', borderRadius: '6px', textDecoration: 'none' }}
-      >
-        Kembali
+      <Link to="/data-barang" className="btn-back">
+        ← Kembali
       </Link>
     </div>
   );

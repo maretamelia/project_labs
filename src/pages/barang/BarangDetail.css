@@ -1,0 +1,75 @@
+/* Layout utama */
+.barang-detail-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+}
+
+/* Judul barang */
+.barang-detail-container h2 {
+  margin-bottom: 15px;
+  color: #333;
+  text-align: center;
+}
+
+/* Gambar barang */
+.barang-detail-container .barang-image {
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0 auto 20px;
+  display: block;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Info barang */
+.barang-detail-container .barang-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #555;
+}
+
+.barang-detail-container .barang-info p {
+  margin: 0;
+}
+
+.barang-detail-container .barang-info p strong {
+  color: #333;
+}
+
+/* Tombol kembali */
+.barang-detail-container .btn-back {
+  margin-top: 20px;
+  display: inline-block;
+  background-color: #6B46C1;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.2s;
+}
+
+.barang-detail-container .btn-back:hover {
+  background-color: #5a379d;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .barang-detail-container {
+    padding: 15px;
+  }
+
+  .barang-detail-container .barang-image {
+    max-width: 100%;
+    height: 180px;
+  }
+}

@@ -153,12 +153,15 @@ function BarangEdit() {
           />
         </div>
 
-        <button
-          type="submit"
-          style={{ backgroundColor: '#6B46C1', color: 'white', padding: '10px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}
-        >
-          Update
-        </button>
+        {/* Tombol Kembali & Simpan */}
+        <div className="button-group">
+          <button type="button" onClick={() => navigate('/data-barang')} className="btn-back">
+            ← Kembali
+          </button>
+           <button type="button" onClick={() => navigate('/data-barang')} className="btn-submit">
+            Update
+          </button>
+        </div>
       </form>
     </div>
   );
