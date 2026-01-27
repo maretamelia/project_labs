@@ -1,20 +1,17 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './SidebarUser.css';
-
-import {
-  MdDashboard,
-  MdInventory,
-  MdAssignment,
-  MdHistory,
-  MdDescription
-} from 'react-icons/md';
+import { MdDashboard, MdInventory, MdAssignment, MdHistory, MdManageAccounts } from 'react-icons/md';
 
 function SidebarUser({ isOpen = true }) {
   const location = useLocation();
 
-  const isActive = (path) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
+  // Fungsi untuk menandai menu active
+  const isActive = (exactPath) => {
+    // Jika exactPath = '/user', hanya aktif kalau benar-benar di dashboard
+    if (exactPath === '/user') return location.pathname === exactPath;
+    // Untuk menu lain, aktif juga jika ada sub-path
+    return location.pathname.startsWith(exactPath);
   };
 
   return (
@@ -31,32 +28,32 @@ function SidebarUser({ isOpen = true }) {
 
       <nav className="sidebar-nav">
         <Link
-          to="/user/dashboard"
-          className={`sidebar-item ${isActive('/user/dashboard') ? 'active' : ''}`}
+          to="/user"
+          className={`sidebar-item ${isActive('/user') ? 'active' : ''}`}
         >
           <span className="sidebar-icon"><MdDashboard /></span>
           <span className="sidebar-text">Dashboard</span>
         </Link>
 
         <Link
-          to="/user/barang"
-          className={`sidebar-item ${isActive('/user/barang') ? 'active' : ''}`}
+          to="/user/DaftarBarang"
+          className={`sidebar-item ${isActive('/user/DaftarBarang') ? 'active' : ''}`}
         >
           <span className="sidebar-icon"><MdInventory /></span>
           <span className="sidebar-text">Daftar Barang</span>
         </Link>
 
         <Link
-          to="/user/pinjaman"
-          className={`sidebar-item ${isActive('/user/pinjaman') ? 'active' : ''}`}
+          to="/user/PinjamanSaya"
+          className={`sidebar-item ${isActive('/user/PinjamanSaya') ? 'active' : ''}`}
         >
           <span className="sidebar-icon"><MdAssignment /></span>
           <span className="sidebar-text">Pinjaman Saya</span>
         </Link>
 
         <Link
-          to="/user/riwayat"
-          className={`sidebar-item ${isActive('/user/riwayat') ? 'active' : ''}`}
+          to="/user/RiwayatPeminjaman"
+          className={`sidebar-item ${isActive('/user/RiwayatPeminjaman') ? 'active' : ''}`}
         >
           <span className="sidebar-icon"><MdHistory /></span>
           <span className="sidebar-text">Riwayat Peminjaman</span>
@@ -66,7 +63,7 @@ function SidebarUser({ isOpen = true }) {
           to="/user/sop"
           className={`sidebar-item ${isActive('/user/sop') ? 'active' : ''}`}
         >
-          <span className="sidebar-icon"><MdDescription /></span>
+          <span className="sidebar-icon"><MdManageAccounts /></span>
           <span className="sidebar-text">SOP</span>
         </Link>
       </nav>

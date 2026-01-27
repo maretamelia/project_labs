@@ -1,0 +1,273 @@
+Main Container
+.riwayat-page {
+  padding: 24px;
+  background-color: #f3f4f6;
+  min-height: 100vh;
+}
+
+/* Header Section */
+.riwayat-header {
+  background: linear-gradient(to right, #D098CC, #D098CC);
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.riwayat-header-title {
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.riwayat-header-subtitle {
+  color: white;
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* Content Box */
+.riwayat-content {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+/* Search Wrapper */
+.riwayat-search-wrapper {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.riwayat-search-box {
+  flex: 1;
+  display: flex;
+  gap: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.riwayat-search-input {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.riwayat-search-input::placeholder {
+  color: #9ca3af;
+}
+
+.riwayat-search-btn {
+  background: linear-gradient(to right, #ec4899, #d946ef);
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.riwayat-search-btn:hover {
+  opacity: 0.9;
+}
+
+.riwayat-filter-btn {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.riwayat-filter-btn:hover {
+  background-color: #f9fafb;
+}
+
+/* Table */
+.riwayat-table-wrapper {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.riwayat-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.riwayat-table thead {
+  background-color: #f9fafb;
+}
+
+.riwayat-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.riwayat-table td {
+  padding: 13px;
+  font-size: 14px;
+  color: #6b7280;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+td.empty-table {
+    text-align: center;
+}
+
+.riwayat-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  align-items: center;
+}
+
+.status-badge.ditolak {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.status-badge.selesai {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+/* Detail Button */
+.detail-btn {
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-btn:hover {
+  background-color: #2563eb;
+}
+
+/* aksi lihat detail */
+
+.aksi-btn {
+  background: #0059FF;
+  border: none;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  position: relative;
+  top: 1px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.aksi-icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+
+
+/* Pagination */
+.riwayat-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;}
+
+
+.pagination-btn {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  background-color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+}
+
+.pagination-btn:hover {
+  background-color: #f9fafb;
+}
+
+.pagination-number {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  background-color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  min-width: 40px;
+}
+
+.pagination-number:hover {
+  background-color: #f9fafb;
+}
+
+.pagination-number.active {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .riwayat-page {
+    padding: 50px;
+  }
+
+  .riwayat-content {
+    padding: 16px;
+  }
+
+  .riwayat-table-wrapper {
+    overflow-x: scroll;
+  }
+
+  .riwayat-pagination {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+}

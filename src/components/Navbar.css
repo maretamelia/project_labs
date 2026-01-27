@@ -34,8 +34,14 @@
   gap: 20px;
 }
 
+/* Notification Wrapper */
+.notification-wrapper {
+  position: relative;
+}
+
 /* Notification Button */
 .notification-btn {
+  position: relative;
   background: none;
   border: none;
   font-size: 22px;
@@ -44,24 +50,29 @@
   color: #333;
   transition: background-color 0.2s;
   border-radius: 6px;
-  position: relative;
 }
 
 .notification-btn:hover {
   background-color: #f8f9fa;
 }
 
-/* Optional: Badge untuk notifikasi */
-.notification-btn::after {
-  content: '';
+/* Notification Badge with Number */
+.notification-badge {
   position: absolute;
-  top: 8px;
+  top: 5px;
   right: 8px;
-  width: 8px;
-  height: 8px;
-  background-color: #dc3545;
+  background: #F44336;
+  color: white;
   border-radius: 50%;
-  display: none; /* Tampilkan jika ada notifikasi */
+  min-width: 18px;
+  height: 18px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid white;
 }
 
 /* User Info Container */

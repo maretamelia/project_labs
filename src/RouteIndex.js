@@ -1,4 +1,3 @@
-// src/RouteIndex.js
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
@@ -11,28 +10,44 @@ import BarangCreate from './pages/barang/BarangCreate';
 import BarangEdit from './pages/barang/BarangEdit';
 import BarangDetail from './pages/barang/BarangDetail';
 
+// import page user
+import Dashboard from './pages/user/Dashboard/Dashboard';
+import CreatePinjaman from './pages/user/pinjaman/CreatePinjaman';
+import PinjamanSaya from './pages/user/pinjaman/PinjamanSaya';
+import EditPinjaman from './pages/user/pinjaman/EditPinjaman';
+import RiwayatPeminjaman from './pages/user/pinjaman/RiwayatPeminjaman';
+import DetailPeminjaman from './pages/user/DetailPeminjaman/DetailPeminjaman';
+import SOP from './pages/user/sop/SOP';
+import DaftarBarang from './pages/user/DaftarBarang/DaftarBarang';
+
 export default function RouteIndex() {
   return (
     <Routes>
-      {/* Halaman utama */}
-      <Route
-        path="/"
-        element={
-          <>
-            <h1>Selamat datang, Amel!</h1>
-            <p>Ini halaman utama React-mu.</p>
-          </>
-        }
-      />
+      {/* ====================== ADMIN ====================== */}
+      <Route path="/" element={
+        <>
+          <h1>Selamat datang!</h1>
+          <p>Ini halaman utama React-mu.</p>
+        </>
+      } />
 
-      {/* Route kategori */}
       <Route path="/kategori" element={<KategoriList />} />
-
-      {/* Route barang */}
-      <Route path="/data-barang" element={<BarangList />} />
+      <Route path="/barang" element={<BarangList />} />
       <Route path="/barang/create" element={<BarangCreate />} />
       <Route path="/barang/edit/:id" element={<BarangEdit />} />
       <Route path="/barang/:id" element={<BarangDetail />} />
+
+      {/* ====================== USER ====================== */}
+      <Route path="/user" element={
+        <Dashboard/>
+      } />
+      <Route path="/user/DaftarBarang" element={<DaftarBarang />} />
+      <Route path="/user/PinjamanSaya" element={<PinjamanSaya />} />
+      <Route path="/user/pinjaman/create" element={<CreatePinjaman/>} />
+      <Route path="/user/EditPinjaman/:id" element={<EditPinjaman/>} />
+      <Route path="/user/RiwayatPeminjaman" element={<RiwayatPeminjaman />} />
+      <Route path="/user/pinjaman/:id" element={<DetailPeminjaman />} />
+      <Route path="/user/sop" element={<SOP />} />
     </Routes>
   );
 }

@@ -1,0 +1,252 @@
+Main Container
+.pinjaman-page {
+  padding: 24px;
+  background-color: #f3f4f6;
+  min-height: 100vh;
+}
+
+.pinjaman-header {
+  background: linear-gradient(to right, #D098CC, #D098CC);
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.pinjaman-header-title {
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.pinjaman-header-subtitle {
+  color: white;
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.pinjaman-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.btn-add {
+  background: #D098CC;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.btn-add:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.pinjaman-table-wrapper {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
+.pinjaman-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pinjaman-table thead {
+  background-color: #f9fafb;
+}
+
+.pinjaman-table th, .pinjaman-table td {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+  color: #374151;
+}
+
+.pinjaman-table td {
+  color: #6b7280;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+td.empty-table {
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.menunggu { 
+  background-color: #E5E7EB; 
+  color: #6B7280; 
+}
+
+.status-badge.dipinjam { 
+  background-color: #E0F2FE; 
+  color: #0284C7; 
+}
+
+.status-badge.dikembalikan { 
+  background-color: #d1fae5; 
+  color: #059669; 
+}
+
+.status-badge.disetujui { 
+  background-color: #FEF3C7; 
+  color: #B45309; 
+}
+
+.status-badge.terlambat { 
+  background-color: #fee2e2; 
+  color: #b91c1c; 
+}
+
+.aksi-cell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.aksi-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  width: 32px;
+  height: 32px;
+}
+
+.aksi-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.aksi-btn.edit-btn {
+  background: #FFA713;
+}
+
+.aksi-btn.edit-btn:hover {
+  background: #f59e0b;
+}
+
+.aksi-btn.view-btn {
+  background: #0059FF;
+}
+
+.aksi-btn.view-btn:hover {
+  background: #0047cc;
+}
+
+.aksi-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.filter-section {
+  margin-bottom: 20px;
+}
+
+.filter-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-field label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.filter-input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filter-input-with-icon svg {
+  position: absolute;
+  left: 12px;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.filter-input-with-icon input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.filter-field input[type="number"] {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.filter-field input:focus,
+.filter-input-with-icon input:focus {
+  outline: none;
+  border-color: #D098CC;
+  box-shadow: 0 0 0 3px rgba(208, 152, 204, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pinjaman-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .btn-add {
+    width: 100%;
+  }
+
+  .pinjaman-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr;
+  }
+}
