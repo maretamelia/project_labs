@@ -34,14 +34,6 @@ function Dashboard() {
       bgGradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     },
     {
-      id: 2,
-      title: 'Jumlah barang',
-      value: '200',
-      icon: <FiShoppingBag />,
-      color: 'red',
-      bgGradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
-    },
-    {
       id: 3,
       title: 'Jumlah barang di pinjam',
       value: '1000',

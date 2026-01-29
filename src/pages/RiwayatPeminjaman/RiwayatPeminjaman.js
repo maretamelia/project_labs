@@ -104,12 +104,8 @@ function RiwayatPeminjaman() {
     // TODO: Implement action logic
   };
 
-  return (
-    <div className="content-wrapper">
-      <PageHeader
-        title="Riwayat Peminjaman"
-        subtitle="Riwayat Peminjaman"
-      />
+  return ( 
+  <div className="RiwayatPeminjaman-container"> <PageHeader title="Daftar Peminjaman" subtitle="Daftar Peminjaman" />
 
       <SearchBar
         searchTerm={searchTerm}

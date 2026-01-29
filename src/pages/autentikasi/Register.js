@@ -1,19 +1,164 @@
-import React from "react";
-import './style.css'; 
-import { Link } from "react-router-dom";
+// src/pages/autentikasi/Register.jsx
+import React, { useState } from 'react';
+import './style.css'; // pastikan path CSS benar
 
 export default function Register() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [terms, setTerms] = useState(false);
+  const [alert, setAlert] = useState({ message: '', type: '' });
+
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const showAlert = (message, type = 'info') => {
+    setAlert({ message, type });
+    setTimeout(() => setAlert({ message: '', type: '' }), 3000);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (name.trim().length < 3) {
+      showAlert('Nama minimal 3 karakter!', 'error');
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      showAlert('Email tidak valid!', 'error');
+      return;
+    }
+
+    if (password.length < 8) {
+      showAlert('Password minimal 8 karakter!', 'error');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      showAlert('Password tidak cocok! Silakan cek kembali.', 'error');
+      return;
+    }
+
+    if (!terms) {
+      showAlert('Anda harus menyetujui syarat & ketentuan!', 'error');
+      return;
+    }
+
+    showAlert(`Registrasi berhasil untuk: ${name}! Mengalihkan ke halaman login...`, 'success');
+
+    // Redirect ke login setelah 2 detik
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 2000);
+
+    // TODO: Tambahkan logic backend registrasi disini
+    // fetch('/api/register', { method: 'POST', ... })
+  };
+
+  const registerWithGoogle = () => {
+    showAlert('Mendaftar dengan Google...', 'info');
+    // TODO: Tambahkan logic Google OAuth disini
+  };
+
   return (
     <div className="container">
-      <h2>Register</h2>
-      <input type="text" placeholder="Nama Lengkap" />
-      <input type="email" placeholder="Email" />
-      <input type="password" placeholder="Password" />
-      <button>Register</button>
-      
-      <p style={{ marginTop: '15px', fontSize: '14px' }}>
-        Sudah punya akun? <Link to="/login">Login</Link>
-      </p>
+      {alert.message && (
+        <div className={`custom-alert custom-alert-${alert.type}`}>
+          {alert.message}
+        </div>
+      )}
+
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1 className="auth-title">Buat Akun Baru</h1>
+          <p className="auth-subtitle">Daftar untuk memulai perjalanan Anda</p>
+        </div>
+
+        <form id="registerForm" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="register-name">Nama Lengkap</label>
+            <div className="input-wrapper">
+              <input
+                type="text"
+                id="register-name"
+                placeholder="Masukkan nama lengkap"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="register-email">Email</label>
+            <div className="input-wrapper">
+              <input
+                type="email"
+                id="register-email"
+                placeholder="nama@email.com"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="register-password">Password</label>
+            <div className="input-wrapper">
+              <input
+                type="password"
+                id="register-password"
+                placeholder="Min. 8 karakter"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="register-confirm-password">Konfirmasi Password</label>
+            <div className="input-wrapper">
+              <input
+                type="password"
+                id="register-confirm-password"
+                placeholder="Ketik ulang password"
+                required
+                minLength={8}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="checkbox-wrapper">
+            <input
+              type="checkbox"
+              id="terms"
+              checked={terms}
+              onChange={(e) => setTerms(e.target.checked)}
+            />
+            <label htmlFor="terms">Saya setuju dengan syarat & ketentuan</label>
+          </div>
+
+          <button type="submit" className="button">Daftar Sekarang</button>
+
+          <div className="divider">
+            <span>atau daftar dengan</span>
+          </div>
+
+          <button type="button" className="social-btn" onClick={registerWithGoogle}>
+            Daftar dengan Google
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          Sudah punya akun? <a href="/login">Masuk di sini</a>
+        </div>
+      </div>
     </div>
   );
 }

@@ -23,7 +23,6 @@ body {
 /* Main Content (Area di kanan sidebar) */
 .main-content {
   flex: 1;
-  margin-left: 250px; /* Default: sidebar terbuka */
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -47,7 +46,7 @@ body {
   background-color: #f8f9fa;
   overflow-y: auto;
 }
-
+ran
 /* Responsive */
 @media (max-width: 768px) {
   .main-content {
@@ -57,4 +56,19 @@ body {
   .content-wrapper {
     padding: 15px;
   }
+}
+/* Layout khusus login/register */
+.main-content.no-layout {
+  margin: 0 !important;       /* hapus offset sidebar */
+  height: 100vh;               /* full viewport */
+  display: flex;               /* biar container bisa center */
+  flex-direction: column;
+}
+
+.main-content.no-layout .content-wrapper {
+  flex: 1;
+  padding: 0 !important;       /* hapus padding */
+  display: flex;               /* biar container child bisa center */
+  justify-content: center;
+  align-items: center;
 }

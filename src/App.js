@@ -4,43 +4,52 @@ import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import SidebarUser from './components/user/SidebarUser';
 import Navbar from './components/Navbar';
-import RouteIndex from './RouteIndex'; // import RouteIndex langsung dari src
+import RouteIndex from './RouteIndex';
 import './App.css';
 
+// ======================== AppContent ========================
 function AppContent() {
-  const location = useLocation(); // ini dipakai buat cek path
+  const location = useLocation(); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  // Tentukan sidebar berdasarkan prefix path
   const isUserPath = location.pathname.startsWith('/user');
+  const hideLayout = location.pathname === '/login' || location.pathname === '/register'; // cek login/register
 
   return (
     <div className="app-container">
-      {/* Sidebar berdasarkan URL */}
-      {isUserPath ? (
+      {/* Sidebar hanya tampil kalau bukan login/register */}
+      {!hideLayout && (isUserPath ? (
         <SidebarUser isOpen={isSidebarOpen} />
       ) : (
         <Sidebar isOpen={isSidebarOpen} />
-      )}
+      ))}
 
-      <div className={`main-content ${isSidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-        <Navbar 
-          userName="Grisella"
-          userRole={isUserPath ? 'user' : 'admin'} // optional, biar Navbar tahu role
-          onMenuToggle={toggleSidebar}
-        />
+      <div
+  className={`main-content ${isSidebarOpen ? 'sidebar-open' : 'sidebar-closed'} ${
+    hideLayout ? 'no-layout' : ''
+  }`}
+>
+
+        {/* Navbar hanya tampil kalau bukan login/register */}
+        {!hideLayout && (
+          <Navbar 
+            userName="Grisella"
+            userRole={isUserPath ? 'user' : 'admin'}
+            onMenuToggle={toggleSidebar}
+          />
+        )}
 
         <div className="content-wrapper">
-          <RouteIndex /> {/* Semua route admin/user jalan dari sini */}
+          <RouteIndex /> {/* Semua route */}
         </div>
       </div>
     </div>
   );
 }
 
-// Router dibungkus di sini
+// ======================== App utama ========================
 function App() {
   return (
     <Router>

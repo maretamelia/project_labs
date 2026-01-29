@@ -106,7 +106,7 @@ function DaftarPeminjamanList() {
     <div className="peminjaman-container">
 
       <PageHeader
-        title="Daftar Peminjaman"
+        title=" Daftar Peminjaman"
         subtitle="Daftar Peminjaman"
       />
 
