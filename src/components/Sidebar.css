@@ -1,3 +1,7 @@
+/* ============================================
+   SOLUSI: SIDEBARFIXED + MAIN CONTENT
+   ============================================ */
+
 /* Sidebar Container - Design Minimalis */
 .sidebar {
   width: 250px;
@@ -5,7 +9,7 @@
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  position: fixed;
+  position: fixed;  /* ✅ INI PENYEBABNYA! */
   left: 0;
   top: 0;
   border-right: 1px solid #e5e7eb;
@@ -144,7 +148,221 @@
   transition: transform 0.2s;
 }
 
-/* Responsive */
+
+/* ============================================
+   🔥 MAIN CONTENT - INI YANG HARUS DIUBAH!
+   ============================================ */
+
+/* ROOT CONTAINER */
+.app-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-color: #f9fafb;
+}
+
+/* MAIN CONTENT - Sesuaikan dengan sidebar fixed */
+.main-content {
+  flex: 1;
+  margin-left: 250px;        /* ✅ HARUS sama dengan width sidebar */
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 250px); /* ✅ PENTING: kurangi lebar sidebar */
+  box-sizing: border-box;
+}
+
+/* Kalau sidebar ditutup/collapsed */
+.main-content.sidebar-closed {
+  margin-left: 0;            /* ✅ Gak ada margin */
+  width: 100%;               /* ✅ Full width */
+}
+
+/* Content Wrapper */
+.content-wrapper {
+  padding: 24px;
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Button Add Item */
+.btn-add-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #b57edc 0%, #d89ee8 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(181, 126, 220, 0.25);
+}
+
+.btn-add-item:hover {
+  background: linear-gradient(135deg, #a06bc9 0%, #c88dd6 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(181, 126, 220, 0.35);
+}
+
+.btn-add-item svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Items Grid */
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+/* Item Card */
+.item-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Item Image */
+.item-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.item-card:hover .item-image img {
+  transform: scale(1.05);
+}
+
+/* Item Info */
+.item-info {
+  padding: 16px;
+  flex: 1;
+}
+
+.item-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.item-stock {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Item Actions */
+.item-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #e5e7eb;
+  background-color: #fafafa;
+}
+
+.btn-detail {
+  flex: 1;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #b57edc 0%, #d89ee8 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-detail:hover {
+  background: linear-gradient(135deg, #a06bc9 0%, #c88dd6 100%);
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-edit {
+  background-color: #fef3c7;
+  color: #f59e0b;
+}
+
+.btn-edit:hover {
+  background-color: #fde68a;
+  transform: translateY(-1px);
+}
+
+.btn-delete {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.btn-delete:hover {
+  background-color: #fecaca;
+  transform: translateY(-1px);
+}
+
+
+/* ============================================
+   📱 RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .sidebar {
     width: 70px;
@@ -180,5 +398,57 @@
 
   .sidebar-icon {
     margin: 0;
+  }
+
+  /* ✅ Main content sesuaikan */
+  .main-content {
+    margin-left: 70px;         /* ✅ Sesuai sidebar collapsed */
+    width: calc(100% - 70px);  /* ✅ Kurangi 70px */
+  }
+
+  .main-content.sidebar-closed {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .content-wrapper {
+    padding: 20px 15px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-add-item {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .item-image {
+    height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .items-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .item-actions {
+    flex-wrap: wrap;
+  }
+
+  .btn-detail {
+    width: 100%;
+  }
+
+  .btn-icon {
+    flex: 1;
   }
 }

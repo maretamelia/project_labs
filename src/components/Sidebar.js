@@ -25,7 +25,10 @@ function Sidebar({ isOpen = true }) {
       </div>
 
       <nav className="sidebar-nav">
-        <Link to="/" className={`sidebar-item ${location.pathname === '/' ? 'active' : ''}`}>
+       <Link
+          to="/dashboard-admin"
+          className={`sidebar-item ${isActive('/dashboard-admin') ? 'active' : ''}`}
+        >
           <span className="sidebar-icon"><MdDashboard /></span>
           <span className="sidebar-text">Dashboard</span>
         </Link>
@@ -48,11 +51,6 @@ function Sidebar({ isOpen = true }) {
         <Link to="/riwayat-peminjaman" className={`sidebar-item ${isActive('/riwayat-peminjaman') ? 'active' : ''}`}>
           <span className="sidebar-icon"><MdHistory /></span>
           <span className="sidebar-text">Riwayat Peminjaman</span>
-        </Link>
-
-        <Link to="/manajemen-peminjaman" className={`sidebar-item ${isActive('/manajemen-peminjaman') ? 'active' : ''}`}>
-          <span className="sidebar-icon"><MdManageAccounts /></span>
-          <span className="sidebar-text">Manajemen Peminjaman</span>
         </Link>
       </nav>
     </div>

@@ -1,101 +1,219 @@
-/* Layout Utama */
-.layout {
+/* ROOT CONTAINER FIX */
+.app-container {
   display: flex;
+  width: 100%;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  overflow-x: hidden;
+  background-color: #f9fafb;
+  position: relative; /* ✅ tambahkan ini */
 }
+
 
 .main-content {
   flex: 1;
+  margin-left: 0;              /* ✅ UBAH jadi 0, biar gak dobel */
+  transition: all 0.3s ease;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
-}
-
-/* Page Wrapper */
-.page-wrapper {
-  padding: 24px;
+  width: 100%;                 /* ✅ UBAH jadi 100% */
   box-sizing: border-box;
 }
 
-/* Toolbar - Search dan Buttons */
+/* Kalau sidebar ditutup */
+.main-content.sidebar-closed {
+  margin-left: 0;
+  width: 100%;
+}
+
+
+/* Content Wrapper */
+.content-wrapper {
+  padding: 24px;
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+
+/* Toolbar */
 .toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  gap: 16px;
-  width: 100%;
+  margin-bottom: 30px;
+  gap: 20px;
+  flex-wrap: wrap; /* ✅ tambahkan ini biar responsive */
 }
 
-.toolbar-left {
+/* Button Add Item */
+.btn-add-item {
   display: flex;
-  gap: 12px;
-  flex: 1;
-  max-width: 600px;
-}
-
-.toolbar-left button {
-  padding: 10px 20px;
-  background-color: #a855f7;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #b57edc 0%, #d89ee8 100%);
   color: white;
   border: none;
   border-radius: 8px;
-  cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: background-color 0.2s;
-  white-space: nowrap;
-}
-
-.toolbar-left button:hover {
-  background-color: #9333ea;
-}
-
-.btn-add {
-  padding: 10px 24px;
-  background-color: #a855f7;
-  color: white;
-  border: none;
-  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  transition: all 0.3s;
   white-space: nowrap;
-  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(181, 126, 220, 0.25);
 }
 
-.btn-add:hover {
-  background-color: #9333ea;
+.btn-add-item:hover {
+  background: linear-gradient(135deg, #a06bc9 0%, #c88dd6 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(181, 126, 220, 0.35);
 }
 
-/* Barang Grid */
-.barang-grid {
+.btn-add-item svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Items Grid */
+.items-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
-  margin-bottom: 32px;
+  margin-bottom: 30px;
+  width: 100%; /* ✅ pastikan gak overflow */
+}
+
+/* Item Card */
+.item-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Item Image */
+.item-image {
   width: 100%;
-  max-width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background-color: #f3f4f6;
 }
 
-/* Responsive Design */
-@media (min-width: 1024px) {
-  .barang-grid {
-    grid-template-columns: repeat(3, 1fr);
+.item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.item-card:hover .item-image img {
+  transform: scale(1.05);
+}
+
+/* Item Info */
+.item-info {
+  padding: 16px;
+  flex: 1;
+}
+
+.item-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.item-stock {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Item Actions */
+.item-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #e5e7eb;
+  background-color: #fafafa;
+}
+
+.btn-detail {
+  flex: 1;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #b57edc 0%, #d89ee8 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-detail:hover {
+  background: linear-gradient(135deg, #a06bc9 0%, #c88dd6 100%);
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-edit {
+  background-color: #fef3c7;
+  color: #f59e0b;
+}
+
+.btn-edit:hover {
+  background-color: #fde68a;
+  transform: translateY(-1px);
+}
+
+.btn-delete {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.btn-delete:hover {
+  background-color: #fecaca;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   }
 }
 
-@media (min-width: 768px) and (max-width: 1023px) {
-  .barang-grid {
-    grid-template-columns: repeat(2, 1fr);
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
   }
-}
 
-@media (max-width: 767px) {
-  .page-wrapper {
-    padding: 16px;
+  .content-wrapper {
+    padding: 20px 15px;
   }
 
   .toolbar {
@@ -103,31 +221,35 @@
     align-items: stretch;
   }
 
-  .toolbar-left {
-    max-width: 100%;
+  .btn-add-item {
+    width: 100%;
+    justify-content: center;
   }
 
-  .barang-grid {
-    grid-template-columns: 1fr;
+  .items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 16px;
   }
 
-  .btn-add {
-    width: 100%;
+  .item-image {
+    height: 160px;
   }
 }
 
 @media (max-width: 480px) {
-  .page-wrapper {
-    padding: 12px;
+  .items-grid {
+    grid-template-columns: 1fr;
   }
 
-  .toolbar {
-    gap: 12px;
+  .item-actions {
+    flex-wrap: wrap;
   }
 
-  .toolbar-left {
-    flex-direction: column;
-    gap: 8px;
+  .btn-detail {
+    width: 100%;
+  }
+
+  .btn-icon {
+    flex: 1;
   }
 }

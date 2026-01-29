@@ -1,0 +1,51 @@
+.peminjaman-container {
+  padding: 20px;
+}
+
+.peminjaman-controls {
+  margin-bottom: 16px;
+}
+
+.table-wrapper {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.peminjaman-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.peminjaman-table th,
+.peminjaman-table td {
+  padding: 12px;
+  font-size: 14px;
+}
+
+.peminjaman-table thead th {
+  border-bottom: 2px solid #e5e7eb; /* garis abu halus */
+  font-weight: 600;
+  color: #374151;
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.status.peminjaman {
+  background: #e7f8ee;
+  color: #1a9b56;
+}
+
+.status.pengembalian {
+  background: #eef2f7;
+  color: #5b6b82;
+}
+
+.status.terlambat {
+  background: #fdeaea;
+  color: #d93025;
+}

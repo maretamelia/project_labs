@@ -1,0 +1,77 @@
+/* Reset dasar */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Body full screen dengan gradient */
+body, html {
+  height: 100%;
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+}
+
+/* Center container login */
+.container {
+  width: 350px;
+  padding: 30px 40px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  margin: auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center;
+}
+
+/* Judul */
+.container h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Input field */
+.container input {
+  width: 100%;
+  padding: 10px 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* Button */
+.container button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #4facfe;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.container button:hover {
+  background-color: #00f2fe;
+}
+
+/* Paragraph link ke register */
+.container p {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+.container p a {
+  color: #4facfe;
+  text-decoration: none;
+}
+
+.container p a:hover {
+  text-decoration: underline;
+}
