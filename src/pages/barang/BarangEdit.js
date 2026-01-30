@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import './BarangCreate.css'; // pakai CSS yang sama dengan BarangCreate
 
 function BarangEdit() {
   const { id } = useParams();
@@ -59,69 +60,59 @@ function BarangEdit() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = {
-      kodeBarang,
-      nama,
-      kategori,
-      stok,
-      deskripsi,
-      gambar: gambarFile || preview,
-    };
+    const formData = { kodeBarang, nama, kategori, stok, deskripsi, gambar: gambarFile || preview };
     console.log('Data Barang Terupdate:', formData);
     alert('Barang berhasil diupdate! (sementara di console)');
-    navigate('/barang');
+    navigate('/data-barang');
   };
 
   return (
-    <div style={{ maxWidth: '500px', margin: '20px auto' }}>
+    <div className="barang-create-container">
       <h2>Edit Barang</h2>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+      <form onSubmit={handleSubmit} className="barang-form">
 
         {/* Upload Gambar */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        <div className="form-group">
           <label>Image</label>
-          <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', border: '2px dashed #ccc', padding: '20px', borderRadius: '6px', cursor: 'pointer' }}>
+          <label className="image-upload">
             {preview ? (
-              <img src={preview} alt="Preview" style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '6px' }} />
+              <img src={preview} alt="Preview" className="image-preview" />
             ) : (
               <span>Click atau drop file di sini</span>
             )}
-            <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
+            <input type="file" accept="image/*" onChange={handleFileChange} />
           </label>
         </div>
 
         {/* Kode Barang */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        <div className="form-group">
           <label>Kode Barang</label>
           <input
             type="text"
             value={kodeBarang}
             onChange={(e) => setKodeBarang(e.target.value)}
             required
-            style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
           />
         </div>
 
         {/* Nama Barang */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        <div className="form-group">
           <label>Nama Barang</label>
           <input
             type="text"
             value={nama}
             onChange={(e) => setNama(e.target.value)}
             required
-            style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
           />
         </div>
 
         {/* Kategori */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        <div className="form-group">
           <label>Kategori</label>
           <select
             value={kategori}
             onChange={(e) => setKategori(e.target.value)}
             required
-            style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
           >
             <option value="">Pilih Kategori</option>
             {kategoriList.map((k, idx) => (
@@ -131,34 +122,32 @@ function BarangEdit() {
         </div>
 
         {/* Stok */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        <div className="form-group">
           <label>Stok</label>
           <input
             type="number"
             value={stok}
             onChange={(e) => setStok(e.target.value)}
             required
-            style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
           />
         </div>
 
         {/* Deskripsi */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        <div className="form-group">
           <label>Deskripsi</label>
           <textarea
             value={deskripsi}
             onChange={(e) => setDeskripsi(e.target.value)}
             rows="3"
-            style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
           />
         </div>
 
-        {/* Tombol Kembali & Simpan */}
+        {/* Tombol Kembali & Update */}
         <div className="button-group">
           <button type="button" onClick={() => navigate('/data-barang')} className="btn-back">
             ← Kembali
           </button>
-           <button type="button" onClick={() => navigate('/data-barang')} className="btn-submit">
+          <button type="submit" className="btn-submit">
             Update
           </button>
         </div>

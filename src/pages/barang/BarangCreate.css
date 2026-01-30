@@ -1,40 +1,78 @@
-/* Container form */
+/* Container utama */
 .barang-create-container {
-  max-width: 500px;
-  margin: 20px auto;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Judul halaman */
+.barang-create-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #4f46e5;
+  font-size: 24px;
 }
 
 /* Form */
 .barang-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 }
 
-/* Form group */
+/* Form Group */
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
 }
 
+.form-group label {
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Input & Select */
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
 }
 
 /* Upload gambar */
 .image-upload {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  border: 2px dashed #ccc;
+  border: 2px dashed #cbd5e1;
   padding: 20px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  color: #64748b;
+  min-height: 150px;
+}
+
+.image-upload:hover {
+  border-color: #4f46e5;
+  color: #4f46e5;
 }
 
 .image-upload input {
@@ -48,36 +86,47 @@
   border-radius: 6px;
 }
 
-/* Tombol Kembali & Simpan */
+/* Tombol */
 .button-group {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
+  gap: 10px;
+}
+
+.btn-back,
+.btn-submit {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
 }
 
 .btn-back {
-  background-color: #ccc;
-  color: #333;
-  padding: 10px 20px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.btn-back:hover {
+  background: #d1d5db;
 }
 
 .btn-submit {
-  background-color: #6B46C1;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-}
-
-/* Hover efek */
-.btn-back:hover {
-  background-color: #b3b3b3;
+  background: #4f46e5;
+  color: #fff;
 }
 
 .btn-submit:hover {
-  background-color: #5a2fa0;
+  background: #4338ca;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .barang-create-container {
+    margin: 20px;
+    padding: 15px;
+  }
 }
