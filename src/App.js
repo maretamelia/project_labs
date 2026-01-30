@@ -31,7 +31,6 @@ function AppContent() {
     hideLayout ? 'no-layout' : ''
   }`}
 >
-
         {/* Navbar hanya tampil kalau bukan login/register */}
         {!hideLayout && (
           <Navbar 
