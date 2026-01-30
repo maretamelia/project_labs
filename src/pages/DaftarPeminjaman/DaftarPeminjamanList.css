@@ -21,6 +21,7 @@
 .peminjaman-table td {
   padding: 12px;
   font-size: 14px;
+  text-align: center; /* Rata tengah semua kolom */
 }
 
 .peminjaman-table thead th {
@@ -33,6 +34,7 @@
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
+  display: inline-block; /* Agar badge tetap rapi di tengah */
 }
 
 .status.peminjaman {
@@ -48,4 +50,13 @@
 .status.terlambat {
   background: #fdeaea;
   color: #d93025;
+}
+
+.status.disetujui {
+  background-color: #10b981;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
 }

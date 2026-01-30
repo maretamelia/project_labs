@@ -143,6 +143,7 @@ function RiwayatPeminjaman() {
         <table className="riwayat-table">
           <thead>
             <tr>
+              <th>No</th>
               <th>Nama Barang</th>
               <th>Jumlah</th>
               <th>Tanggal Pinjam</th>
@@ -155,13 +156,14 @@ function RiwayatPeminjaman() {
           <tbody>
             {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan="6" style={{ textAlign: 'center' }}>
+                <td colSpan="7" style={{ textAlign: 'center' }}>
                   Data tidak ditemukan
                 </td>
               </tr>
             ) : (
-              paginatedData.map(item => (
+              paginatedData.map((item, index) => (
                 <tr key={item.id}>
+                  <td>{startIndex + index + 1}</td>
                   <td>{item.namaBarang}</td>
                   <td>{item.jumlah}</td>
                   <td>{item.tanggalPinjam}</td>

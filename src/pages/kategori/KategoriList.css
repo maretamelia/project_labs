@@ -188,6 +188,8 @@
   gap: 10px;
   justify-content: flex-end;
   margin-top: 24px;
+  padding-bottom: 20px; /* ⬅ kasih jarak ke bawah */
+  padding-right: 20px;  /* biar sejajar body */
 }
 
 .btn-batal,

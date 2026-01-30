@@ -3,6 +3,7 @@ import PageHeader from '../../components/PageHeader';
 import SearchBar from '../../components/SearchBar';
 import Pagination from '../../components/Pagination';
 import FilterModal from '../../components/FilterModal';
+import ActionModal from '../../components/Actionmodal';
 import './DaftarPeminjamanList.css';
 
 const DaftarPeminjaman = [
@@ -33,11 +34,22 @@ const DaftarPeminjaman = [
     tglKembali: '2025-09-20',
     status: 'Terlambat',
   },
+  {
+    id: 4,
+    nama: 'Alzel Danendra',
+    barang: 'Laptop',
+    jumlah: 1,
+    tglPinjam: '2025-09-10',
+    tglKembali: '2025-09-15',
+    status: 'Disetujui',
+  },
 ];
 
 function DaftarPeminjamanList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
 
   // FILTER STATE
@@ -63,6 +75,17 @@ function DaftarPeminjamanList() {
     setMinJumlah('');
     setMaxJumlah('');
     setStatusFilter([]);
+  };
+
+  const handleActionClick = (item) => {
+    setSelectedItem(item);
+    setIsActionModalOpen(true);
+  };
+
+  const handleActionApply = (aksiStatus, itemData) => {
+    console.log('Action applied:', aksiStatus, 'for item:', itemData);
+    // Tambahkan logika untuk memproses aksi di sini
+    // Misalnya: update status, kirim ke backend, dll.
   };
 
   const filteredData = DaftarPeminjaman.filter(item => {
@@ -97,6 +120,8 @@ function DaftarPeminjamanList() {
         return 'status pengembalian';
       case 'Terlambat':
         return 'status terlambat';
+      case 'Disetujui':
+        return 'status disetujui';
       default:
         return 'status';
     }
@@ -148,7 +173,12 @@ function DaftarPeminjamanList() {
                   </span>
                 </td>
                 <td>
-                  <button className="btn-action">⋮</button>
+                  <button 
+                    className="btn-action"
+                    onClick={() => handleActionClick(item)}
+                  >
+                    ⋮
+                  </button>
                 </td>
               </tr>
             ))}
@@ -195,6 +225,15 @@ function DaftarPeminjamanList() {
 
         </div>
       </FilterModal>
+
+      {/* ACTION MODAL */}
+      <ActionModal
+        isOpen={isActionModalOpen}
+        onClose={() => setIsActionModalOpen(false)}
+        onApply={handleActionApply}
+        status={selectedItem?.status}
+        itemData={selectedItem}
+      />
 
     </div>
   );

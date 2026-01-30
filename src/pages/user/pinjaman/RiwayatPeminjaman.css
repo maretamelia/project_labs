@@ -118,6 +118,7 @@ Main Container
   font-weight: 600;
   color: #374151;
   border-bottom: 1px solid #e5e7eb;
+  text-align: center; 
 }
 
 .riwayat-table td {
@@ -125,6 +126,7 @@ Main Container
   font-size: 14px;
   color: #6b7280;
   border-bottom: 1px solid #f3f4f6;
+  text-align: center; 
 }
 
 td.empty-table {
@@ -184,6 +186,7 @@ td.empty-table {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin: 0 auto;
   
 }
 

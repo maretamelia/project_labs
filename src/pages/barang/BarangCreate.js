@@ -1,143 +1,244 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './BarangCreate.css'; // import CSS terpisah
+import { FiUpload } from 'react-icons/fi';
+import './BarangCreate.css';
 
-function BarangCreate() {
+
+
+function TambahBarang() {
   const navigate = useNavigate();
-  const [kategori, setKategori] = useState('');
-  const [kodeBarang, setKodeBarang] = useState('');
-  const [nama, setNama] = useState('');
-  const [stok, setStok] = useState('');
-  const [deskripsi, setDeskripsi] = useState('');
-  const [gambarFile, setGambarFile] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [kategoriList, setKategoriList] = useState([]);
 
-  useEffect(() => {
-    setKategoriList(['Elektronik', 'Pakaian', 'Aksesoris']);
-  }, []);
+  const [formData, setFormData] = useState({
+    nama: '',
+    kategori: '',
+    kode_barang: '',
+    stok: '',
+    deskripsi: '',
+    image: null
+  });
 
-  const handleFileChange = (e) => {
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const kategoriOptions = [
+    'Mikrokontroler',
+    'Sensor',
+    'Aktuator',
+    'Display',
+    'Komunikasi',
+    'Power Supply',
+    'Lainnya'
+  ];
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => {
+      if (name === 'kategori') {
+        return {
+          ...prev,
+          kategori: value,
+          kode_barang: value
+            ? value.substring(0, 3).toUpperCase() + '-001'
+            : ''
+        };
+      }
+
+      return {
+        ...prev,
+        [name]: value
+      };
+    });
+  };
+
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file && file.size > 2 * 1024 * 1024) {
-      alert('Ukuran file terlalu besar (max 2MB)');
-      return;
-    }
-    setGambarFile(file);
-    setPreview(URL.createObjectURL(file));
+    if (!file) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      image: file
+    }));
+
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(reader.result);
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = { kodeBarang, nama, kategori, stok, deskripsi, gambarFile };
-    console.log('Data Barang Baru:', formData);
-    alert('Barang berhasil ditambahkan! (sementara di console)');
+    console.log('DATA BARANG:', formData);
+    // nanti sambung ke API
+    // navigate('/data-barang');
+  };
 
-    // Reset form
-    setKodeBarang('');
-    setNama('');
-    setKategori('');
-    setStok('');
-    setDeskripsi('');
-    setGambarFile(null);
-    setPreview(null);
+  const handleCancel = () => navigate('/data-barang');
 
-    navigate('/barang');
+  const getCurrentDate = () => {
+    const today = new Date();
+    return today.toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   };
 
   return (
-    <div className="barang-create-container">
-      <h2>Tambah Barang</h2>
+    <div className="tambah-barang-page">
+      {/* ===== HEADER ===== */}
+      <div className="tambah-barang-header">
+        <h1 className="header-title">Tambah Barang</h1>
+        <p className="header-subtitle">Tambah Data Barang</p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="barang-form">
-        {/* Upload Gambar */}
-        <div className="form-group">
-          <label>Image</label>
-          <label className="image-upload">
-            {preview ? (
-              <img src={preview} alt="Preview" className="image-preview" />
-            ) : (
-              <span>Click atau drop file di sini</span>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              required
-            />
-          </label>
+      {/* ===== CONTENT ===== */}
+      <div className="tambah-barang-container">
+        {/* ===== FORM ===== */}
+        <div className="form-section">
+          <form onSubmit={handleSubmit}>
+            {/* Image */}
+            <div className="form-group">
+              <label className="form-label">
+                Image 
+              </label>
+              <div className="image-upload-area">
+                <input
+                  type="file"
+                  id="image-upload"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  hidden
+                />
+                <label htmlFor="image-upload" className="upload-label">
+                  <FiUpload size={40} />
+                  <span>Click to upload image</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Nama */}
+            <div className="form-group">
+              <label className="form-label">
+                Nama
+              </label>
+              <input
+                type="text"
+                name="nama"
+                value={formData.nama}
+                onChange={handleInputChange}
+                className="form-input"
+                placeholder="Masukkan nama barang"
+              />
+            </div>
+
+            {/* Kategori */}
+            <div className="form-group">
+              <label className="form-label">
+                Kategori 
+              </label>
+              <select
+                name="kategori"
+                value={formData.kategori}
+                onChange={handleInputChange}
+                className="form-select"
+              >
+                <option value="">Pilih kategori</option>
+                {kategoriOptions.map((kat, i) => (
+                  <option key={i} value={kat}>
+                    {kat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Kode Barang */}
+            <div className="form-group">
+              <label className="form-label">
+                Kode Barang 
+              </label>
+              <input
+                type="text"
+                name="kode_barang"
+                value={formData.kode_barang}
+                onChange={handleInputChange}
+                className="form-input"
+                placeholder="BRG-001"
+              />
+            </div>
+
+            {/* Stok */}
+            <div className="form-group">
+              <label className="form-label">
+                Stok 
+              </label>
+              <input
+                type="number"
+                name="stok"
+                value={formData.stok}
+                onChange={handleInputChange}
+                className="form-input"
+                min="0"
+                placeholder="0"
+              />
+            </div>
+
+            {/* Deskripsi */}
+            <div className="form-group">
+              <label className="form-label">Deskripsi</label>
+              <textarea
+                name="deskripsi"
+                value={formData.deskripsi}
+                onChange={handleInputChange}
+                className="form-textarea"
+                rows="4"
+              />
+            </div>
+
+            {/* BUTTON */}
+            <div className="form-actions">
+              <button type="button" className="btn-cancel" onClick={handleCancel}>
+                Batal
+              </button>
+              <button type="submit" className="btn-submit">
+                Simpan
+              </button>
+            </div>
+          </form>
         </div>
 
-        {/* Kode Barang */}
-        <div className="form-group">
-          <label>Kode Barang</label>
-          <input
-            type="text"
-            value={kodeBarang}
-            onChange={(e) => setKodeBarang(e.target.value)}
-            required
-          />
-        </div>
+        {/* ===== PREVIEW ===== */}
+        <div className="preview-section">
+          <div className="preview-label">Preview</div>
 
-        {/* Nama Barang */}
-        <div className="form-group">
-          <label>Nama Barang</label>
-          <input
-            type="text"
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
-            required
-          />
-        </div>
+          <div className="preview-card">
+            <div className="preview-image">
+              {imagePreview ? (
+                <img src={imagePreview} alt="Preview" />
+              ) : (
+                <div className="preview-placeholder">No Image</div>
+              )}
+            </div>
 
-        {/* Kategori */}
-        <div className="form-group">
-          <label>Kategori</label>
-          <select
-            value={kategori}
-            onChange={(e) => setKategori(e.target.value)}
-            required
-          >
-            <option value="">Pilih Kategori</option>
-            {kategoriList.map((k, idx) => (
-              <option key={idx} value={k}>{k}</option>
-            ))}
-          </select>
-        </div>
+            <div className="preview-kode">
+              {formData.kode_barang || 'KODE-XXX'}
+            </div>
 
-        {/* Stok */}
-        <div className="form-group">
-          <label>Stok</label>
-          <input
-            type="number"
-            value={stok}
-            onChange={(e) => setStok(e.target.value)}
-            required
-          />
-        </div>
+            <div className="preview-stok">
+              {formData.stok || 0} Barang
+            </div>
 
-        {/* Deskripsi */}
-        <div className="form-group">
-          <label>Deskripsi</label>
-          <textarea
-            value={deskripsi}
-            onChange={(e) => setDeskripsi(e.target.value)}
-            rows="3"
-          />
-        </div>
+            <div className="preview-nama">
+              {formData.nama || 'Nama Barang'}
+            </div>
 
-        {/* Tombol Kembali & Simpan */}
-        <div className="button-group">
-          <button type="button" onClick={() => navigate('/data-barang')} className="btn-back">
-            ← Kembali
-          </button>
-          <button type="submit" className="btn-submit">
-            Simpan
-          </button>
+            <div className="preview-info">
+              <p>Kategori: {formData.kategori || '-'}</p>
+              <p>Tanggal: {getCurrentDate()}</p>
+            </div>
+          </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
 
-export default BarangCreate;
+export default TambahBarang;

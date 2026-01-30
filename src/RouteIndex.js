@@ -7,7 +7,7 @@ import BarangList from './pages/barang/BarangList';
 import BarangCreate from './pages/barang/BarangCreate';
 import BarangEdit from './pages/barang/BarangEdit';
 import BarangDetail from './pages/barang/BarangDetail';
-import DaftarPeminjamanList from './pages/RiwayatPeminjaman/RiwayatPeminjaman';
+import DaftarPeminjamanList from './pages/DaftarPeminjaman/DaftarPeminjamanList';
 import Dashboard from './pages/user/Dashboard/Dashboard';
 import CreatePinjaman from './pages/user/pinjaman/CreatePinjaman';
 import PinjamanSaya from './pages/user/pinjaman/PinjamanSaya';

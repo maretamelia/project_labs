@@ -49,7 +49,7 @@ function DataBarang() {
       <div className="main-content">
         <div className="content-wrapper">
           <PageHeader 
-            title="Daftar Barang"
+            title="Data Barang"
             subtitle="Kelola semua barang di sini"
           />
 
