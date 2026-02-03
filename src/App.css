@@ -42,17 +42,15 @@ body {
 /* Content Wrapper (Area di bawah navbar) */
 .content-wrapper {
   flex: 1;
-  padding: 30px;
+  /* padding: 30px; */
   background-color: #f8f9fa;
   overflow-y: auto;
 }
-ran
 /* Responsive */
 @media (max-width: 768px) {
   .main-content {
     margin-left: 70px; /* Sidebar jadi sempit di mobile */
   }
-
   .content-wrapper {
     padding: 15px;
   }

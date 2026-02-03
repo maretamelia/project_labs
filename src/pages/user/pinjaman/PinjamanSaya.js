@@ -1,32 +1,44 @@
-// PinjamanSaya.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PinjamanSaya.css';
+import AddProductModal from '../../../components/AddProductModal';
 import DetailPinjaman from './DetailPinjaman';
 import SearchBar from '../../../components/SearchBar';
 import Pagination from '../../../components/Pagination';
 import FilterModal from '../../../components/FilterModal';
-import { FiCalendar } from 'react-icons/fi';
 import EditIcon from '../../../assets/icons/edit.svg';
 import LihatDetailIcon from '../../../assets/icons/lihatdetail.svg';
 
+const STATUS_LIST = [
+  'Menunggu',
+  'Disetujui',
+  'Dipinjam',
+  'Dikembalikan',
+  'Ditolak',
+  'Terlambat'
+];
+
 function PinjamanSaya() {
   const navigate = useNavigate();
+  const ITEMS_PER_PAGE = 5;
 
+  /* ================= STATE ================= */
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isDetailPopupOpen, setIsDetailPopupOpen] = useState(false);
+  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [selectedPinjaman, setSelectedPinjaman] = useState(null);
+
   const [filterValues, setFilterValues] = useState({
     startDate: '',
     endDate: '',
     minJumlah: '',
-    maxJumlah: ''
+    maxJumlah: '',
+    status: []
   });
 
-  const ITEMS_PER_PAGE = 5;
-
+  /* ================= DATA DUMMY ================= */
   const [pinjaman] = useState([
     { id: 1, nama: 'Proyektor', jumlah: 1, tanggalPinjam: '2025-09-15', tanggalKembali: '2025-09-20', status: 'Menunggu' },
     { id: 2, nama: 'Laptop', jumlah: 1, tanggalPinjam: '2025-09-12', tanggalKembali: '2025-09-18', status: 'Dipinjam' },
@@ -34,6 +46,36 @@ function PinjamanSaya() {
     { id: 4, nama: 'Speaker', jumlah: 1, tanggalPinjam: '2025-09-05', tanggalKembali: '2025-09-10', status: 'Terlambat' },
     { id: 5, nama: 'Mic', jumlah: 1, tanggalPinjam: '2025-09-01', tanggalKembali: '2025-09-05', status: 'Disetujui' },
   ]);
+
+  /* ================= HANDLER ================= */
+  const handleFilterChange = (key, value) => {
+    setFilterValues(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleStatusChange = (status) => {
+    setFilterValues(prev => ({
+      ...prev,
+      status: prev.status.includes(status)
+        ? prev.status.filter(s => s !== status)
+        : [...prev.status, status]
+    }));
+  };
+
+  const handleApplyFilter = () => {
+    setCurrentPage(1);
+    setIsFilterOpen(false);
+  };
+
+  const handleResetFilter = () => {
+    setFilterValues({
+      startDate: '',
+      endDate: '',
+      minJumlah: '',
+      maxJumlah: '',
+      status: []
+    });
+    setCurrentPage(1);
+  };
 
   const handleEdit = (item) => {
     navigate(`/user/EditPinjaman/${item.id}`, { state: { item } });
@@ -44,44 +86,30 @@ function PinjamanSaya() {
     setIsDetailPopupOpen(true);
   };
 
-  const handleCloseDetailPopup = () => {
-    setIsDetailPopupOpen(false);
-    setSelectedPinjaman(null);
+  const handleSelectProduct = (barang) => {
+    navigate('/user/pinjaman/create', { state: { selectedBarang: barang } });
   };
 
-  const handleBuatPeminjaman = () => {
-    navigate('/user/pinjaman/create');
-  };
-
-  const handleFilterChange = (key, value) => {
-    setFilterValues(prev => ({ ...prev, [key]: value }));
-  };
-
-  const handleApplyFilter = () => {
-    setCurrentPage(1);
-    setIsFilterOpen(false);
-  };
-
-  const handleResetFilter = () => {
-    setFilterValues({ startDate: '', endDate: '', minJumlah: '', maxJumlah: '' });
-    setCurrentPage(1);
-  };
-
+  /* ================= FILTER LOGIC ================= */
   const filteredData = pinjaman.filter(item => {
     const matchSearch = item.nama.toLowerCase().includes(searchTerm.toLowerCase());
     const matchMin = filterValues.minJumlah === '' || item.jumlah >= Number(filterValues.minJumlah);
     const matchMax = filterValues.maxJumlah === '' || item.jumlah <= Number(filterValues.maxJumlah);
     const itemDate = new Date(item.tanggalPinjam);
-    const matchStartDate = filterValues.startDate === '' || itemDate >= new Date(filterValues.startDate);
-    const matchEndDate = filterValues.endDate === '' || itemDate <= new Date(filterValues.endDate);
-    return matchSearch && matchMin && matchMax && matchStartDate && matchEndDate;
+    const matchStartDate = !filterValues.startDate || itemDate >= new Date(filterValues.startDate);
+    const matchEndDate = !filterValues.endDate || itemDate <= new Date(filterValues.endDate);
+    const matchStatus = filterValues.status.length === 0 || filterValues.status.includes(item.status);
+    return matchSearch && matchMin && matchMax && matchStartDate && matchEndDate && matchStatus;
   });
 
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedData = filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const getStatusClass = status => status.toLowerCase();
 
+  /* ================= RENDER ================= */
   return (
     <div className="pinjaman-page">
       <div className="pinjaman-header">
@@ -99,7 +127,7 @@ function PinjamanSaya() {
           }}
           onOpenFilter={() => setIsFilterOpen(true)}
         />
-        <button className="btn-add" onClick={handleBuatPeminjaman}>
+        <button className="btn-add" onClick={() => setIsAddProductOpen(true)}>
           + Buat Peminjaman
         </button>
       </div>
@@ -113,7 +141,7 @@ function PinjamanSaya() {
               <th>Tanggal Pinjam</th>
               <th>Tanggal Kembali</th>
               <th>Status</th>
-              <th>Aksi</th>
+              <th style={{ minWidth: '120px' }}>Aksi</th> {/* pastikan kolom aksi ga kepotong */}
             </tr>
           </thead>
           <tbody>
@@ -135,20 +163,12 @@ function PinjamanSaya() {
                   </td>
                   <td className="aksi-cell">
                     {item.status === 'Menunggu' && (
-                      <button
-                        className="aksi-btn edit-btn"
-                        onClick={() => handleEdit(item)}
-                        title="Edit"
-                      >
-                        <img src={EditIcon} alt="Edit" className="aksi-icon"/>
+                      <button className="aksi-btn edit-btn" onClick={() => handleEdit(item)}>
+                        <img src={EditIcon} alt="Edit" />
                       </button>
                     )}
-                    <button
-                      className="aksi-btn view-btn"
-                      onClick={() => handleDetail(item)}
-                      title="Detail"
-                    >
-                      <img src={LihatDetailIcon} alt="Detail" className="aksi-icon"/>
+                    <button className="aksi-btn view-btn" onClick={() => handleDetail(item)}>
+                      <img src={LihatDetailIcon} alt="Detail" />
                     </button>
                   </td>
                 </tr>
@@ -167,55 +187,40 @@ function PinjamanSaya() {
         <div className="filter-section">
           <div className="filter-section-title">Tanggal</div>
           <div className="filter-row">
-            <div className="filter-field">
-              <label>Dari</label>
-              <div className="filter-input-with-icon">
-                <FiCalendar />
+            {['startDate', 'endDate'].map((key, i) => (
+              <div className="filter-field" key={key}>
+                <label>{i === 0 ? 'Dari' : 'Ke'}</label>
                 <input
                   type="date"
-                  value={filterValues.startDate}
-                  onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                  value={filterValues[key]}
+                  onChange={(e) => handleFilterChange(key, e.target.value)}
+                  className="filter-input"
                 />
               </div>
-            </div>
-            <div className="filter-field">
-              <label>Ke</label>
-              <div className="filter-input-with-icon">
-                <FiCalendar />
-                <input
-                  type="date"
-                  value={filterValues.endDate}
-                  onChange={(e) => handleFilterChange('endDate', e.target.value)}
-                />
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
         <div className="filter-section">
-          <div className="filter-section-title">Jumlah Produk</div>
-          <div className="filter-row">
-            <div className="filter-field">
-              <label>Min</label>
+          <div className="filter-section-title">Status Peminjaman</div>
+          {STATUS_LIST.map(status => (
+            <label key={status} className="filter-checkbox1">
               <input
-                type="number"
-                value={filterValues.minJumlah}
-                onChange={(e) => handleFilterChange('minJumlah', e.target.value)}
-                placeholder="0"
+                type="checkbox"
+                checked={filterValues.status.includes(status)}
+                onChange={() => handleStatusChange(status)}
               />
-            </div>
-            <div className="filter-field">
-              <label>Max</label>
-              <input
-                type="number"
-                value={filterValues.maxJumlah}
-                onChange={(e) => handleFilterChange('maxJumlah', e.target.value)}
-                placeholder="999"
-              />
-            </div>
-          </div>
+              {status}
+            </label>
+          ))}
         </div>
       </FilterModal>
+
+      <AddProductModal
+        isOpen={isAddProductOpen}
+        onClose={() => setIsAddProductOpen(false)}
+        onSelectProduct={handleSelectProduct}
+      />
 
       <Pagination
         currentPage={currentPage}
@@ -224,9 +229,9 @@ function PinjamanSaya() {
         onPageChange={setCurrentPage}
       />
 
-      <DetailPinjaman 
+      <DetailPinjaman
         isOpen={isDetailPopupOpen}
-        onClose={handleCloseDetailPopup}
+        onClose={() => setIsDetailPopupOpen(false)}
         data={selectedPinjaman}
       />
     </div>

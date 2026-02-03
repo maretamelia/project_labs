@@ -1,5 +1,5 @@
 .peminjaman-container {
-  padding: 20px;
+  width: 100%;
 }
 
 .peminjaman-controls {
@@ -7,7 +7,7 @@
 }
 
 .table-wrapper {
-  background: #fff;
+  background: #ffffff;
   border-radius: 12px;
   padding: 16px;
 }
@@ -21,20 +21,27 @@
 .peminjaman-table td {
   padding: 12px;
   font-size: 14px;
-  text-align: center; /* Rata tengah semua kolom */
+  text-align: left;
+  vertical-align: middle;
 }
 
 .peminjaman-table thead th {
-  border-bottom: 2px solid #e5e7eb; /* garis abu halus */
+  border-bottom: 2px solid #e5e7eb;
   font-weight: 600;
   color: #374151;
 }
 
+.peminjaman-table tbody tr:not(:last-child) td {
+  border-bottom: 1px solid #f1f5f9;
+}
+
 .status {
+  display: inline-block;
   padding: 4px 12px;
-  border-radius: 12px;
+  border-radius: 999px;
   font-size: 12px;
-  display: inline-block; /* Agar badge tetap rapi di tengah */
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .status.peminjaman {
@@ -53,10 +60,105 @@
 }
 
 .status.disetujui {
-  background-color: #10b981;
-  color: white;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
+  background: #10b981;
+  color: #ffffff;
+}
+
+
+.btn-action {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px 8px;
+}
+
+.btn-action:hover {
+  color: #111827;
+}
+
+
+.filter-section {
+  margin-bottom: 20px;
+}
+
+.filter-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+/* GRID 2 KOLOM */
+.filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* FIELD */
+.filter-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-field label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 6px;
   font-weight: 500;
+}
+
+/* INPUT */
+.filter-field input {
+  height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.filter-field input::placeholder {
+  color: #9ca3af;
+}
+
+.filter-field input:focus {
+  outline: none;
+  border-color: #D098CC;
+  box-shadow: 0 0 0 3px rgba(208, 152, 204, 0.15);
+}
+
+/* STATUS CHECKBOX */
+.filter-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+}
+
+.filter-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+.filter-modal input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .filter-row {
+    grid-template-columns: 1fr;
+  }
 }

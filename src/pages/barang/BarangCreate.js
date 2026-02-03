@@ -93,7 +93,7 @@ function TambahBarang() {
       {/* ===== CONTENT ===== */}
       <div className="tambah-barang-container">
         {/* ===== FORM ===== */}
-        <div className="form-section">
+        <div className="form-section1">
           <form onSubmit={handleSubmit}>
             {/* Image */}
             <div className="form-group">

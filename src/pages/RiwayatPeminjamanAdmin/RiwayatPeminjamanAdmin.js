@@ -1,32 +1,34 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import LihatDetailIcon from '../../../assets/icons/lihatdetail.svg';
-import './RiwayatPeminjaman.css';
-import SearchBar from '../../../components/SearchBar';
-import Pagination from '../../../components/Pagination';
-import FilterModal from '../../../components/FilterModal';
+import PageHeader from '../../components/PageHeader';
+import './RiwayatPeminjamanAdmin.css';
+import SearchBar from '../../components/SearchBar';
+import Pagination from '../../components/Pagination';
+import FilterModal from '../../components/FilterModal';
+import DetailPeminjamanModal from './DetailPeminjamanAdmin';
+import { BsThreeDots } from 'react-icons/bs';
 
-function RiwayatPeminjaman() {
-  const navigate = useNavigate();
-
+function RiwayatPeminjamanAdmin() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 5;
+  const [openMenuId, setOpenMenuId] = useState(null);
 
-  /* ===== FILTER STATE ===== */
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState(null);
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filterValues, setFilterValues] = useState({
     startDate: '',
     endDate: '',
     minJumlah: '',
-    maxJumlah: '',
-    status: []
+    maxJumlah: ''
   });
 
-  /* ===== DATA DUMMY ===== */
+  const ITEMS_PER_PAGE = 5;
+
   const [riwayatData] = useState([
     {
       id: 1,
+      namaPeminjam: 'Alzel Danendra',
       namaBarang: 'Proyektor',
       jumlah: 1,
       tanggalPinjam: '2025-05-13',
@@ -35,6 +37,7 @@ function RiwayatPeminjaman() {
     },
     {
       id: 2,
+      namaPeminjam: 'Algioziel Malik',
       namaBarang: 'Laptop',
       jumlah: 1,
       tanggalPinjam: '2025-05-10',
@@ -43,6 +46,7 @@ function RiwayatPeminjaman() {
     },
     {
       id: 3,
+      namaPeminjam: 'Mikaila Anjasmana',
       namaBarang: 'Kamera',
       jumlah: 2,
       tanggalPinjam: '2025-05-08',
@@ -51,6 +55,7 @@ function RiwayatPeminjaman() {
     },
     {
       id: 4,
+      namaPeminjam: 'Jingga',
       namaBarang: 'Speaker',
       jumlah: 1,
       tanggalPinjam: '2025-05-06',
@@ -67,15 +72,6 @@ function RiwayatPeminjaman() {
     }));
   };
 
-  const handleStatusChange = (value) => {
-    setFilterValues(prev => ({
-      ...prev,
-      status: prev.status.includes(value)
-        ? prev.status.filter(s => s !== value)
-        : [...prev.status, value]
-    }));
-  };
-
   const handleApplyFilter = () => {
     setCurrentPage(1);
     setIsFilterOpen(false);
@@ -86,17 +82,16 @@ function RiwayatPeminjaman() {
       startDate: '',
       endDate: '',
       minJumlah: '',
-      maxJumlah: '',
-      status: []
+      maxJumlah: ''
     });
     setCurrentPage(1);
   };
 
   /* ===== FILTER LOGIC ===== */
   const filteredData = riwayatData.filter(item => {
-    const matchSearch = item.namaBarang
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+    const matchSearch =
+      item.namaBarang.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.namaPeminjam.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchMin =
       filterValues.minJumlah === '' ||
@@ -109,24 +104,19 @@ function RiwayatPeminjaman() {
     const itemDate = new Date(item.tanggalPinjam);
 
     const matchStartDate =
-      !filterValues.startDate ||
+      filterValues.startDate === '' ||
       itemDate >= new Date(filterValues.startDate);
 
     const matchEndDate =
-      !filterValues.endDate ||
+      filterValues.endDate === '' ||
       itemDate <= new Date(filterValues.endDate);
-
-    const matchStatus =
-      filterValues.status.length === 0 ||
-      filterValues.status.includes(item.status);
 
     return (
       matchSearch &&
       matchMin &&
       matchMax &&
       matchStartDate &&
-      matchEndDate &&
-      matchStatus
+      matchEndDate
     );
   });
 
@@ -137,19 +127,38 @@ function RiwayatPeminjaman() {
     startIndex + ITEMS_PER_PAGE
   );
 
-  const handleDetail = (id) => {
-    navigate(`/user/pinjaman/${id}`);
+  /* ===== AKSI ===== */
+  const handleDetail = (item) => {
+    setSelectedData(item);
+    setIsDetailModalOpen(true);
+    setOpenMenuId(null);
+  };
+
+  const handleCloseDetailModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedData(null);
+  };
+
+  const handleHapus = (id) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+      console.log('Hapus peminjaman id:', id);
+      setOpenMenuId(null);
+    }
+  };
+
+  const toggleMenu = (id) => {
+    setOpenMenuId(openMenuId === id ? null : id);
   };
 
   return (
     <div className="riwayat-page">
-      <div className="riwayat-header">
-        <h1 className="riwayat-header-title">Riwayat Peminjaman</h1>
-        <p className="riwayat-header-subtitle">Daftar Riwayat Peminjaman</p>
-      </div>
+      <PageHeader
+        title="Riwayat Peminjaman"
+        subtitle="Daftar Riwayat Peminjaman"
+      />
 
       <SearchBar
-        placeholder="Cari nama barang..."
+        placeholder="Cari nama barang atau peminjam..."
         searchTerm={searchTerm}
         onSearchChange={(value) => {
           setSearchTerm(value);
@@ -158,12 +167,12 @@ function RiwayatPeminjaman() {
         onOpenFilter={() => setIsFilterOpen(true)}
       />
 
-      {/* TABLE */}
       <div className="riwayat-table-wrapper">
         <table className="riwayat-table">
           <thead>
             <tr>
               <th>No</th>
+              <th>Nama</th>
               <th>Nama Barang</th>
               <th>Jumlah</th>
               <th>Tanggal Pinjam</th>
@@ -172,10 +181,11 @@ function RiwayatPeminjaman() {
               <th>Aksi</th>
             </tr>
           </thead>
+
           <tbody>
             {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan="7" className="empty-table">
+                <td colSpan="8" className="empty-table">
                   Data tidak ditemukan
                 </td>
               </tr>
@@ -183,6 +193,7 @@ function RiwayatPeminjaman() {
               paginatedData.map((item, index) => (
                 <tr key={item.id}>
                   <td>{startIndex + index + 1}</td>
+                  <td>{item.namaPeminjam}</td>
                   <td>{item.namaBarang}</td>
                   <td>{item.jumlah}</td>
                   <td>{item.tanggalPinjam}</td>
@@ -193,12 +204,31 @@ function RiwayatPeminjaman() {
                     </span>
                   </td>
                   <td className="aksi-cell">
-                    <button
-                      className="aksi-btn1"
-                      onClick={() => handleDetail(item.id)}
-                    >
-                      <img src={LihatDetailIcon} alt="detail" className="aksi-icon" />
-                    </button>
+                    <div className="aksi-menu-wrapper">
+                      <button
+                        className="aksi-btn-ellipsis"
+                        onClick={() => toggleMenu(item.id)}
+                      >
+                        <BsThreeDots />
+                      </button>
+
+                      {openMenuId === item.id && (
+                        <div className="aksi-dropdown-menu">
+                          <button
+                            className="aksi-dropdown-item detail"
+                            onClick={() => handleDetail(item)}
+                          >
+                            Detail
+                          </button>
+                          <button
+                            className="aksi-dropdown-item hapus"
+                            onClick={() => handleHapus(item.id)}
+                          >
+                            Hapus
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))
@@ -221,7 +251,6 @@ function RiwayatPeminjaman() {
               <label>Dari</label>
               <input
                 type="date"
-                className="filter-input-date"
                 value={filterValues.startDate}
                 onChange={(e) =>
                   handleFilterChange('startDate', e.target.value)
@@ -233,7 +262,6 @@ function RiwayatPeminjaman() {
               <label>Ke</label>
               <input
                 type="date"
-                className="filter-input-date"
                 value={filterValues.endDate}
                 onChange={(e) =>
                   handleFilterChange('endDate', e.target.value)
@@ -244,48 +272,31 @@ function RiwayatPeminjaman() {
         </div>
 
         <div className="filter-section">
-          <div className="filter-section-title">Jumlah</div>
+          <div className="filter-section-title">Jumlah Barang</div>
           <div className="filter-row">
             <div className="filter-field">
               <label>Min</label>
               <input
                 type="number"
-                className="filter-input"
-                placeholder="Contoh : 1"
+                placeholder="0"
                 value={filterValues.minJumlah}
                 onChange={(e) =>
                   handleFilterChange('minJumlah', e.target.value)
                 }
               />
             </div>
+
             <div className="filter-field">
               <label>Max</label>
               <input
                 type="number"
-                className="filter-input"
-                placeholder="Contoh : 10"
+                placeholder="999"
                 value={filterValues.maxJumlah}
                 onChange={(e) =>
                   handleFilterChange('maxJumlah', e.target.value)
                 }
               />
             </div>
-          </div>
-        </div>
-
-        <div className="filter-section">
-          <div className="filter-section-title">Status Peminjaman</div>
-          <div className="filter-checkbox-group">
-            {['Selesai', 'Ditolak'].map(status => (
-              <label key={status} className="filter-checkbox">
-                <input
-                  type="checkbox"
-                  checked={filterValues.status.includes(status)}
-                  onChange={() => handleStatusChange(status)}
-                />
-                {status}
-              </label>
-            ))}
           </div>
         </div>
       </FilterModal>
@@ -296,8 +307,14 @@ function RiwayatPeminjaman() {
         itemsPerPage={ITEMS_PER_PAGE}
         onPageChange={setCurrentPage}
       />
+
+      <DetailPeminjamanModal
+        isOpen={isDetailModalOpen}
+        data={selectedData}
+        onClose={handleCloseDetailModal}
+      />
     </div>
   );
 }
 
-export default RiwayatPeminjaman;
+export default RiwayatPeminjamanAdmin;

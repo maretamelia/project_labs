@@ -8,6 +8,7 @@ import BarangCreate from './pages/barang/BarangCreate';
 import BarangEdit from './pages/barang/BarangEdit';
 import BarangDetail from './pages/barang/BarangDetail';
 import DaftarPeminjamanList from './pages/DaftarPeminjaman/DaftarPeminjamanList';
+import RiwayatPeminjamanAdmin from './pages/RiwayatPeminjamanAdmin/RiwayatPeminjamanAdmin';
 import Dashboard from './pages/user/Dashboard/Dashboard';
 import CreatePinjaman from './pages/user/pinjaman/CreatePinjaman';
 import PinjamanSaya from './pages/user/pinjaman/PinjamanSaya';
@@ -33,7 +34,7 @@ export default function RouteIndex() {
       <Route path="/barang/edit/:id" element={<BarangEdit />} />
       <Route path="/barang/:id" element={<BarangDetail />} />
       <Route path="/daftar-peminjaman" element={<DaftarPeminjamanList />} />
-      <Route path="/riwayat-peminjaman" element={<RiwayatPeminjaman />} />
+      <Route path="/riwayat-peminjaman" element={<RiwayatPeminjamanAdmin />} />
 
       {/* ====================== LOGIN / REGISTER ====================== */}
       <Route path="/login" element={<Login />} />

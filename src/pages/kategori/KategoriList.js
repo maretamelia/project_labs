@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiEdit2, FiTrash2, FiCalendar } from 'react-icons/fi';
+import { FiEdit2, FiTrash2} from 'react-icons/fi';
 import PageHeader from '../../components/PageHeader';
 import SearchBar from '../../components/SearchBar';
 import Pagination from '../../components/Pagination';
@@ -229,30 +229,32 @@ function KategoriList() {
         onApply={handleApplyFilter}
         onReset={handleResetFilter}
       >
-        {/* Konten filter */}
         <div className="filter-section">
           <div className="filter-section-title">Tanggal</div>
           <div className="filter-row">
             <div className="filter-field">
               <label>Dari :</label>
               <div className="filter-input-with-icon">
-                <FiCalendar className="filter-input-icon" />
                 <input
                   type="date"
                   value={filterValues.startDate}
-                  onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                  onChange={(e) =>
+                    handleFilterChange('startDate', e.target.value)
+                  }
                   className="filter-input"
                 />
               </div>
             </div>
+
             <div className="filter-field">
               <label>Ke :</label>
               <div className="filter-input-with-icon">
-                <FiCalendar className="filter-input-icon" />
                 <input
                   type="date"
                   value={filterValues.endDate}
-                  onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                  onChange={(e) =>
+                    handleFilterChange('endDate', e.target.value)
+                  }
                   className="filter-input"
                 />
               </div>
@@ -267,26 +269,28 @@ function KategoriList() {
               <label>Min Jumlah</label>
               <input
                 type="number"
-                placeholder="Contoh : 1"
                 value={filterValues.minJumlah}
-                onChange={(e) => handleFilterChange('minJumlah', e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange('minJumlah', e.target.value)
+                }
                 className="filter-input"
               />
             </div>
+
             <div className="filter-field">
               <label>Max Jumlah</label>
               <input
                 type="number"
-                placeholder="Contoh : 10"
                 value={filterValues.maxJumlah}
-                onChange={(e) => handleFilterChange('maxJumlah', e.target.value)}
+                onChange={(e) =>
+                  handleFilterChange('maxJumlah', e.target.value)
+                }
                 className="filter-input"
               />
             </div>
           </div>
         </div>
       </FilterModal>
-
     </div>
   );
 }

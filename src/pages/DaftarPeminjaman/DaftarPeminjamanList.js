@@ -193,38 +193,82 @@ function DaftarPeminjamanList() {
         totalItems={filteredData.length}
         onPageChange={setCurrentPage}
       />
+{/* FILTER MODAL */}
+<FilterModal
+  isOpen={isFilterOpen}
+  onClose={() => setIsFilterOpen(false)}
+  onApply={() => setIsFilterOpen(false)}
+  onReset={resetFilter}
+>
+  {/* TANGGAL */}
+  <div className="filter-section">
+    <div className="filter-section-title">Tanggal</div>
+    <div className="filter-row">
+      <div className="filter-field">
+        <label>Dari</label>
+        <input
+          type="date"
+          value={tanggalDari}
+          onChange={(e) => setTanggalDari(e.target.value)}
+        />
+      </div>
 
-      {/* FILTER MODAL */}
-      <FilterModal
-        isOpen={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
-        onApply={() => setIsFilterOpen(false)}
-        onReset={resetFilter}
-      >
-        <div className="filter-modal">
+      <div className="filter-field">
+        <label>Ke</label>
+        <input
+          type="date"
+          value={tanggalKe}
+          onChange={(e) => setTanggalKe(e.target.value)}
+        />
+      </div>
+    </div>
+  </div>
 
-          <h4>Tanggal</h4>
-          <input type="date" value={tanggalDari} onChange={e => setTanggalDari(e.target.value)} />
-          <input type="date" value={tanggalKe} onChange={e => setTanggalKe(e.target.value)} />
+  {/* JUMLAH */}
+  <div className="filter-section">
+    <div className="filter-section-title">Jumlah</div>
+    <div className="filter-row">
+      <div className="filter-field">
+        <label>Min Jumlah barang</label>
+        <input
+          type="number"
+          placeholder="Contoh: 1"
+          value={minJumlah}
+          onChange={(e) => setMinJumlah(e.target.value)}
+        />
+      </div>
 
-          <h4>Jumlah</h4>
-          <input type="number" placeholder="Min" value={minJumlah} onChange={e => setMinJumlah(e.target.value)} />
-          <input type="number" placeholder="Max" value={maxJumlah} onChange={e => setMaxJumlah(e.target.value)} />
+      <div className="filter-field">
+        <label>Max Jumlah barang</label>
+        <input
+          type="number"
+          placeholder="Contoh: 10"
+          value={maxJumlah}
+          onChange={(e) => setMaxJumlah(e.target.value)}
+        />
+      </div>
+    </div>
+  </div>
 
-          <h4>Status</h4>
-          {['Peminjaman', 'Pengembalian', 'Terlambat'].map(s => (
-            <label key={s}>
-              <input
-                type="checkbox"
-                checked={statusFilter.includes(s)}
-                onChange={() => toggleStatus(s)}
-              />
-              {s}
-            </label>
-          ))}
+  {/* STATUS */}
+  <div className="filter-section">
+    <div className="filter-section-title">Status</div>
 
-        </div>
-      </FilterModal>
+    <div className="filter-checkbox-group">
+      {['Peminjaman', 'Pengembalian', 'Terlambat'].map((s) => (
+        <label key={s} className="filter-checkbox">
+          <input
+            type="checkbox"
+            checked={statusFilter.includes(s)}
+            onChange={() => toggleStatus(s)}
+          />
+          {s}
+        </label>
+      ))}
+    </div>
+  </div>
+</FilterModal>
+
 
       {/* ACTION MODAL */}
       <ActionModal
