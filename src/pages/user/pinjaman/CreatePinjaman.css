@@ -1,11 +1,11 @@
 Main Container
 .create-pinjaman-page {
-  padding: 24px;
+  padding: 20px;
   background-color: #f3f4f6;
   min-height: 100vh;
 }
 
-/* Header */
+/* Header (tidak diubah) */
 .create-pinjaman-header {
   background: linear-gradient(to right, #D098CC, #D098CC);
   padding: 24px;
@@ -29,8 +29,10 @@ Main Container
 
 /* Container */
 .create-pinjaman-container {
-  max-width: 900px;
+  width: 100%;        /* Full width */
+  max-width: 1200px;  /* Batas maksimal untuk layar besar */
   margin: 0 auto;
+  padding: 0 16px;    /* Sedikit padding kiri kanan */
 }
 
 /* Form Card */
@@ -38,7 +40,7 @@ Main Container
   background: white;
   border-radius: 12px;
   padding: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
@@ -105,23 +107,23 @@ Main Container
 
 /* Form Styles */
 .peminjaman-form {
-  padding: 24px;
+  padding: 32px; /* lebih lega */
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 /* Row dengan 3 kolom */
 .form-row-three-col {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 24px;
+  gap: 32px; /* lebih lega */
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .form-group.full-width {
@@ -129,7 +131,7 @@ Main Container
 }
 
 .form-group label {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: #374151;
 }
@@ -142,10 +144,10 @@ Main Container
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 10px 12px;
+  padding: 14px 20px; /* lebih besar */
   border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: 10px;
+  font-size: 14px;
   color: #374151;
   transition: all 0.3s ease;
   font-family: inherit;
@@ -161,18 +163,18 @@ Main Container
 .form-group textarea:focus {
   outline: none;
   border-color: #D098CC;
-  box-shadow: 0 0 0 3px rgba(208, 152, 204, 0.1);
+  box-shadow: 0 0 0 4px rgba(208, 152, 204, 0.15);
 }
 
 .form-group textarea {
   resize: vertical;
-  min-height: 100px;
-  font-size: 13px;
+  min-height: 140px; /* lebih tinggi */
+  font-size: 14px;
 }
 
 /* Error Message */
 .error-message {
-  font-size: 11px;
+  font-size: 12px;
   color: #ef4444;
   margin-top: 4px;
 }
@@ -189,30 +191,33 @@ Main Container
   left: 12px;
   color: #9ca3af;
   pointer-events: none;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 .input-with-icon input {
-  padding-left: 40px;
+  padding-left: 44px; 
   width: 100%;
+  height: 44px; 
+  box-sizing: border-box;
+  font-size: 14px;
 }
 
 /* Form Actions */
 .form-actions {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   justify-content: flex-end;
-  margin-top: 12px;
-  padding-top: 16px;
+  margin-top: 16px;
+  padding-top: 20px;
   border-top: 1px solid #e5e7eb;
 }
 
 .btn-batal,
 .btn-simpan {
-  padding: 8px 24px;
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -233,13 +238,12 @@ Main Container
 .btn-simpan {
   background: #3b82f6;
   color: white;
-  padding: 8px 28px;
 }
 
 .btn-simpan:hover {
   background: #2563eb;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
 }
 
 .btn-simpan:active {
@@ -247,12 +251,15 @@ Main Container
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .create-pinjaman-container {
+    padding: 0 16px;
+    max-width: 95%;
+  }
+}
+
 @media (max-width: 768px) {
   .create-pinjaman-page {
-    padding: 16px;
-  }
-
-  .create-pinjaman-header {
     padding: 16px;
   }
 
@@ -261,7 +268,7 @@ Main Container
   }
 
   .peminjaman-form {
-    padding: 16px;
+    padding: 20px;
     gap: 16px;
   }
 
@@ -286,16 +293,15 @@ Main Container
     padding: 12px;
   }
 
-  .create-pinjaman-title {
-    font-size: 18px;
-  }
-
   .form-card-title {
     font-size: 14px;
   }
 
-  .form-row-three-col {
-    grid-template-columns: 1fr;
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 13px;
+    padding: 10px 14px;
   }
 
   .btn-batal,
