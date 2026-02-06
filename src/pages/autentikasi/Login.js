@@ -1,18 +1,27 @@
 // src/pages/autentikasi/Login.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // ✅ pakai Link untuk SPA navigation
-import './style.css'; // pastikan style.css ada di folder yang sama atau sesuaikan path
+import { Link, useNavigate } from 'react-router-dom';
+import './style.css';
+
+// ⬇️ TAMBAHAN PENTING
+import { login } from '../../services/authservices';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [alert, setAlert] = useState({ message: '', type: '' });
+  const navigate = useNavigate();
 
-  // Validasi email
-  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidEmail = (email) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // Handle submit form
-  const handleSubmit = (e) => {
+  const showAlert = (message, type = 'info') => {
+    setAlert({ message, type });
+    setTimeout(() => setAlert({ message: '', type: '' }), 3000);
+  };
+
+  // 🔥 INI YANG DIPERBAIKI
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!isValidEmail(email)) {
@@ -25,20 +34,23 @@ export default function Login() {
       return;
     }
 
-    showAlert('Login berhasil untuk: ' + email, 'success');
+    try {
+      const res = await login(email, password);
 
-    // TODO: Tambahkan logic backend login disini
-    // fetch('/api/login', { method: 'POST', ... })
-  };
+      // ⬇️ SIMPAN TOKEN (WAJIB)
+      localStorage.setItem('token', res.token);
+      localStorage.setItem('user', JSON.stringify(res.user));
 
-  const loginWithGoogle = () => {
-    showAlert('Menghubungkan dengan Google...', 'info');
-    // TODO: Tambahkan logic Google OAuth disini
-  };
+      showAlert('Login berhasil', 'success');
 
-  const showAlert = (message, type = 'info') => {
-    setAlert({ message, type });
-    setTimeout(() => setAlert({ message: '', type: '' }), 3000);
+      // optional redirect
+      navigate('/kategori');
+    } catch (err) {
+      showAlert(
+        err.response?.data?.message || 'Login gagal',
+        'error'
+      );
+    }
   };
 
   return (
@@ -52,56 +64,40 @@ export default function Login() {
       <div className="auth-card">
         <div className="auth-header">
           <h1 className="auth-title">Selamat Datang</h1>
-          <p className="auth-subtitle">Masuk ke akun Anda untuk melanjutkan</p>
+          <p className="auth-subtitle">
+            Masuk ke akun Anda untuk melanjutkan
+          </p>
         </div>
 
-        <form id="loginForm" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="login-email">Email</label>
-            <div className="input-wrapper">
-              <input
-                type="email"
-                id="login-email"
-                placeholder="nama@email.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="nama@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
 
           <div className="form-group">
-            <label htmlFor="login-password">Password</label>
-            <div className="input-wrapper">
-              <input
-                type="password"
-                id="login-password"
-                placeholder="••••••••"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+            <label>Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
 
-          <div className="forgot-password">
-            <Link to="/forgot-password">Lupa password?</Link>
-          </div>
-
-          <button type="submit" className="button">Masuk</button>
-
-          <div className="divider">
-            <span>atau lanjutkan dengan</span>
-          </div>
-
-          <button type="button" className="social-btn" onClick={loginWithGoogle}>
-            Login dengan Google
+          <button type="submit" className="button">
+            Masuk
           </button>
-        </form>
 
-        <div className="auth-footer">
-          Belum punya akun? <Link to="/register">Daftar sekarang</Link>
-        </div>
+          <div className="auth-footer">
+            Belum punya akun? <Link to="/register">Daftar</Link>
+          </div>
+        </form>
       </div>
     </div>
   );
