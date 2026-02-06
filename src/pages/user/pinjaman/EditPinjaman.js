@@ -6,7 +6,7 @@ import { FiCalendar } from 'react-icons/fi';
 
 function EditPinjaman() {
   const navigate = useNavigate();
-  const { id } = useParams(); // ambil id dari route
+  const { id } = useParams();
 
   const [formData, setFormData] = useState({
     namaBarang: '',
@@ -28,39 +28,29 @@ function EditPinjaman() {
   ];
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-
-      // Data dummy berdasarkan id
-      const dummyData = {
-        id: id,
-        namaBarang: 'Proyektor',
-        kategori: 'Audio Visual',
-        jumlah: 5,
-        tanggalPinjam: '2025-09-15',
-        tanggalKembali: '2025-09-20',
-        keterangan: 'Untuk presentasi tugas'
-      };
-
-      setFormData(dummyData);
-      setIsLoading(false);
+    setIsLoading(true);
+    // Dummy fetch data
+    const dummyData = {
+      id,
+      namaBarang: 'Proyektor',
+      kategori: 'Audio Visual',
+      jumlah: 5,
+      tanggalPinjam: '2025-09-15',
+      tanggalKembali: '2025-09-20',
+      keterangan: 'Untuk presentasi tugas'
     };
-
-    fetchData();
+    setFormData(dummyData);
+    setIsLoading(false);
   }, [id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validasi
     if (!formData.namaBarang || !formData.kategori || !formData.jumlah ||
         !formData.tanggalPinjam || !formData.tanggalKembali) {
       alert('Mohon lengkapi semua field yang wajib diisi!');
@@ -101,104 +91,105 @@ function EditPinjaman() {
       </div>
 
       <div className="Edit-pinjaman-content">
-        <div className="form-section">
-          <div className="form-card">
-            <form onSubmit={handleSubmit} className="peminjaman-form">
-              {/* Nama Barang & Kategori */}
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="namaBarang">Nama Barang<span className="required">*</span></label>
-                  <input
-                    type="text"
-                    id="namaBarang"
-                    name="namaBarang"
-                    value={formData.namaBarang}
-                    onChange={handleInputChange}
-                    placeholder="Masukkan nama barang"
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="kategori">Kategori<span className="required">*</span></label>
-                  <select
-                    id="kategori"
-                    name="kategori"
-                    value={formData.kategori}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Pilih kategori</option>
-                    {kategoriOptions.map((kat, idx) => (
-                      <option key={idx} value={kat}>{kat}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Jumlah & Tanggal */}
-              <div className="form-row date-row">
-                <div className="form-group">
-                  <label htmlFor="jumlah">Jumlah Barang<span className="required">*</span></label>
-                  <input
-                    type="number"
-                    id="jumlah"
-                    name="jumlah"
-                    value={formData.jumlah}
-                    onChange={handleInputChange}
-                    min="1"
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="tanggalPinjam">Tanggal Pinjam<span className="required">*</span></label>
-                  <div className="input-with-icon">
-                    <FiCalendar className="input-icon"/>
-                    <input
-                      type="date"
-                      id="tanggalPinjam"
-                      name="tanggalPinjam"
-                      value={formData.tanggalPinjam}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <label htmlFor="tanggalKembali">Tanggal Kembali<span className="required">*</span></label>
-                  <div className="input-with-icon">
-                    <FiCalendar className="input-icon"/>
-                    <input
-                      type="date"
-                      id="tanggalKembali"
-                      name="tanggalKembali"
-                      value={formData.tanggalKembali}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Keterangan */}
-              <div className="form-group full-width">
-                <label htmlFor="keterangan">Keterangan</label>
-                <textarea
-                  id="keterangan"
-                  name="keterangan"
-                  value={formData.keterangan}
+        <div className="form-card">
+          <form onSubmit={handleSubmit} className="peminjaman-form">
+            
+            {/* Nama Barang & Kategori */}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="namaBarang">Nama Barang<span className="required">*</span></label>
+                <input
+                  type="text"
+                  id="namaBarang"
+                  name="namaBarang"
+                  value={formData.namaBarang}
                   onChange={handleInputChange}
-                  rows="4"
-                  placeholder="Tambahkan keterangan (opsional)"
+                  placeholder="Masukkan nama barang"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="kategori">Kategori<span className="required"></span></label>
+                <select
+                  id="kategori"
+                  name="kategori"
+                  value={formData.kategori}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Pilih kategori</option>
+                  {kategoriOptions.map((kat, idx) => (
+                    <option key={idx} value={kat}>{kat}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Jumlah & Tanggal */}
+            <div className="form-row date-row">
+              <div className="form-group">
+                <label htmlFor="jumlah">Jumlah Barang<span className="required"></span></label>
+                <input
+                  type="number"
+                  id="jumlah"
+                  name="jumlah"
+                  value={formData.jumlah}
+                  onChange={handleInputChange}
+                  min="1"
+                  required
                 />
               </div>
 
-              {/* Buttons */}
-              <div className="form-actions">
-                <button type="button" className="btn-batal" onClick={handleBatal}>Batal</button>
-                <button type="submit" className="btn-simpan">Simpan</button>
+              <div className="form-group">
+                <label htmlFor="tanggalPinjam">Tanggal Pinjam<span className="required"></span></label>
+                <div className="input-with-icon">
+                  <FiCalendar className="input-icon"/>
+                  <input
+                    type="date"
+                    id="tanggalPinjam"
+                    name="tanggalPinjam"
+                    value={formData.tanggalPinjam}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
               </div>
-            </form>
-          </div>
+
+              <div className="form-group">
+                <label htmlFor="tanggalKembali">Tanggal Kembali<span className="required"></span></label>
+                <div className="input-with-icon">
+                  <FiCalendar className="input-icon"/>
+                  <input
+                    type="date"
+                    id="tanggalKembali"
+                    name="tanggalKembali"
+                    value={formData.tanggalKembali}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Keterangan */}
+            <div className="form-group full-width">
+              <label htmlFor="keterangan">Keterangan</label>
+              <textarea
+                id="keterangan"
+                name="keterangan"
+                value={formData.keterangan}
+                onChange={handleInputChange}
+                rows="4"
+                placeholder="Tambahkan keterangan (opsional)"
+              />
+            </div>
+
+            {/* Buttons */}
+            <div className="form-actions">
+              <button type="button" className="btn-batal" onClick={handleBatal}>Batal</button>
+              <button type="submit" className="btn-simpan">Simpan</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

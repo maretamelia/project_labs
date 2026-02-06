@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { 
   FiPackage, 
-  FiShoppingBag, 
   FiTrendingUp, 
   FiCheckCircle 
 } from 'react-icons/fi';

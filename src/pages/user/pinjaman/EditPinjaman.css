@@ -31,38 +31,17 @@ Main Container
 .Edit-pinjaman-content {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
-/* Form Section */
-/* .form-section {
-  width: 100%;
-  max-width: 900px;
-} */
-
+/* Form Card */
 .form-card {
   background: white;
   border-radius: 12px;
-  padding: 24px;
+  padding: 32px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.form-card-header {
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.form-card-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #D098CC;
-  margin: 0 0 4px 0;
-}
-
-.form-card-subtitle {
-  font-size: 13px;
-  color: #6b7280;
-  margin: 0;
+  max-width: 1200px;
+  width: 100%;
 }
 
 /* Form Styles */

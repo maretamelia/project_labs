@@ -1,5 +1,6 @@
 // src/pages/autentikasi/Login.jsx
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // ✅ pakai Link untuk SPA navigation
 import './style.css'; // pastikan style.css ada di folder yang sama atau sesuaikan path
 
 export default function Login() {
@@ -84,7 +85,7 @@ export default function Login() {
           </div>
 
           <div className="forgot-password">
-            <a href="#">Lupa password?</a>
+            <Link to="/forgot-password">Lupa password?</Link>
           </div>
 
           <button type="submit" className="button">Masuk</button>
@@ -99,7 +100,7 @@ export default function Login() {
         </form>
 
         <div className="auth-footer">
-          Belum punya akun? <a href="/register">Daftar sekarang</a>
+          Belum punya akun? <Link to="/register">Daftar sekarang</Link>
         </div>
       </div>
     </div>

@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { FiEdit2, FiTrash2} from 'react-icons/fi';
+import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import PageHeader from '../../components/PageHeader';
 import SearchBar from '../../components/SearchBar';
 import Pagination from '../../components/Pagination';
 import FilterModal from '../../components/FilterModal';
+import {
+  getKategoris,
+  createKategori,
+  updateKategori,
+  deleteKategori
+} from '../../services/kategoriservices';
 import './KategoriList.css';
 
 function KategoriList() {
@@ -42,59 +48,77 @@ function KategoriList() {
     });
   };
 
+  // ===== Fetch Kategori dari Backend =====
   useEffect(() => {
-    const dummyData = [
-      { id: 1, name: 'Mikrokontroler', totalBarang: 0, tanggalDibuat: '13 Mei 2026' },
-      { id: 2, name: 'Sensor', totalBarang: 28, tanggalDibuat: '13 Mei 2026' },
-      { id: 3, name: 'Mikrokontroler', totalBarang: 0, tanggalDibuat: '13 Mei 2026' },
-      { id: 4, name: 'Sensor', totalBarang: 48, tanggalDibuat: '13 Mei 2026' },
-      { id: 5, name: 'Mikrokontroler', totalBarang: 58, tanggalDibuat: '13 Mei 2026' },
-      { id: 6, name: 'Sensor', totalBarang: 68, tanggalDibuat: '13 Mei 2026' },
-      { id: 7, name: 'Aktuator', totalBarang: 12, tanggalDibuat: '13 Mei 2026' },
-      { id: 8, name: 'Display', totalBarang: 35, tanggalDibuat: '13 Mei 2026' },
-    ];
-    setKategori(dummyData);
+    fetchKategori();
   }, []);
 
-  const handleAddKategori = () => {
-    if (namaKategori.trim()) {
-      const newKategori = {
-        id: Date.now(),
-        name: namaKategori,
-        totalBarang: 0,
-        tanggalDibuat: new Date().toLocaleDateString('id-ID', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        })
-      };
-      setKategori([newKategori, ...kategori]);
-      setNamaKategori('');
-      setIsModalOpen(false);
+  const fetchKategori = async () => {
+    try {
+      const response = await getKategoris();
+      setKategori(response.data.data || response.data);
+    } catch (error) {
+      console.error('Gagal fetch kategori:', error);
     }
   };
 
+  // ===== Tambah Kategori =====
+  const handleAddKategori = async () => {
+    if (!namaKategori.trim()) return;
+
+    try {
+      const response = await createKategori({ nama_kategori: namaKategori });
+      const newKategori = response.data.data;
+      setKategori([newKategori, ...kategori]);
+      setNamaKategori('');
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Gagal menambah kategori:', error);
+      alert('Gagal menambah kategori');
+    }
+  };
+
+  // ===== Edit Kategori =====
   const handleEditClick = (k) => {
     setEditKategori(k);
     setIsEditModalOpen(true);
   };
 
-  const handleUpdateKategori = () => {
-    if (editKategori && editKategori.name.trim()) {
-      setKategori(kategori.map(k => k.id === editKategori.id ? editKategori : k));
+  const handleUpdateKategori = async () => {
+    if (!editKategori || !editKategori.nama_kategori?.trim()) return;
+
+    try {
+      const response = await updateKategori(editKategori.id, {
+        nama_kategori: editKategori.nama_kategori
+      });
+      const updatedKategori = response.data.data;
+      setKategori(kategori.map(k =>
+        k.id === updatedKategori.id ? updatedKategori : k
+      ));
       setIsEditModalOpen(false);
       setEditKategori(null);
+    } catch (error) {
+      console.error('Gagal mengupdate kategori:', error);
+      alert('Gagal mengupdate kategori');
     }
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm('Yakin ingin menghapus kategori ini?')) {
+  // ===== Delete Kategori =====
+  const handleDelete = async (id) => {
+    if (!window.confirm('Yakin ingin menghapus kategori ini?')) return;
+
+    try {
+      await deleteKategori(id);
       setKategori(kategori.filter(k => k.id !== id));
+    } catch (error) {
+      console.error('Gagal menghapus kategori:', error);
+      alert('Gagal menghapus kategori');
     }
   };
 
+  // ===== Filter/Search/Pagination =====
   const filteredKategori = kategori.filter(k =>
-    k.name.toLowerCase().includes(searchTerm.toLowerCase())
+    (k.nama_kategori || k.name).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredKategori.length / itemsPerPage);
@@ -107,7 +131,7 @@ function KategoriList() {
       <PageHeader title="Kategori Barang" subtitle="Daftar kategori" />
 
       <div className="kategori-controls">
-        <SearchBar 
+        <SearchBar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           onOpenFilter={() => setIsFilterOpen(true)}
@@ -133,9 +157,9 @@ function KategoriList() {
             {currentItems.map((k, index) => (
               <tr key={k.id}>
                 <td>{indexOfFirstItem + index + 1}.</td>
-                <td>{k.name}</td>
-                <td>{k.totalBarang} item</td>
-                <td>{k.tanggalDibuat}</td>
+                <td>{k.nama_kategori || k.name}</td>
+                <td>{k.totalBarang || 0} item</td>
+                <td>{k.tanggalDibuat || k.created_at}</td>
                 <td>
                   <div className="action-buttons">
                     <button onClick={() => handleEditClick(k)} className="btn-edit">
@@ -152,7 +176,7 @@ function KategoriList() {
         </table>
       </div>
 
-      <Pagination 
+      <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         currentItems={currentItems.length}
@@ -160,7 +184,7 @@ function KategoriList() {
         onPageChange={setCurrentPage}
       />
 
-      {/* Modal Tambah Kategori */}
+      {/* Modal Tambah */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -191,7 +215,7 @@ function KategoriList() {
         </div>
       )}
 
-      {/* Modal Edit Kategori */}
+      {/* Modal Edit */}
       {isEditModalOpen && editKategori && (
         <div className="modal-overlay" onClick={() => setIsEditModalOpen(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -204,8 +228,10 @@ function KategoriList() {
                 <input
                   type="text"
                   placeholder="Nama Kategori"
-                  value={editKategori.name}
-                  onChange={(e) => setEditKategori({ ...editKategori, name: e.target.value })}
+                  value={editKategori.nama_kategori || editKategori.name}
+                  onChange={(e) =>
+                    setEditKategori({ ...editKategori, nama_kategori: e.target.value })
+                  }
                   className="form-input"
                 />
               </div>

@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import './Sidebar.css';
 
 // Tambahkan di sini
-import { MdDashboard, MdInventory, MdCategory, MdAssignment, MdHistory, MdManageAccounts } from 'react-icons/md';
+import { MdDashboard, MdInventory, MdCategory, MdAssignment, MdHistory } from 'react-icons/md';
 
 function Sidebar({ isOpen = true }) {
   const location = useLocation();
