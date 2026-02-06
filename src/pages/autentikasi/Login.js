@@ -1,9 +1,7 @@
 // src/pages/autentikasi/Login.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './style.css';
-
-// ⬇️ TAMBAHAN PENTING
 import { login } from '../../services/authservices';
 
 export default function Login() {
@@ -20,7 +18,19 @@ export default function Login() {
     setTimeout(() => setAlert({ message: '', type: '' }), 3000);
   };
 
-  // 🔥 INI YANG DIPERBAIKI
+  // 🔥 AUTO REDIRECT JIKA SUDAH LOGIN
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.role) {
+      const role = user.role.toLowerCase();
+      if (role === 'admin') {
+        navigate('/admin-dashboard');
+      } else if (role === 'user') {
+        navigate('/user-dashboard');
+      }
+    }
+  }, [navigate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -37,19 +47,23 @@ export default function Login() {
     try {
       const res = await login(email, password);
 
-      // ⬇️ SIMPAN TOKEN (WAJIB)
+      // SIMPAN TOKEN & USER
       localStorage.setItem('token', res.token);
       localStorage.setItem('user', JSON.stringify(res.user));
 
       showAlert('Login berhasil', 'success');
 
-      // optional redirect
-      navigate('/kategori');
+      // REDIRECT SESUAI ROLE
+      const role = res.user.role.toLowerCase();
+      if (role === 'admin') {
+        navigate('/admin-dashboard');
+      } else if (role === 'user') {
+        navigate('/user-dashboard');
+      } else {
+        showAlert('Role tidak dikenali', 'error');
+      }
     } catch (err) {
-      showAlert(
-        err.response?.data?.message || 'Login gagal',
-        'error'
-      );
+      showAlert(err.response?.data?.message || 'Login gagal', 'error');
     }
   };
 

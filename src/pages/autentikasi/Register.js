@@ -1,8 +1,11 @@
 // src/pages/autentikasi/Register.jsx
 import React, { useState } from 'react';
-import './style.css'; // pastikan path CSS benar
+import './style.css';
+import { register } from '../../services/authservices'; // pastikan import function register yang sudah kita buat
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,43 +20,50 @@ export default function Register() {
     setTimeout(() => setAlert({ message: '', type: '' }), 3000);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validasi
     if (name.trim().length < 3) {
       showAlert('Nama minimal 3 karakter!', 'error');
       return;
     }
-
     if (!isValidEmail(email)) {
       showAlert('Email tidak valid!', 'error');
       return;
     }
-
     if (password.length < 8) {
       showAlert('Password minimal 8 karakter!', 'error');
       return;
     }
-
     if (password !== confirmPassword) {
       showAlert('Password tidak cocok! Silakan cek kembali.', 'error');
       return;
     }
-
     if (!terms) {
       showAlert('Anda harus menyetujui syarat & ketentuan!', 'error');
       return;
     }
 
-    showAlert(`Registrasi berhasil untuk: ${name}! Mengalihkan ke halaman login...`, 'success');
+    try {
+      // 🔥 Logic register ke backend
+      const res = await register(name, email, password, confirmPassword);
 
-    // Redirect ke login setelah 2 detik
-    setTimeout(() => {
-      window.location.href = '/login';
-    }, 2000);
+      // Simpan user & token di localStorage
+      localStorage.setItem('user', JSON.stringify(res.user));
+      localStorage.setItem('token', res.token);
 
-    // TODO: Tambahkan logic backend registrasi disini
-    // fetch('/api/register', { method: 'POST', ... })
+      showAlert(`Registrasi berhasil! Mengalihkan ke login...`, 'success');
+
+      // Redirect ke dashboard user setelah 1 detik
+      setTimeout(() => {
+        navigate('/login'); // default role user
+      }, 1000);
+    } catch (err) {
+      console.log(err.response?.data);
+      const msg = err.response?.data?.message || 'Gagal registrasi, silakan coba lagi!';
+      showAlert(msg, 'error');
+    }
   };
 
   const registerWithGoogle = () => {

@@ -26,3 +26,13 @@ export const logout = async () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
 };
+// 🔥 Register
+export const register = async (name, email, password, password_confirmation) => {
+  const res = await axios.post(`${API_URL}/register`, {
+    name,
+    email,
+    password,
+    password_confirmation,
+  });
+  return res.data;
+};
