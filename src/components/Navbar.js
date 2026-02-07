@@ -1,27 +1,38 @@
 import React, { useState } from 'react';
-import { logout } from '../services/authservices';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Navbar.css';
 import Notifikasi from './Notifikasi';
 import Usermenu from './Usermenu';
 
-function Navbar({
-  userName = 'Grisella',
-  userRole = 'Admin',
-  userAvatar,
-  onMenuToggle,
-}) {
+function Navbar({ userName = 'Grisella', userRole = 'Admin', userAvatar, onMenuToggle }) {
+  const navigate = useNavigate();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   // ================= LOGOUT =================
   const handleLogout = async () => {
-  try {
-    console.log('TOKEN:', localStorage.getItem('token'));
-    await logout();
-    window.location.href = '/login';
-  } catch (err) {
-    console.error('Logout gagal', err.response?.data || err);
-  }
-};
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await axios.post(
+        'http://127.0.0.1:8000/api/logout',
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout gagal', err.response?.data || err);
+      alert('Logout gagal, coba lagi!');
+    }
+  };
 
   // ================= NOTIFIKASI =================
   const adminNotifications = [
@@ -57,43 +68,26 @@ function Navbar({
     },
   ];
 
-  const initialNotifications =
-    userRole === 'Admin' ? adminNotifications : userNotifications;
-
+  const initialNotifications = userRole.toLowerCase() === 'admin' ? adminNotifications : userNotifications;
   const [notifications, setNotifications] = useState(initialNotifications);
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
-
-  const handleMarkAllRead = () => {
-    setNotifications((prev) =>
-      prev.map((n) => ({ ...n, isRead: true }))
-    );
-  };
-
-  const handleDeleteNotification = (id) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
+  const handleMarkAllRead = () => setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+  const handleDeleteNotification = (id) => setNotifications(prev => prev.filter(n => n.id !== id));
 
   // ================= RENDER =================
   return (
     <div className="navbar">
-      {/* LEFT */}
-      <button className="hamburger-btn" onClick={onMenuToggle}>
-        ☰
-      </button>
+      {/* LEFT: Hamburger */}
+      <button className="hamburger-btn" onClick={onMenuToggle}>☰</button>
 
       {/* RIGHT */}
       <div className="navbar-right">
         {/* NOTIFIKASI */}
         <div className="notification-wrapper">
-          <button
-            className="notification-btn"
-            onClick={() => setIsNotifOpen(true)}
-          >
+          <button className="notification-btn" onClick={() => setIsNotifOpen(true)}>
             🔔
-            {unreadCount > 0 && (
-              <span className="notification-badge">{unreadCount}</span>
-            )}
+            {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
           </button>
         </div>
 
@@ -102,11 +96,11 @@ function Navbar({
           userName={userName}
           userRole={userRole}
           userAvatar={userAvatar}
-          onLogout={handleLogout}
+          onLogout={handleLogout} // tombol logout
         />
       </div>
 
-      {/* MODAL NOTIF */}
+      {/* MODAL NOTIFIKASI */}
       <Notifikasi
         isOpen={isNotifOpen}
         onClose={() => setIsNotifOpen(false)}

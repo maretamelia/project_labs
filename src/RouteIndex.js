@@ -1,7 +1,8 @@
+// src/RouteIndex.js
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-// import halaman admin
+// admin pages
 import KategoriList from './pages/kategori/KategoriList';
 import BarangList from './pages/barang/BarangList';
 import BarangCreate from './pages/barang/BarangCreate';
@@ -9,6 +10,9 @@ import BarangEdit from './pages/barang/BarangEdit';
 import BarangDetail from './pages/barang/BarangDetail';
 import DaftarPeminjamanList from './pages/DaftarPeminjaman/DaftarPeminjamanList';
 import RiwayatPeminjamanAdmin from './pages/RiwayatPeminjamanAdmin/RiwayatPeminjamanAdmin';
+import DashboardAdmin from './pages/Dashboard/DashboardAdmin';
+
+// user pages
 import Dashboard from './pages/user/Dashboard/Dashboard';
 import CreatePinjaman from './pages/user/pinjaman/CreatePinjaman';
 import PinjamanSaya from './pages/user/pinjaman/PinjamanSaya';
@@ -17,9 +21,9 @@ import RiwayatPeminjaman from './pages/user/pinjaman/RiwayatPeminjaman';
 import DetailPeminjaman from './pages/user/DetailPeminjaman/DetailPeminjaman';
 import SOP from './pages/user/sop/SOP';
 import DaftarBarang from './pages/user/DaftarBarang/DaftarBarang';
-import DashboardAdmin from './pages/Dashboard/DashboardAdmin';
+import Profile from './pages/Profile/Profile'; 
 
-// **FIX IMPORT SESUAI HURUF BESAR**
+// auth pages
 import Login from './pages/autentikasi/Login';
 import Register from './pages/autentikasi/Register';
 
@@ -35,6 +39,7 @@ export default function RouteIndex() {
       <Route path="/barang/:id" element={<BarangDetail />} />
       <Route path="/daftar-peminjaman" element={<DaftarPeminjamanList />} />
       <Route path="/riwayat-peminjaman" element={<RiwayatPeminjamanAdmin />} />
+      <Route path="/Profile" element={<Profile />} />
 
       {/* ====================== LOGIN / REGISTER ====================== */}
       <Route path="/login" element={<Login />} />
@@ -49,6 +54,7 @@ export default function RouteIndex() {
       <Route path="/user/RiwayatPeminjaman" element={<RiwayatPeminjaman />} />
       <Route path="/user/pinjaman/:id" element={<DetailPeminjaman />} />
       <Route path="/user/sop" element={<SOP />} />
+      <Route path="/Profile" element={<Profile />} />
     </Routes>
   );
 }

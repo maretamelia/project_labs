@@ -7,7 +7,6 @@ import Navbar from './components/Navbar';
 import RouteIndex from './RouteIndex';
 import './App.css';
 
-// ======================== AppContent ========================
 function AppContent() {
   const location = useLocation(); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -15,23 +14,17 @@ function AppContent() {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const isUserPath = location.pathname.startsWith('/user');
-  const hideLayout = location.pathname === '/login' || location.pathname === '/register'; // cek login/register
+  const hideLayout = location.pathname === '/login' || location.pathname === '/register';
 
   return (
     <div className="app-container">
-      {/* Sidebar hanya tampil kalau bukan login/register */}
       {!hideLayout && (isUserPath ? (
         <SidebarUser isOpen={isSidebarOpen} />
       ) : (
         <Sidebar isOpen={isSidebarOpen} />
       ))}
 
-      <div
-  className={`main-content ${isSidebarOpen ? 'sidebar-open' : 'sidebar-closed'} ${
-    hideLayout ? 'no-layout' : ''
-  }`}
->
-        {/* Navbar hanya tampil kalau bukan login/register */}
+      <div className={`main-content ${isSidebarOpen ? 'sidebar-open' : 'sidebar-closed'} ${hideLayout ? 'no-layout' : ''}`}>
         {!hideLayout && (
           <Navbar 
             userName="Grisella"
@@ -41,20 +34,17 @@ function AppContent() {
         )}
 
         <div className="content-wrapper">
-          <RouteIndex /> {/* Semua route */}
+          <RouteIndex />
         </div>
       </div>
     </div>
   );
 }
 
-// ======================== App utama ========================
-function App() {
+export default function App() {
   return (
     <Router>
       <AppContent />
     </Router>
   );
 }
-
-export default App;
