@@ -119,8 +119,8 @@ function KategoriList() {
   // ===== Filter/Search/Pagination =====
   const filteredKategori = kategori.filter(k =>
     (k.nama_kategori || k.name).toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+  )
+.sort((a, b) => b.id - a.id);
   const totalPages = Math.ceil(filteredKategori.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -148,7 +148,7 @@ function KategoriList() {
             <tr>
               <th>No</th>
               <th>Kategori</th>
-              <th>Total Produk</th>
+              <th>Total Barang</th>
               <th>Dibuat Tanggal</th>
               <th>Aksi</th>
             </tr>
@@ -158,8 +158,8 @@ function KategoriList() {
               <tr key={k.id}>
                 <td>{indexOfFirstItem + index + 1}.</td>
                 <td>{k.nama_kategori || k.name}</td>
-                <td>{k.totalBarang || 0} item</td>
-                <td>{k.tanggalDibuat || k.created_at}</td>
+                <td>{k.barangs_count || 0} item</td>
+                <td>{k.created_at ? k.created_at.split('T')[0] : '-'}</td>
                 <td>
                   <div className="action-buttons">
                     <button onClick={() => handleEditClick(k)} className="btn-edit">

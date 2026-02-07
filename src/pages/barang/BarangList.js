@@ -3,83 +3,89 @@ import { useNavigate } from 'react-router-dom';
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import PageHeader from '../../components/PageHeader';
 import SearchBar from '../../components/SearchBar';
+import Pagination from '../../components/Pagination'; // Import komponen pagination yang sama
 import FilterModal from '../../components/FilterModal';
+import { getBarangs, deleteBarang } from '../../services/barangservices';
 import './BarangList.css';
 
 function DataBarang() {
   const navigate = useNavigate();
-
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1); // State halaman
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const itemsPerPage = 8; // Set 8 sesuai permintaanmu
 
-  // Filter values
   const [filterValues, setFilterValues] = useState({
     kategori: 'All',
     minStock: '',
     maxStock: '',
   });
 
-  // Dummy data
   useEffect(() => {
-    setItems([
-      { id: 1, name: 'Arduino Uno', image: 'https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400', stock: 25, available: 20, category: 'Microcontroller' },
-      { id: 2, name: 'Breadboard', image: 'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=400', stock: 30, available: 25, category: 'Component' },
-      { id: 3, name: 'LED Merah', image: 'https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=400', stock: 100, available: 80, category: 'Component' },
-    ]);
+    fetchBarang();
   }, []);
 
-  // Tombol navigasi
-  const handleAddItem = () => navigate('/barang/create');
-  const handleEditItem = (id) => navigate(`/barang/edit/${id}`);
-  const handleDeleteItem = (id) => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus barang ini?')) {
-      setItems(items.filter(item => item.id !== id));
+  const fetchBarang = async () => {
+    try {
+      const response = await getBarangs();
+      const rawData = response?.data || response; 
+      const list = Array.isArray(rawData.data) ? rawData.data : (Array.isArray(rawData) ? rawData : []);
+
+      const formatted = list.map(item => ({
+        id: item.id,
+        name: item.nama_barang || item.nama || 'Tanpa Nama',
+        image: item.image 
+          ? `http://localhost:8000/storage/${item.image}` 
+          : 'https://via.placeholder.com/150',
+        stock: Number(item.stok || 0),
+        available: Number(item.stok || 0) - (item.stok_dipinjam || 0),
+        category: item.kategori?.nama_kategori || '-',
+      }));
+
+      setItems(formatted);
+    } catch (err) {
+      console.error('Gagal fetch barang', err);
     }
   };
-  const handleViewItem = (id) => navigate(`/barang/${id}`);
 
-  // Handle filter changes
-  const handleFilterChange = (key, value) => {
-    setFilterValues({ ...filterValues, [key]: value });
+  // Reset page ke 1 kalau lagi search
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterValues]);
+
+  const handleDeleteItem = async (id) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus barang ini?')) {
+      try {
+        await deleteBarang(id);
+        setItems(items.filter(item => item.id !== id));
+      } catch (error) {
+        alert('Gagal menghapus barang');
+      }
+    }
   };
 
-  const handleApplyFilter = () => {
-    setIsFilterOpen(false);
-  };
-
-  const handleResetFilter = () => {
-    setFilterValues({
-      kategori: 'All',
-      minStock: '',
-      maxStock: '',
-    });
-  };
-
-  // Daftar kategori unik
-  const categories = ['All', ...new Set(items.map(item => item.category))];
-
-  // Filtered items
+  // Logika Filter
   const filteredItems = items.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesCategory =
-      filterValues.kategori === 'All' || item.category === filterValues.kategori;
-
-    const matchesMinStock =
-      filterValues.minStock === '' || item.stock >= parseInt(filterValues.minStock);
-
-    const matchesMaxStock =
-      filterValues.maxStock === '' || item.stock <= parseInt(filterValues.maxStock);
-
+    const matchesCategory = filterValues.kategori === 'All' || item.category === filterValues.kategori;
+    const matchesMinStock = filterValues.minStock === '' || item.stock >= parseInt(filterValues.minStock);
+    const matchesMaxStock = filterValues.maxStock === '' || item.stock <= parseInt(filterValues.maxStock);
     return matchesSearch && matchesCategory && matchesMinStock && matchesMaxStock;
-  });
+  })
+  .sort((a, b) => b.id - a.id);
+
+  // Logika Pagination (Sama persis dengan KategoriList)
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <div className="app-container">
       <div className="main-content">
         <div className="content-wrapper1">
-          <PageHeader title="Data Barang" subtitle="Kelola semua barang di sini" />
+          <PageHeader title="Data Barang" description="Kelola semua barang di sini" />
 
           <div className="toolbar">
             <SearchBar
@@ -88,82 +94,28 @@ function DataBarang() {
               onOpenFilter={() => setIsFilterOpen(true)}
               placeholder="Cari barang..."
             />
-
-            <button className="btn-add-item" onClick={handleAddItem}>
+            <button className="btn-add-item" onClick={() => navigate('/barang/create')}>
               <FiPlus /> Tambah Barang
             </button>
           </div>
 
-          {/* Filter Modal */}
-          <FilterModal
-            isOpen={isFilterOpen}
-            onClose={() => setIsFilterOpen(false)}
-            onApply={handleApplyFilter}
-            onReset={handleResetFilter}
-          >
-            <div className="filter-section">
-              <div className="filter-section-title">Kategori</div>
-              <div className="filter-row">
-                <div className="filter-field">
-                  <select
-                    value={filterValues.kategori}
-                    onChange={(e) => handleFilterChange('kategori', e.target.value)}
-                    className="filter-input"
-                  >
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="filter-section">
-              <div className="filter-section-title">Stock</div>
-              <div className="filter-row">
-                <div className="filter-field">
-                  <label>Min Stock</label>
-                  <input
-                    type="number"
-                    value={filterValues.minStock}
-                    onChange={(e) => handleFilterChange('minStock', e.target.value)}
-                    className="filter-input"
-                  />
-                </div>
-                <div className="filter-field">
-                  <label>Max Stock</label>
-                  <input
-                    type="number"
-                    value={filterValues.maxStock}
-                    onChange={(e) => handleFilterChange('maxStock', e.target.value)}
-                    className="filter-input"
-                  />
-                </div>
-              </div>
-            </div>
-          </FilterModal>
-
           <div className="items-grid">
-            {filteredItems.length > 0 ? (
-              filteredItems.map((item) => (
+            {currentItems.length > 0 ? (
+              currentItems.map((item) => (
                 <div key={item.id} className="item-card">
                   <div className="item-image">
                     <img src={item.image} alt={item.name} />
                   </div>
                   <div className="item-info">
                     <h3 className="item-name">{item.name}</h3>
-                    <p className="item-stock">
-                      Tersedia: {item.available}/{item.stock}
-                    </p>
+                    <p className="item-stock">Tersedia: {item.available}/{item.stock}</p>
                     <p className="item-category">Kategori: {item.category}</p>
                   </div>
                   <div className="item-actions">
-                    <button className="btn-detail" onClick={() => handleViewItem(item.id)}>
+                    <button className="btn-detail" onClick={() => navigate(`/barang/${item.id}`)}>
                       Selengkapnya
                     </button>
-                    <button className="btn-icon btn-edit" onClick={() => handleEditItem(item.id)}>
+                    <button className="btn-icon btn-edit" onClick={() => navigate(`/barang/edit/${item.id}`)}>
                       <FiEdit2 />
                     </button>
                     <button className="btn-icon btn-delete" onClick={() => handleDeleteItem(item.id)}>
@@ -173,11 +125,30 @@ function DataBarang() {
                 </div>
               ))
             ) : (
-              <p className="no-items">Barang tidak ditemukan.</p>
+              <div className="no-items"><p>Barang tidak ditemukan.</p></div>
             )}
           </div>
+
+          {/* Panggil komponen Pagination yang sama dengan Kategori */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            currentItems={currentItems.length}
+            totalItems={filteredItems.length}
+            onPageChange={setCurrentPage}
+          />
         </div>
       </div>
+
+      {/* Filter Modal (Opsional, sesuaikan isinya) */}
+      <FilterModal
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        onApply={() => setIsFilterOpen(false)}
+        onReset={() => setFilterValues({ kategori: 'All', minStock: '', maxStock: '' })}
+      >
+        {/* Isi field filter kamu di sini */}
+      </FilterModal>
     </div>
   );
 }
