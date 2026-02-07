@@ -1,41 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Dashboard.css';
 import { FiBox, FiClock, FiCheckCircle, FiUpload } from 'react-icons/fi';
+import { getUserDashboardData } from '../../../services/dashboardUserService'; 
+import './Dashboard.css';
 
 function Dashboard() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState({ 
+    stats: {}, 
+    recent: [], 
+    reminders: [], 
+    rules: [] 
+  });
 
-  const handleSeeAll = () => {
-    navigate('/user/pinjamansaya');
-  };
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        const response = await getUserDashboardData();
+        setData(response.data.data);
+      } catch (error) {
+        console.error("Gagal memuat data user dashboard", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboardData();
+  }, []);
 
   const stats = [
-    { id: 1, icon: <FiBox />, count: 2, label: 'Sedang Dipinjam', color: 'beige' },
-    { id: 2, icon: <FiClock />, count: 4, label: 'Menunggu Persetujuan', color: 'gray' },
-    { id: 3, icon: <FiUpload />, count: 5, label: 'Terlambat', color: 'orange' },
-    { id: 4, icon: <FiCheckCircle />, count: 7, label: 'Dikembalikan', color: 'pink' },
+    { id: 1, icon: <FiBox />, count: data.stats?.dipinjam || 0, label: 'Sedang Dipinjam', color: 'beige' },
+    { id: 2, icon: <FiClock />, count: data.stats?.menunggu || 0, label: 'Menunggu Persetujuan', color: 'gray' },
+    { id: 3, icon: <FiUpload />, count: data.stats?.terlambat || 0, label: 'Terlambat', color: 'orange' },
+    { id: 4, icon: <FiCheckCircle />, count: data.stats?.kembali || 0, label: 'Dikembalikan', color: 'pink' },
   ];
 
-  const peminjaman = [
-    { no: 1, namaBarang: 'Breadboard', jumlah: 2, tanggalPinjam: '15/09/2025', tanggalKembali: '20/09/2025', status: 'Menunggu' },
-    { no: 2, namaBarang: 'Breadboard', jumlah: 3, tanggalPinjam: '15/09/2025', tanggalKembali: '20/09/2025', status: 'Dipinjam' },
-    { no: 3, namaBarang: 'Breadboard', jumlah: 2, tanggalPinjam: '15/09/2025', tanggalKembali: '20/09/2025', status: 'Terlambat' },
-    { no: 4, namaBarang: 'Breadboard', jumlah: 4, tanggalPinjam: '15/09/2025', tanggalKembali: '20/09/2025', status: 'Disetujui' },
-    { no: 5, namaBarang: 'Breadboard', jumlah: 1, tanggalPinjam: '15/09/2025', tanggalKembali: '20/09/2025', status: 'Dikembalikan' },
-  ];
-
-  const getStatusClass = (status) => {
-    return status.toLowerCase();
-  };
+  if (loading) return <div className="loading">Loading...</div>;
 
   return (
     <div className="dashboard-page">
-      
+      {/* STATS CARDS */}
       <div className="stats-container">
         {stats.map(stat => (
           <div key={stat.id} className={`stat-card ${stat.color}`}>
-            <div className="stat-icon">{stat.icon}</div>
+            <div className="stat-icon-wrapper">{stat.icon}</div>
             <div className="stat-info">
               <div className="stat-count">{stat.count}</div>
               <div className="stat-label">{stat.label}</div>
@@ -45,11 +54,12 @@ function Dashboard() {
       </div>
 
       <div className="table-header">
-      <button className="btn-see-all" onClick={handleSeeAll}>
+        <button className="btn-see-all" onClick={() => navigate('/user/pinjamansaya')}>
           See all →
         </button>
       </div>
 
+      {/* TABLE RIWAYAT */}
       <div className="table-wrapper">
         <table className="dashboard-table">
           <thead>
@@ -63,15 +73,15 @@ function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            {peminjaman.map(item => (
-              <tr key={item.no}>
-                <td>{item.no}.</td>
+            {data.recent?.map((item, index) => (
+              <tr key={index}>
+                <td>{index + 1}.</td>
                 <td>{item.namaBarang}</td>
                 <td>{item.jumlah}</td>
                 <td>{item.tanggalPinjam}</td>
                 <td>{item.tanggalKembali}</td>
                 <td>
-                  <span className={`status-badge ${getStatusClass(item.status)}`}>
+                  <span className={`status-badge ${item.status?.toLowerCase()}`}>
                     {item.status}
                   </span>
                 </td>
@@ -81,15 +91,20 @@ function Dashboard() {
         </table>
       </div>
 
-      {/* NOTIFIKASI CARDS */}
+      {/* NOTIFIKASI CARDS - Sekarang sudah di dalam fungsi Dashboard */}
       <div className="notification-cards">
         <div className="notif-card warning">
           <div className="notif-icon">⚠️</div>
           <div className="notif-content">
-            <h3>Penginggat Pengembalian</h3>
+            <h3>Pengingat Pengembalian</h3>
             <ul>
-              <li>Breadboard - 2 hari lagi</li>
-              <li>Kamera - Hari ini</li>
+              {data.reminders && data.reminders.length > 0 ? (
+                data.reminders.map((notif, index) => (
+                  <li key={index}>{notif.nama} - {notif.pesan}</li>
+                ))
+              ) : (
+                <li>Tidak ada tanggungan pengembalian terdekat</li>
+              )}
             </ul>
           </div>
         </div>
@@ -99,9 +114,13 @@ function Dashboard() {
           <div className="notif-content">
             <h3>Aturan Peminjaman</h3>
             <ul>
-              <li>Maks. 3 barang</li>
-              <li>Keterlambatan dikenakan sanksi</li>
-              <li>Barang rusak wajib dilaporkan</li>
+              {data.rules?.length > 0 ? (
+                data.rules.map((rule, index) => (
+                  <li key={index}>{rule}</li>
+                ))
+              ) : (
+                <li>Memuat aturan...</li>
+              )}
             </ul>
           </div>
         </div>
