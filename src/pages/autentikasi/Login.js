@@ -1,4 +1,3 @@
-// src/pages/autentikasi/Login.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './style.css';
@@ -10,6 +9,7 @@ export default function Login() {
   const [alert, setAlert] = useState({ message: '', type: '' });
   const navigate = useNavigate();
 
+  /* ================= VALIDASI ================= */
   const isValidEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -18,19 +18,21 @@ export default function Login() {
     setTimeout(() => setAlert({ message: '', type: '' }), 3000);
   };
 
-  // 🔥 AUTO REDIRECT JIKA SUDAH LOGIN
+  /* ================= AUTO REDIRECT ================= */
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.role) {
-      const role = user.role.toLowerCase();
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+
+    if (token && role) {
       if (role === 'admin') {
-        navigate('/admin-dashboard');
+        navigate('/dashboard-admin', { replace: true });
       } else if (role === 'user') {
-        navigate('/user-dashboard');
+        navigate('/user', { replace: true });
       }
     }
   }, [navigate]);
 
+  /* ================= SUBMIT LOGIN ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -47,8 +49,13 @@ export default function Login() {
     try {
       const res = await login(email, password);
 
-      // SIMPAN TOKEN & USER
+      /**
+       * ===========================
+       * 🔥 SIMPAN DATA LOGIN 🔥
+       * ===========================
+       */
       localStorage.setItem('token', res.token);
+      localStorage.setItem('role', res.user.role); // ⬅️ INI PENTING
       localStorage.setItem('user', JSON.stringify(res.user));
 
       showAlert('Login berhasil', 'success');
@@ -56,17 +63,19 @@ export default function Login() {
       // REDIRECT SESUAI ROLE
       const role = res.user.role.toLowerCase();
       if (role === 'admin') {
-        navigate('/admin-dashboard');
+        navigate('/dashboard-admin', { replace: true });
       } else if (role === 'user') {
-        navigate('/user-dashboard');
+        navigate('/user', { replace: true });
       } else {
         showAlert('Role tidak dikenali', 'error');
       }
+
     } catch (err) {
       showAlert(err.response?.data?.message || 'Login gagal', 'error');
     }
   };
 
+  /* ================= RENDER ================= */
   return (
     <div className="container">
       {alert.message && (

@@ -97,7 +97,7 @@
 /* Pagination Styling */
 .pagination {
   display: flex;
-  justify-content: center;
+  justify-content: right;
   gap: 8px;
   margin-top: 20px;
 }

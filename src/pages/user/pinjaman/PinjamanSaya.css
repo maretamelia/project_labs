@@ -141,13 +141,13 @@ td.empty-table {
   color: #B91C1C;
 }
 
-/* =====================
-   AKSI
-===================== */
 .pinjaman-table td.aksi-cell {
-  display: flex;
-  gap: 8px;
+  text-align: left;
   white-space: nowrap;
+}
+
+.aksi-btn:not(:last-child) {
+    margin-right: 12px;
 }
 
 .aksi-btn {

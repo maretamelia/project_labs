@@ -20,7 +20,7 @@ const Usermenu = ({ userName, userRole, userAvatar, onLogout }) => {
 
   const handleProfileClick = () => {
     const role = userRole.toLowerCase();
-    navigate(role === 'admin' ? '/admin/profile' : '/user/profile');
+    navigate(role === 'admin' ? '/Profile' : 'Profile');
     setOpen(false);
   };
 
