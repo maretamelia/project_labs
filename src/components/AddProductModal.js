@@ -1,63 +1,127 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiX, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import './AddProductModal.css';
+import axios from 'axios';
 
 function AddProductModal({ isOpen, onClose, onSelectProduct }) {
+  const [barangList, setBarangList] = useState([]); // WAJIB ARRAY
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [selectedBarang, setSelectedBarang] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const ITEMS_PER_PAGE = 12;
 
-  const barangList = [
-    { id: '1', namaBarang: 'test lagi', kategori: 'Elektronik', image: 'kk.jpg', stok: 47, unit: 'pcs' },
-    { id: '2', namaBarang: 'Bust', kategori: 'Elektronik', image: 'placeholder', stok: 42, unit: 'kg' },
-    { id: '3', namaBarang: 'testing', kategori: 'Mikrokontroler', image: 'kk.jpg', stok: 132, unit: 'pcs' },
-    { id: '4', namaBarang: 'manap', kategori: 'Alat Tulis', image: 'placeholder', stok: 8, unit: 'pcs' },
-    { id: '5', namaBarang: 'djigdli', kategori: 'Elektronik', image: 'placeholder', stok: 1235, unit: 'mm' },
-    { id: '6', namaBarang: 'Laptop Dell', kategori: 'Elektronik', image: 'placeholder', stok: 5, unit: 'unit' },
-    { id: '7', namaBarang: 'Proyektor', kategori: 'Audio Visual', image: 'placeholder', stok: 3, unit: 'unit' },
-    { id: '8', namaBarang: 'Kamera Canon', kategori: 'Audio Visual', image: 'placeholder', stok: 2, unit: 'unit' },
-    { id: '9', namaBarang: 'Speaker', kategori: 'Audio Visual', image: 'placeholder', stok: 10, unit: 'unit' },
-    { id: '10', namaBarang: 'Microphone', kategori: 'Audio Visual', image: 'placeholder', stok: 5, unit: 'unit' },
-  ];
+  /* ================= FETCH BARANG ================= */
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchBarang = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem('token');
+
+        const res = await axios.get(
+          'http://localhost:8000/api/user/barang',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: 'application/json',
+            },
+          }
+        );
+
+        // 🔒 NORMALISASI RESPONSE (ANTI ERROR)
+        let list = [];
+
+        if (Array.isArray(res.data)) {
+          list = res.data;
+        } else if (Array.isArray(res.data?.data)) {
+          list = res.data.data;
+        } else if (Array.isArray(res.data?.data?.data)) {
+          list = res.data.data.data;
+        }
+
+        console.log('Barang list:', list);
+
+        setBarangList(list);
+        setCurrentPage(1); // ⬅️ WAJIB BIAR PAGINATION AMAN
+      } catch (err) {
+        console.error('Gagal fetch barang:', err);
+        setBarangList([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBarang();
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  // Filter & Pagination
+  /* ================= FILTER ================= */
   const filteredBarang = barangList.filter(barang => {
+    const nama = barang.nama_barang || '';
+    const id = String(barang.id || '');
+
     const matchSearch =
-      barang.namaBarang.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      barang.id.toLowerCase().includes(searchTerm.toLowerCase());
+      nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      id.includes(searchTerm);
+
     const matchCategory =
-      selectedCategory === 'All Categories' || barang.kategori === selectedCategory;
+      selectedCategory === 'All Categories' ||
+      barang.kategori?.nama_kategori === selectedCategory;
+
     return matchSearch && matchCategory;
   });
 
-  const totalPages = Math.ceil(filteredBarang.length / ITEMS_PER_PAGE);
+  /* ================= PAGINATION ================= */
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredBarang.length / ITEMS_PER_PAGE)
+  );
+
   const paginatedBarang = filteredBarang.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
 
+  /* ================= CATEGORY ================= */
+  const categories = [
+    'All Categories',
+    ...new Set(
+      barangList
+        .map(b => b.kategori?.nama_kategori)
+        .filter(Boolean)
+    ),
+  ];
+
   const getCategoryColor = (kategori) => {
     const colors = {
-      'Elektronik': '#D098CC',
-      'Mikrokontroler': '#10B981',
+      Elektronik: '#D098CC',
+      Mikrokontroler: '#10B981',
       'Alat Tulis': '#F59E0B',
       'Peralatan Lab': '#3B82F6',
-      'Audio Visual': '#EF4444'
+      'Audio Visual': '#EF4444',
     };
     return colors[kategori] || '#9CA3AF';
   };
 
-  const categories = ['All Categories', ...new Set(barangList.map(b => b.kategori))];
-
-  // Handlers
+  /* ================= HANDLERS ================= */
   const handleNext = () => {
-    if (!selectedBarang) return alert('Silakan pilih barang terlebih dahulu');
-    onSelectProduct(selectedBarang);
+    if (!selectedBarang) {
+      alert('Silakan pilih barang terlebih dahulu');
+      return;
+    }
+
+    onSelectProduct({
+      barang_id: selectedBarang.id,
+      nama_barang: selectedBarang.nama_barang,
+      stok: selectedBarang.stok,
+      satuan: selectedBarang.satuan,
+    });
+
     handleClose();
   };
 
@@ -69,9 +133,13 @@ function AddProductModal({ isOpen, onClose, onSelectProduct }) {
     onClose();
   };
 
-  const handlePrevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
-  const handleNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  const handlePrevPage = () =>
+    setCurrentPage(p => Math.max(p - 1, 1));
 
+  const handleNextPage = () =>
+    setCurrentPage(p => Math.min(p + 1, totalPages));
+
+  /* ================= RENDER ================= */
   return (
     <div className="modal-overlay">
       <div className="modal-container">
@@ -91,7 +159,10 @@ function AddProductModal({ isOpen, onClose, onSelectProduct }) {
             placeholder="Search Product (Code/Name)"
             className="modal-search-input"
             value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
           />
           <span className="modal-filter-label">{selectedCategory}</span>
         </div>
@@ -101,50 +172,73 @@ function AddProductModal({ isOpen, onClose, onSelectProduct }) {
           {categories.map(category => (
             <button
               key={category}
-              className={`category-badge ${selectedCategory === category ? 'active' : ''}`}
-              onClick={() => { setSelectedCategory(category); setCurrentPage(1); }}
-              style={selectedCategory === category ? { backgroundColor: getCategoryColor(category) } : {}}
+              className={`category-badge ${
+                selectedCategory === category ? 'active' : ''
+              }`}
+              onClick={() => {
+                setSelectedCategory(category);
+                setCurrentPage(1);
+              }}
+              style={
+                selectedCategory === category
+                  ? { backgroundColor: getCategoryColor(category) }
+                  : {}
+              }
             >
               {category}
             </button>
           ))}
         </div>
 
-        {/* Products Grid */}
+        {/* Products */}
         <div className="modal-products-grid">
-          {paginatedBarang.length === 0 && <div className="grid-empty">Tidak ada barang yang cocok</div>}
+          {loading && <div className="grid-empty">Loading...</div>}
+          {!loading && paginatedBarang.length === 0 && (
+            <div className="grid-empty">Tidak ada barang</div>
+          )}
 
           {paginatedBarang.map(barang => (
             <div
               key={barang.id}
-              className={`product-item ${selectedBarang?.id === barang.id ? 'selected' : ''}`}
+              className={`product-item ${
+                selectedBarang?.id === barang.id ? 'selected' : ''
+              }`}
               onClick={() => setSelectedBarang(barang)}
             >
-              {/* Kategori */}
-              <div className="product-category" style={{ backgroundColor: getCategoryColor(barang.kategori) }}>
-                {barang.kategori}
+              <div
+                className="product-category"
+                style={{
+                  backgroundColor: getCategoryColor(
+                    barang.kategori?.nama_kategori
+                  ),
+                }}
+              >
+                {barang.kategori?.nama_kategori}
               </div>
 
-              {/* Gambar Barang */}
               <div className="product-image-box">
-                {barang.image && barang.image !== 'placeholder' ? (
-                  <img src={barang.image} alt={barang.namaBarang} className="product-image" />
+                {barang.gambar ? (
+                  <img
+                    src={`http://localhost:8000/storage/${barang.gambar}`}
+                    alt={barang.nama_barang}
+                    className="product-image"
+                  />
                 ) : (
                   <div className="product-placeholder">📦</div>
                 )}
               </div>
 
-              {/* Detail */}
               <div className="product-details">
-                <h4 className="product-title">{barang.namaBarang}</h4>
+                <h4 className="product-title">{barang.nama_barang}</h4>
                 <p className="product-stock-info">
-                  <span className="stock-label">Stok Total:</span>
-                  <span className="stock-amount">{barang.stok} {barang.unit}</span>
+                  <span className="stock-label">Stok:</span>{' '}
+                  {barang.stok} {barang.satuan}
                 </p>
               </div>
 
-              {/* Selected Mark */}
-              {selectedBarang?.id === barang.id && <div className="selection-mark">✓</div>}
+              {selectedBarang?.id === barang.id && (
+                <div className="selection-mark">✓</div>
+              )}
             </div>
           ))}
         </div>
@@ -152,16 +246,24 @@ function AddProductModal({ isOpen, onClose, onSelectProduct }) {
         {/* Pagination */}
         <div className="modal-pagination-section">
           <span className="pagination-text">
-            Menampilkan {paginatedBarang.length} sampai {Math.min(currentPage * ITEMS_PER_PAGE, filteredBarang.length)} dari {filteredBarang.length} produk
+            Menampilkan {paginatedBarang.length} dari {filteredBarang.length}
           </span>
           <div className="pagination-nav">
-            <button className="pagination-arrow" onClick={handlePrevPage} disabled={currentPage === 1}>
+            <button
+              className="pagination-arrow"
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+            >
               <FiChevronLeft size={18} />
             </button>
             <span className="page-number">
-              Halaman {currentPage} of {totalPages || 1}
+              Halaman {currentPage} of {totalPages}
             </span>
-            <button className="pagination-arrow" onClick={handleNextPage} disabled={currentPage === totalPages}>
+            <button
+              className="pagination-arrow"
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+            >
               <FiChevronRight size={18} />
             </button>
           </div>

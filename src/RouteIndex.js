@@ -2,7 +2,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './routes/ProtectedRoute';
-
+import { Navigate } from 'react-router-dom';
 // ================= ADMIN PAGES =================
 import KategoriList from './pages/kategori/KategoriList';
 import BarangList from './pages/barang/BarangList';
@@ -31,6 +31,8 @@ import Register from './pages/autentikasi/Register';
 export default function RouteIndex() {
   return (
     <Routes>
+
+      <Route path="/" element={<Navigate to={"/login"} replace/>} />
 
       {/* ================= AUTH ================= */}
       <Route path="/login" element={<Login />} />

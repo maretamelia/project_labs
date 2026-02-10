@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PinjamanSaya.css';
+
 import AddProductModal from '../../../components/AddProductModal';
 import DetailPinjaman from './DetailPinjaman';
 import SearchBar from '../../../components/SearchBar';
 import Pagination from '../../../components/Pagination';
 import FilterModal from '../../../components/FilterModal';
+
 import EditIcon from '../../../assets/icons/edit.svg';
 import LihatDetailIcon from '../../../assets/icons/lihatdetail.svg';
+
+import { getPinjamanSaya } from '../../../services/pinjamanServices';
 
 const STATUS_LIST = [
   'Menunggu',
@@ -15,7 +19,7 @@ const STATUS_LIST = [
   'Dipinjam',
   'Dikembalikan',
   'Ditolak',
-  'Terlambat'
+  'Terlambat',
 ];
 
 function PinjamanSaya() {
@@ -23,6 +27,9 @@ function PinjamanSaya() {
   const ITEMS_PER_PAGE = 5;
 
   /* ================= STATE ================= */
+  const [pinjaman, setPinjaman] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -35,29 +42,53 @@ function PinjamanSaya() {
     endDate: '',
     minJumlah: '',
     maxJumlah: '',
-    status: []
+    status: [],
   });
 
-  /* ================= DATA DUMMY ================= */
-  const [pinjaman] = useState([
-    { id: 1, nama: 'Proyektor', jumlah: 1, tanggalPinjam: '2025-09-15', tanggalKembali: '2025-09-20', status: 'Menunggu' },
-    { id: 2, nama: 'Laptop', jumlah: 1, tanggalPinjam: '2025-09-12', tanggalKembali: '2025-09-18', status: 'Dipinjam' },
-    { id: 3, nama: 'Kamera', jumlah: 2, tanggalPinjam: '2025-09-10', tanggalKembali: '2025-09-15', status: 'Dikembalikan' },
-    { id: 4, nama: 'Speaker', jumlah: 1, tanggalPinjam: '2025-09-05', tanggalKembali: '2025-09-10', status: 'Terlambat' },
-    { id: 5, nama: 'Mic', jumlah: 1, tanggalPinjam: '2025-09-01', tanggalKembali: '2025-09-05', status: 'Disetujui' },
-  ]);
+  /* ================= FETCH PINJAMAN ================= */
+  const fetchPinjaman = async () => {
+    setLoading(true);
+    try {
+      const response = await getPinjamanSaya();
+
+      // 🔒 AMAN UNTUK SEMUA BENTUK RESPONSE
+      const raw = response?.data;
+      const list = Array.isArray(raw?.data) ? raw.data : [];
+
+      const mappedData = list.map(item => ({
+        id: item.id,
+        nama: item.barang?.nama || '-',
+        jumlah: item.jumlah_pinjam ?? 0,
+        tanggalPinjam: item.tanggal_peminjaman || '-',
+        tanggalKembali: item.tanggal_pengembalian || '-',
+        status: item.status || '-',
+        raw: item,
+      }));
+
+      setPinjaman(mappedData);
+    } catch (error) {
+      console.error('Gagal mengambil data pinjaman:', error);
+      setPinjaman([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPinjaman();
+  }, []);
 
   /* ================= HANDLER ================= */
   const handleFilterChange = (key, value) => {
     setFilterValues(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleStatusChange = (status) => {
+  const handleStatusChange = status => {
     setFilterValues(prev => ({
       ...prev,
       status: prev.status.includes(status)
         ? prev.status.filter(s => s !== status)
-        : [...prev.status, status]
+        : [...prev.status, status],
     }));
   };
 
@@ -72,34 +103,63 @@ function PinjamanSaya() {
       endDate: '',
       minJumlah: '',
       maxJumlah: '',
-      status: []
+      status: [],
     });
     setCurrentPage(1);
   };
 
-  const handleEdit = (item) => {
-    navigate(`/user/EditPinjaman/${item.id}`, { state: { item } });
+  const handleEdit = item => {
+    navigate(`/user/EditPinjaman/${item.id}`, {
+      state: { item: item.raw },
+    });
   };
 
-  const handleDetail = (item) => {
-    setSelectedPinjaman(item);
+  const handleDetail = item => {
+    setSelectedPinjaman(item.raw);
     setIsDetailPopupOpen(true);
   };
 
-  const handleSelectProduct = (barang) => {
-    navigate('/user/pinjaman/create', { state: { selectedBarang: barang } });
+  const handleSelectProduct = barang => {
+    navigate('/user/pinjaman/create', {
+      state: { selectedBarang: barang },
+    });
   };
 
   /* ================= FILTER LOGIC ================= */
   const filteredData = pinjaman.filter(item => {
-    const matchSearch = item.nama.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchMin = filterValues.minJumlah === '' || item.jumlah >= Number(filterValues.minJumlah);
-    const matchMax = filterValues.maxJumlah === '' || item.jumlah <= Number(filterValues.maxJumlah);
+    const matchSearch = item.nama
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    const matchMin =
+      filterValues.minJumlah === '' ||
+      item.jumlah >= Number(filterValues.minJumlah);
+
+    const matchMax =
+      filterValues.maxJumlah === '' ||
+      item.jumlah <= Number(filterValues.maxJumlah);
+
     const itemDate = new Date(item.tanggalPinjam);
-    const matchStartDate = !filterValues.startDate || itemDate >= new Date(filterValues.startDate);
-    const matchEndDate = !filterValues.endDate || itemDate <= new Date(filterValues.endDate);
-    const matchStatus = filterValues.status.length === 0 || filterValues.status.includes(item.status);
-    return matchSearch && matchMin && matchMax && matchStartDate && matchEndDate && matchStatus;
+    const matchStartDate =
+      !filterValues.startDate ||
+      itemDate >= new Date(filterValues.startDate);
+
+    const matchEndDate =
+      !filterValues.endDate ||
+      itemDate <= new Date(filterValues.endDate);
+
+    const matchStatus =
+      filterValues.status.length === 0 ||
+      filterValues.status.includes(item.status);
+
+    return (
+      matchSearch &&
+      matchMin &&
+      matchMax &&
+      matchStartDate &&
+      matchEndDate &&
+      matchStatus
+    );
   });
 
   const paginatedData = filteredData.slice(
@@ -114,20 +174,25 @@ function PinjamanSaya() {
     <div className="pinjaman-page">
       <div className="pinjaman-header">
         <h1 className="pinjaman-header-title">Pinjaman Saya</h1>
-        <p className="pinjaman-header-subtitle">Daftar Barang Yang Dipinjam</p>
+        <p className="pinjaman-header-subtitle">
+          Daftar Barang Yang Dipinjam
+        </p>
       </div>
 
       <div className="pinjaman-topbar">
         <SearchBar
           placeholder="Cari nama barang..."
           searchTerm={searchTerm}
-          onSearchChange={(value) => {
+          onSearchChange={value => {
             setSearchTerm(value);
             setCurrentPage(1);
           }}
           onOpenFilter={() => setIsFilterOpen(true)}
         />
-        <button className="btn-add" onClick={() => setIsAddProductOpen(true)}>
+        <button
+          className="btn-add"
+          onClick={() => setIsAddProductOpen(true)}
+        >
           + Buat Peminjaman
         </button>
       </div>
@@ -141,13 +206,21 @@ function PinjamanSaya() {
               <th>Tanggal Pinjam</th>
               <th>Tanggal Kembali</th>
               <th>Status</th>
-              <th style={{ minWidth: '120px' }}>Aksi</th> {/* pastikan kolom aksi ga kepotong */}
+              <th style={{ minWidth: '120px' }}>Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {paginatedData.length === 0 ? (
+            {loading ? (
               <tr>
-                <td colSpan="6" className="empty-table">Data tidak ditemukan</td>
+                <td colSpan="6" className="empty-table">
+                  Loading...
+                </td>
+              </tr>
+            ) : paginatedData.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="empty-table">
+                  Data tidak ditemukan
+                </td>
               </tr>
             ) : (
               paginatedData.map(item => (
@@ -157,17 +230,27 @@ function PinjamanSaya() {
                   <td>{item.tanggalPinjam}</td>
                   <td>{item.tanggalKembali}</td>
                   <td>
-                    <span className={`status-badge ${getStatusClass(item.status)}`}>
+                    <span
+                      className={`status-badge ${getStatusClass(
+                        item.status
+                      )}`}
+                    >
                       {item.status}
                     </span>
                   </td>
                   <td className="aksi-cell">
                     {item.status === 'Menunggu' && (
-                      <button className="aksi-btn edit-btn" onClick={() => handleEdit(item)}>
+                      <button
+                        className="aksi-btn edit-btn"
+                        onClick={() => handleEdit(item)}
+                      >
                         <img src={EditIcon} alt="Edit" />
                       </button>
                     )}
-                    <button className="aksi-btn view-btn" onClick={() => handleDetail(item)}>
+                    <button
+                      className="aksi-btn view-btn"
+                      onClick={() => handleDetail(item)}
+                    >
                       <img src={LihatDetailIcon} alt="Detail" />
                     </button>
                   </td>
@@ -193,7 +276,9 @@ function PinjamanSaya() {
                 <input
                   type="date"
                   value={filterValues[key]}
-                  onChange={(e) => handleFilterChange(key, e.target.value)}
+                  onChange={e =>
+                    handleFilterChange(key, e.target.value)
+                  }
                   className="filter-input"
                 />
               </div>
@@ -202,7 +287,9 @@ function PinjamanSaya() {
         </div>
 
         <div className="filter-section">
-          <div className="filter-section-title">Status Peminjaman</div>
+          <div className="filter-section-title">
+            Status Peminjaman
+          </div>
           {STATUS_LIST.map(status => (
             <label key={status} className="filter-checkbox1">
               <input
