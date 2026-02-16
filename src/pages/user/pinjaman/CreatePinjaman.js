@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './CreatePinjaman.css';
-import { FiCalendar } from 'react-icons/fi';
 import { createPinjaman } from '../../../services/pinjamanServices';
 
 function CreatePinjaman() {
@@ -9,7 +8,6 @@ function CreatePinjaman() {
   const location = useLocation();
   const selectedBarang = location.state?.selectedBarang;
 
-  // State untuk form
   const [formData, setFormData] = useState({
     namaBarang: '',
     kategori: '',
@@ -20,16 +18,12 @@ function CreatePinjaman() {
     keterangan: ''
   });
 
-  // State untuk error form
   const [errors, setErrors] = useState({ jumlah: '' });
-
-  // State loading
   const [loading, setLoading] = useState(false);
 
-  // Populate form dengan data barang yang dipilih dari halaman sebelumnya
+  // Populate form data
   useEffect(() => {
     if (!selectedBarang) return;
-
     setFormData(prev => ({
       ...prev,
       namaBarang: selectedBarang.nama_barang ?? selectedBarang.nama ?? '',
@@ -38,7 +32,6 @@ function CreatePinjaman() {
     }));
   }, [selectedBarang]);
 
-  // Handle perubahan input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -48,12 +41,10 @@ function CreatePinjaman() {
     }
   };
 
-  // Handle submit
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validasi form
-    // console.log('Form data:', formData);
+    // Validasi wajib
     if (
       !formData.barang_id ||
       !formData.jumlah_pinjam ||
@@ -64,37 +55,24 @@ function CreatePinjaman() {
       return;
     }
 
-    // Validasi jumlah barang
+    // Validasi jumlah
     if (Number(formData.jumlah_pinjam) < 1) {
       setErrors(prev => ({ ...prev, jumlah: 'Jumlah barang harus lebih dari 0' }));
       return;
     }
 
     // Validasi tanggal
-    if (
-      new Date(formData.tanggal_peminjaman) >=
-      new Date(formData.tanggal_pengembalian)
-    ) {
-      alert('Tanggal kembali harus lebih besar dari tanggal peminjaman!');
+    if (new Date(formData.tanggal_pengembalian) < new Date(formData.tanggal_peminjaman)) {
+      alert('Tanggal kembali tidak boleh sebelum tanggal peminjaman!');
       return;
     }
 
     submitPinjaman();
   };
 
-  // Fungsi submit peminjaman
   const submitPinjaman = async () => {
     setLoading(true);
     try {
-      // ===== DEBUG PAYLOAD =====
-      // console.log('PAYLOAD:', {
-      //   barang_id: formData.barang_id,
-      //   jumlah_pinjam: formData.jumlah_pinjam,
-      //   tanggal_peminjaman: formData.tanggal_peminjaman,
-      //   tanggal_pengembalian: formData.tanggal_pengembalian,
-      //   keterangan: formData.keterangan,
-      // });
-
       await createPinjaman({
         barang_id: formData.barang_id,
         jumlah_pinjam: formData.jumlah_pinjam,
@@ -107,15 +85,12 @@ function CreatePinjaman() {
       navigate('/user/PinjamanSaya');
     } catch (err) {
       console.error('Gagal membuat peminjaman:', err);
-      alert(
-        err.response?.data?.message || 'Gagal membuat peminjaman'
-      );
+      alert(err.response?.data?.message || 'Gagal membuat peminjaman');
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle batal
   const handleBatal = () => {
     if (window.confirm('Apakah Anda yakin ingin membatalkan? Data yang sudah diisi akan hilang.')) {
       navigate('/user/PinjamanSaya');
@@ -151,16 +126,15 @@ function CreatePinjaman() {
               <label>Nama Barang</label>
               <input 
                 type="text" 
-                value={selectedBarang.nama_barang} 
+                value={selectedBarang?.nama_barang ?? ''} 
                 readOnly 
                 className="readonly-input"
               />
             </div>
+
             <div className="form-row-three-col">
               <div className="form-group">
-                <label>
-                  Jumlah Barang <span className="required">*</span>
-                </label>
+                <label>Jumlah Barang <span className="required">*</span></label>
                 <input
                   type="number"
                   name="jumlah_pinjam"
@@ -175,35 +149,25 @@ function CreatePinjaman() {
               </div>
 
               <div className="form-group">
-                <label>
-                  Tanggal Peminjaman <span className="required">*</span>
-                </label>
-                <div className="input-with-icon">
-                  <FiCalendar />
-                  <input
-                    type="date"
-                    name="tanggal_peminjaman"
-                    value={formData.tanggal_peminjaman}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
+                <label>Tanggal Peminjaman <span className="required">*</span></label>
+                <input
+                  type="date"
+                  name="tanggal_peminjaman"
+                  value={formData.tanggal_peminjaman}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
 
               <div className="form-group">
-                <label>
-                  Tanggal Kembali <span className="required">*</span>
-                </label>
-                <div className="input-with-icon">
-                  <FiCalendar />
-                  <input
-                    type="date"
-                    name="tanggal_pengembalian"
-                    value={formData.tanggal_pengembalian}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
+                <label>Tanggal Kembali <span className="required">*</span></label>
+                <input
+                  type="date"
+                  name="tanggal_pengembalian"
+                  value={formData.tanggal_pengembalian}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
             </div>
 

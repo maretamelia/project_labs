@@ -43,10 +43,10 @@ function AddProductModal({ isOpen, onClose, onSelectProduct }) {
           list = res.data.data.data;
         }
 
-        // console.log('Barang list:', list);
+        console.log('Barang list:', list);
 
         setBarangList(list);
-        setCurrentPage(1); // ⬅️ WAJIB BIAR PAGINATION AMAN
+        setCurrentPage(1); 
       } catch (err) {
         console.error('Gagal fetch barang:', err);
         setBarangList([]);
@@ -120,8 +120,6 @@ function AddProductModal({ isOpen, onClose, onSelectProduct }) {
       nama_barang: selectedBarang.nama_barang,
       stok: selectedBarang.stok,
       satuan: selectedBarang.satuan,
-      kategori: selectedBarang.kategori?.nama_kategori || '',
-      kategori_id: selectedBarang.kategori?.id || '',
     });
 
     handleClose();

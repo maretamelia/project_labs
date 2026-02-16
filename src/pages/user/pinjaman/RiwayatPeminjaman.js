@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import LihatDetailIcon from '../../../assets/icons/lihatdetail.svg';
 import './RiwayatPeminjaman.css';
 import SearchBar from '../../../components/SearchBar';
@@ -23,43 +24,44 @@ function RiwayatPeminjaman() {
     status: []
   });
 
-  /* ===== DATA DUMMY ===== */
-  const [riwayatData] = useState([
-    {
-      id: 1,
-      namaBarang: 'Proyektor',
-      jumlah: 1,
-      tanggalPinjam: '2025-05-13',
-      tanggalKembali: '2025-05-15',
-      status: 'Ditolak'
-    },
-    {
-      id: 2,
-      namaBarang: 'Laptop',
-      jumlah: 1,
-      tanggalPinjam: '2025-05-10',
-      tanggalKembali: '2025-05-12',
-      status: 'Selesai'
-    },
-    {
-      id: 3,
-      namaBarang: 'Kamera',
-      jumlah: 2,
-      tanggalPinjam: '2025-05-08',
-      tanggalKembali: '2025-05-10',
-      status: 'Selesai'
-    },
-    {
-      id: 4,
-      namaBarang: 'Speaker',
-      jumlah: 1,
-      tanggalPinjam: '2025-05-06',
-      tanggalKembali: '2025-05-08',
-      status: 'Selesai'
-    }
-  ]);
+  /* ===== DATA & LOADING ===== */
+  const [riwayatData, setRiwayatData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  /* ===== HANDLER ===== */
+  /* ===== FETCH DATA ===== */
+  useEffect(() => {
+    const fetchRiwayat = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Ambil token dari localStorage atau sesuaikan
+        const token = localStorage.getItem('token');
+
+        const response = await axios.get(
+          'http://localhost:8000/api/user/pinjaman/riwayat',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: 'application/json'
+            }
+          }
+        );
+
+        setRiwayatData(response.data.data);
+      } catch (err) {
+        console.error('Gagal fetch riwayat peminjaman:', err);
+        setError('Gagal mengambil data riwayat peminjaman. Silakan login kembali.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRiwayat();
+  }, []);
+
+  /* ===== HANDLER FILTER ===== */
   const handleFilterChange = (key, value) => {
     setFilterValues(prev => ({
       ...prev,
@@ -92,9 +94,9 @@ function RiwayatPeminjaman() {
     setCurrentPage(1);
   };
 
-  /* ===== FILTER LOGIC ===== */
+  /* ===== FILTER & SEARCH LOGIC ===== */
   const filteredData = riwayatData.filter(item => {
-    const matchSearch = item.namaBarang
+    const matchSearch = item.nama_barang
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
 
@@ -106,7 +108,7 @@ function RiwayatPeminjaman() {
       filterValues.maxJumlah === '' ||
       item.jumlah <= Number(filterValues.maxJumlah);
 
-    const itemDate = new Date(item.tanggalPinjam);
+    const itemDate = new Date(item.tanggal_pinjam);
 
     const matchStartDate =
       !filterValues.startDate ||
@@ -173,20 +175,26 @@ function RiwayatPeminjaman() {
             </tr>
           </thead>
           <tbody>
-            {paginatedData.length === 0 ? (
+            {loading ? (
               <tr>
-                <td colSpan="7" className="empty-table">
-                  Data tidak ditemukan
-                </td>
+                <td colSpan="7" className="empty-table">Loading...</td>
+              </tr>
+            ) : error ? (
+              <tr>
+                <td colSpan="7" className="empty-table">{error}</td>
+              </tr>
+            ) : paginatedData.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="empty-table">Data tidak ditemukan</td>
               </tr>
             ) : (
               paginatedData.map((item, index) => (
                 <tr key={item.id}>
                   <td>{startIndex + index + 1}</td>
-                  <td>{item.namaBarang}</td>
+                  <td>{item.nama_barang}</td>
                   <td>{item.jumlah}</td>
-                  <td>{item.tanggalPinjam}</td>
-                  <td>{item.tanggalKembali}</td>
+                  <td>{item.tanggal_pinjam}</td>
+                  <td>{item.tanggal_kembali}</td>
                   <td>
                     <span className={`status-badge ${item.status.toLowerCase()}`}>
                       {item.status}

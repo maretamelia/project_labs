@@ -13,14 +13,16 @@ import LihatDetailIcon from '../../../assets/icons/lihatdetail.svg';
 
 import { getPinjamanSaya } from '../../../services/pinjamanServices';
 
-const STATUS_LIST = [
-  'Menunggu',
-  'Disetujui',
-  'Dipinjam',
-  'Dikembalikan',
-  'Ditolak',
-  'Terlambat',
-];
+/* ================= KONVERSI STATUS ================= */
+const STATUS_MAP = {
+  pending: 'Menunggu',
+  disetujui: 'Disetujui',
+  ditolak: 'Ditolak',
+  dikembalikan: 'Dikembalikan',
+  pengembalian: 'Dipinjam',
+};
+
+const STATUS_LIST = Object.values(STATUS_MAP);
 
 function PinjamanSaya() {
   const navigate = useNavigate();
@@ -45,33 +47,31 @@ function PinjamanSaya() {
     status: [],
   });
 
-  /* ================= FETCH PINJAMAN ================= */
-  const fetchPinjaman = async () => {
-    setLoading(true);
-    try {
-      const response = await getPinjamanSaya();
+const fetchPinjaman = async () => {
+  setLoading(true);
+  try {
+    const list = await getPinjamanSaya();
 
-      // 🔒 AMAN UNTUK SEMUA BENTUK RESPONSE
-      const raw = response?.data;
-      const list = Array.isArray(raw?.data) ? raw.data : [];
+    const mappedData = list.map(item => ({
+      id: item.id,
+      nama: item.barang?.nama_barang || '-', 
+      jumlah: item.jumlah ?? 0,
+      tanggalPinjam: item.tanggal_pinjam || '-',
+      tanggalKembali: item.tanggal_kembali || '-',
+      statusRaw: item.status,
+      statusLabel: STATUS_MAP[item.status] || item.status,
+      raw: item,
+    }));
 
-      const mappedData = list.map(item => ({
-        id: item.id,
-        nama: item.barang?.nama || '-',
-        jumlah: item.jumlah_pinjam ?? 0,
-        tanggalPinjam: item.tanggal_peminjaman || '-',
-        tanggalKembali: item.tanggal_pengembalian || '-',
-        status: item.status || '-',
-        raw: item,
-      }));
-      setPinjaman(mappedData);
-    } catch (error) {
-      console.error('Gagal mengambil data pinjaman:', error);
-      setPinjaman([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    setPinjaman(mappedData);
+  } catch (error) {
+    console.error('Gagal mengambil data pinjaman:', error);
+    setPinjaman([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchPinjaman();
@@ -149,7 +149,7 @@ function PinjamanSaya() {
 
     const matchStatus =
       filterValues.status.length === 0 ||
-      filterValues.status.includes(item.status);
+      filterValues.status.includes(item.statusLabel);
 
     return (
       matchSearch &&
@@ -166,7 +166,8 @@ function PinjamanSaya() {
     currentPage * ITEMS_PER_PAGE
   );
 
-  const getStatusClass = status => status.toLowerCase();
+  const getStatusClass = status =>
+    status.toLowerCase().replace(/\s/g, '-');
 
   /* ================= RENDER ================= */
   return (
@@ -231,14 +232,14 @@ function PinjamanSaya() {
                   <td>
                     <span
                       className={`status-badge ${getStatusClass(
-                        item.status
+                        item.statusLabel
                       )}`}
                     >
-                      {item.status}
+                      {item.statusLabel}
                     </span>
                   </td>
                   <td className="aksi-cell">
-                    {item.status === 'Menunggu' && (
+                    {item.statusRaw === 'pending' && (
                       <button
                         className="aksi-btn edit-btn"
                         onClick={() => handleEdit(item)}

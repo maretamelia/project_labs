@@ -68,7 +68,7 @@ MAIN CONTAINER
 }
 
 td.empty-table {
-  text-align: center;
+text-align-last: center;
 }
 
 .riwayat-table tbody tr:hover {
