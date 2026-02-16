@@ -25,7 +25,7 @@ function TambahBarang() {
       try {
         const response = await getKategoris();
         // pastikan data array
-        const list = Array.isArray(response) ? response : response.data;
+        const list = Array.isArray(response) ? response : (response.data?.data ?? response.data);
         // convert semua id jadi string supaya match dengan formData.kategori
         const options = list.map(k => ({
           id: k.id.toString(),
@@ -147,7 +147,7 @@ function TambahBarang() {
       {imagePreview ? (
         /* Jika sudah ada gambar, tampilkan gambarnya di kotak upload */
         <div className="upload-preview-container">
-          <img src={imagePreview} alt="Selected" className="upload-preview-img" />
+          <img src={imagePreview} alt="Selected" className="upload-preview-img" width={100} height={100} />
           <div className="upload-overlay">
             <FiUpload size={24} />
             <span>Klik untuk ganti gambar</span>

@@ -35,7 +35,7 @@ function KategoriList() {
   };
 
   const handleApplyFilter = () => {
-    console.log('Filter applied:', filterValues);
+    // console.log('Filter applied:', filterValues);
     setIsFilterOpen(false);
   };
 

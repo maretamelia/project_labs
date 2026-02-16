@@ -64,7 +64,6 @@ function PinjamanSaya() {
         status: item.status || '-',
         raw: item,
       }));
-
       setPinjaman(mappedData);
     } catch (error) {
       console.error('Gagal mengambil data pinjaman:', error);

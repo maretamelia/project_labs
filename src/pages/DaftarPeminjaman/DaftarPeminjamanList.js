@@ -83,7 +83,7 @@ function DaftarPeminjamanList() {
   };
 
   const handleActionApply = (aksiStatus, itemData) => {
-    console.log('Action applied:', aksiStatus, 'for item:', itemData);
+    // console.log('Action applied:', aksiStatus, 'for item:', itemData);
     // Tambahkan logika untuk memproses aksi di sini
     // Misalnya: update status, kirim ke backend, dll.
   };

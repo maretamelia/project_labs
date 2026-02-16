@@ -141,7 +141,7 @@ function RiwayatPeminjamanAdmin() {
 
   const handleHapus = (id) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-      console.log('Hapus peminjaman id:', id);
+      // console.log('Hapus peminjaman id:', id);
       setOpenMenuId(null);
     }
   };

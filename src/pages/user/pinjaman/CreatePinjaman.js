@@ -28,14 +28,14 @@ function CreatePinjaman() {
 
   // Populate form dengan data barang yang dipilih dari halaman sebelumnya
   useEffect(() => {
-    if (selectedBarang) {
-      setFormData(prev => ({
-        ...prev,
-        namaBarang: selectedBarang.namaBarang || selectedBarang.nama || '',
-        kategori: selectedBarang.kategori || '',
-        barang_id: selectedBarang.id || ''
-      }));
-    }
+    if (!selectedBarang) return;
+
+    setFormData(prev => ({
+      ...prev,
+      namaBarang: selectedBarang.nama_barang ?? selectedBarang.nama ?? '',
+      kategori: selectedBarang.kategori ?? '',
+      barang_id: selectedBarang.barang_id ?? ''
+    }));
   }, [selectedBarang]);
 
   // Handle perubahan input
@@ -53,6 +53,7 @@ function CreatePinjaman() {
     e.preventDefault();
 
     // Validasi form
+    // console.log('Form data:', formData);
     if (
       !formData.barang_id ||
       !formData.jumlah_pinjam ||
@@ -86,13 +87,13 @@ function CreatePinjaman() {
     setLoading(true);
     try {
       // ===== DEBUG PAYLOAD =====
-      console.log('PAYLOAD:', {
-        barang_id: formData.barang_id,
-        jumlah_pinjam: formData.jumlah_pinjam,
-        tanggal_peminjaman: formData.tanggal_peminjaman,
-        tanggal_pengembalian: formData.tanggal_pengembalian,
-        keterangan: formData.keterangan,
-      });
+      // console.log('PAYLOAD:', {
+      //   barang_id: formData.barang_id,
+      //   jumlah_pinjam: formData.jumlah_pinjam,
+      //   tanggal_peminjaman: formData.tanggal_peminjaman,
+      //   tanggal_pengembalian: formData.tanggal_pengembalian,
+      //   keterangan: formData.keterangan,
+      // });
 
       await createPinjaman({
         barang_id: formData.barang_id,
@@ -103,7 +104,7 @@ function CreatePinjaman() {
       });
 
       alert('Peminjaman berhasil dibuat!');
-      navigate('/user/pinjamsaya');
+      navigate('/user/PinjamanSaya');
     } catch (err) {
       console.error('Gagal membuat peminjaman:', err);
       alert(
@@ -117,7 +118,7 @@ function CreatePinjaman() {
   // Handle batal
   const handleBatal = () => {
     if (window.confirm('Apakah Anda yakin ingin membatalkan? Data yang sudah diisi akan hilang.')) {
-      navigate('/user/pinjamsaya');
+      navigate('/user/PinjamanSaya');
     }
   };
 
@@ -146,6 +147,15 @@ function CreatePinjaman() {
           )}
 
           <form onSubmit={handleSubmit} className="peminjaman-form">
+            <div className="form-group full-width">
+              <label>Nama Barang</label>
+              <input 
+                type="text" 
+                value={selectedBarang.nama_barang} 
+                readOnly 
+                className="readonly-input"
+              />
+            </div>
             <div className="form-row-three-col">
               <div className="form-group">
                 <label>

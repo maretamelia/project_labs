@@ -122,7 +122,7 @@ function EditBarang() {
       {/* Tampilkan preview gambar di dalam area upload jika ada */}
       {imagePreview ? (
         <div className="upload-preview-container">
-          <img src={imagePreview} alt="Selected" className="upload-preview-img" />
+          <img src={imagePreview} alt="Selected" className="upload-preview-img" width={100} height={100} />
           <div className="upload-overlay">
             <FiUpload size={24} />
             <span>Ganti Gambar</span>

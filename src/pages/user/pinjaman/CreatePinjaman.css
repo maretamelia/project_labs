@@ -50,6 +50,14 @@ Main Container
   border-bottom: 1px solid #e5e7eb;
 }
 
+/* Readonly Input */
+.readonly-input {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
+  border: 1px solid #d1d5db;
+}
+
 .form-card-title {
   font-size: 16px;
   font-weight: 600;
