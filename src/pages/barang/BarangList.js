@@ -85,7 +85,7 @@ function DataBarang() {
     <div className="app-container">
       <div className="main-content">
         <div className="content-wrapper1">
-          <PageHeader title="Data Barang" description="Kelola semua barang di sini" />
+          <PageHeader title="Daftar Barang" subtitle="Daftar Barang Tersedia" />
 
           <div className="toolbar">
             <SearchBar

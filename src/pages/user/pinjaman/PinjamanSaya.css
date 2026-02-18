@@ -240,3 +240,15 @@ td.empty-table {
     grid-template-columns: 1fr;
   }
 }
+.delete-btn {
+  width: 36px;
+  height: 36px;
+  background: #FEE2E2;
+  color: #EF4444;
+}
+.aksi-btn svg {
+  width: 100px;
+  height: 30px;
+}
+
+

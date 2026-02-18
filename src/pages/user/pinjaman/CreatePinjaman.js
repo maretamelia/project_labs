@@ -12,7 +12,7 @@ function CreatePinjaman() {
     namaBarang: '',
     kategori: '',
     barang_id: '',
-    jumlah_pinjam: '',
+    jumlah: '',
     tanggal_peminjaman: '',
     tanggal_pengembalian: '',
     keterangan: ''
@@ -36,7 +36,7 @@ function CreatePinjaman() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
 
-    if (name === 'jumlah_pinjam') {
+    if (name === 'jumlah') {
       setErrors(prev => ({ ...prev, jumlah: '' }));
     }
   };
@@ -47,7 +47,7 @@ function CreatePinjaman() {
     // Validasi wajib
     if (
       !formData.barang_id ||
-      !formData.jumlah_pinjam ||
+      !formData.jumlah||
       !formData.tanggal_peminjaman ||
       !formData.tanggal_pengembalian
     ) {
@@ -56,7 +56,7 @@ function CreatePinjaman() {
     }
 
     // Validasi jumlah
-    if (Number(formData.jumlah_pinjam) < 1) {
+    if (Number(formData.jumlah) < 1) {
       setErrors(prev => ({ ...prev, jumlah: 'Jumlah barang harus lebih dari 0' }));
       return;
     }
@@ -75,7 +75,7 @@ function CreatePinjaman() {
     try {
       await createPinjaman({
         barang_id: formData.barang_id,
-        jumlah_pinjam: formData.jumlah_pinjam,
+        jumlah: formData.jumlah,
         tanggal_peminjaman: formData.tanggal_peminjaman,
         tanggal_pengembalian: formData.tanggal_pengembalian,
         keterangan: formData.keterangan,
@@ -137,8 +137,8 @@ function CreatePinjaman() {
                 <label>Jumlah Barang <span className="required">*</span></label>
                 <input
                   type="number"
-                  name="jumlah_pinjam"
-                  value={formData.jumlah_pinjam}
+                  name="jumlah"
+                  value={formData.jumlah}
                   onChange={handleInputChange}
                   min="1"
                   required

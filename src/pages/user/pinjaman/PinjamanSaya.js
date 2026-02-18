@@ -7,11 +7,11 @@ import DetailPinjaman from './DetailPinjaman';
 import SearchBar from '../../../components/SearchBar';
 import Pagination from '../../../components/Pagination';
 import FilterModal from '../../../components/FilterModal';
-
 import EditIcon from '../../../assets/icons/edit.svg';
 import LihatDetailIcon from '../../../assets/icons/lihatdetail.svg';
+import { FiTrash2 } from 'react-icons/fi';
+import { getPinjamanSaya, deletePinjaman } from '../../../services/pinjamanServices';
 
-import { getPinjamanSaya } from '../../../services/pinjamanServices';
 
 /* ================= KONVERSI STATUS ================= */
 const STATUS_MAP = {
@@ -56,8 +56,12 @@ const fetchPinjaman = async () => {
       id: item.id,
       nama: item.barang?.nama_barang || '-', 
       jumlah: item.jumlah ?? 0,
-      tanggalPinjam: item.tanggal_pinjam || '-',
-      tanggalKembali: item.tanggal_kembali || '-',
+      tanggalPinjam: item.tanggal_peminjaman
+  ? new Date(item.tanggal_peminjaman).toLocaleDateString('id-ID')
+  : '-',
+tanggalKembali: item.tanggal_pengembalian
+  ? new Date(item.tanggal_pengembalian).toLocaleDateString('id-ID')
+  : '-',
       statusRaw: item.status,
       statusLabel: STATUS_MAP[item.status] || item.status,
       raw: item,
@@ -117,6 +121,19 @@ const fetchPinjaman = async () => {
     setSelectedPinjaman(item.raw);
     setIsDetailPopupOpen(true);
   };
+
+  const handleDelete = async (id) => {
+  if (!window.confirm('Yakin ingin membatalkan peminjaman ini?')) return;
+
+  try {
+    await deletePinjaman(id);
+    alert('Peminjaman berhasil dibatalkan');
+    fetchPinjaman();
+  } catch (error) {
+    alert('Gagal menghapus peminjaman');
+  }
+};
+
 
   const handleSelectProduct = barang => {
     navigate('/user/pinjaman/create', {
@@ -239,21 +256,32 @@ const fetchPinjaman = async () => {
                     </span>
                   </td>
                   <td className="aksi-cell">
-                    {item.statusRaw === 'pending' && (
-                      <button
-                        className="aksi-btn edit-btn"
-                        onClick={() => handleEdit(item)}
-                      >
-                        <img src={EditIcon} alt="Edit" />
-                      </button>
-                    )}
-                    <button
-                      className="aksi-btn view-btn"
-                      onClick={() => handleDetail(item)}
-                    >
-                      <img src={LihatDetailIcon} alt="Detail" />
-                    </button>
-                  </td>
+            {/* EDIT hanya jika pending */}
+            {item.statusRaw === 'pending' && (
+              <button
+                className="aksi-btn edit-btn"
+                onClick={() => handleEdit(item)}
+              >
+                <img src={EditIcon} alt="Edit" />
+              </button>
+            )}
+            {/* DETAIL selalu ada */}
+            <button
+              className="aksi-btn view-btn"
+              onClick={() => handleDetail(item)}
+            >
+              <img src={LihatDetailIcon} alt="Detail" />
+            </button>
+
+            {/* DELETE hanya jika pending */}
+            {item.statusRaw === 'pending' && (
+                <button
+                className="aksi-btn delete-btn"
+                onClick={() => handleDelete(item.id)} >
+                <FiTrash2 size />
+              </button>
+               )}
+          </td>
                 </tr>
               ))
             )}

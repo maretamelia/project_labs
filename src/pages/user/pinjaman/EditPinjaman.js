@@ -1,8 +1,9 @@
 // EditPinjaman.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { getDetailPinjaman, updatePinjaman } from '../../../services/pinjamanServices';
+import { getBarangsUser } from '../../../services/barangservices'; // sesuaikan nama file
 import './EditPinjaman.css';
-import { FiCalendar } from 'react-icons/fi';
 
 function EditPinjaman() {
   const navigate = useNavigate();
@@ -17,54 +18,97 @@ function EditPinjaman() {
     keterangan: ''
   });
 
+  const [barangId, setBarangId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const kategoriOptions = [
-    'Elektronik',
-    'Mikrokontroler',
-    'Alat Tulis',
-    'Peralatan Lab',
-    'Audio Visual'
-  ];
+  // Popup state
+  const [showBarangPopup, setShowBarangPopup] = useState(false);
+  const [barangList, setBarangList] = useState([]);
 
+  // Ambil detail peminjaman
   useEffect(() => {
-    setIsLoading(true);
-    // Dummy fetch data
-    const dummyData = {
-      id,
-      namaBarang: 'Proyektor',
-      kategori: 'Audio Visual',
-      jumlah: 5,
-      tanggalPinjam: '2025-09-15',
-      tanggalKembali: '2025-09-20',
-      keterangan: 'Untuk presentasi tugas'
+    const fetchDetail = async () => {
+      try {
+        const detail = await getDetailPinjaman(id);
+
+        setBarangId(detail?.barang?.id);
+        setFormData({
+          namaBarang: detail?.barang?.nama_barang || '',
+          kategori: detail?.barang?.kategori?.nama_kategori || '',
+          jumlah: detail?.jumlah || '',
+          tanggalPinjam: detail?.tanggal_peminjaman
+            ? detail.tanggal_peminjaman.split('T')[0]
+            : '',
+          tanggalKembali: detail?.tanggal_pengembalian
+            ? detail.tanggal_pengembalian.split('T')[0]
+            : '',
+          keterangan: detail?.keterangan || ''
+        });
+      } catch (error) {
+        console.error(error);
+        alert('Gagal mengambil data peminjaman');
+        navigate('/user/PinjamanSaya');
+      } finally {
+        setIsLoading(false);
+      }
     };
-    setFormData(dummyData);
-    setIsLoading(false);
-  }, [id]);
+
+    fetchDetail();
+  }, [id, navigate]);
+
+  // Ambil daftar barang untuk popup
+  useEffect(() => {
+    const fetchBarang = async () => {
+      try {
+        const response = await getBarangsUser();
+        // pastikan barangList selalu array
+        setBarangList(Array.isArray(response.data) ? response.data : []);
+      } catch (error) {
+        console.error('Gagal ambil daftar barang', error);
+        setBarangList([]);
+      }
+    };
+    fetchBarang();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSelectBarang = (barang) => {
+    setFormData(prev => ({
+      ...prev,
+      namaBarang: barang.nama_barang,
+      kategori: barang.kategori?.nama_kategori || ''
+    }));
+    setBarangId(barang.id);
+    setShowBarangPopup(false);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.namaBarang || !formData.kategori || !formData.jumlah ||
-        !formData.tanggalPinjam || !formData.tanggalKembali) {
-      alert('Mohon lengkapi semua field yang wajib diisi!');
+    if (!barangId || !formData.jumlah) {
+      alert('Mohon lengkapi semua field wajib!');
       return;
     }
 
-    if (new Date(formData.tanggalPinjam) >= new Date(formData.tanggalKembali)) {
-      alert('Tanggal kembali harus lebih besar dari tanggal peminjaman!');
-      return;
-    }
+    try {
+      await updatePinjaman(id, {
+        barang_id: barangId,
+        jumlah: formData.jumlah,
+        tanggal_peminjaman: formData.tanggalPinjam,
+        tanggal_pengembalian: formData.tanggalKembali,
+        keterangan: formData.keterangan
+      });
 
-    // console.log('Form Edited:', formData);
-    alert('Peminjaman berhasil diEdit!');
-    navigate('/user/PinjamanSaya');
+      alert('Peminjaman berhasil diupdate!');
+      navigate('/user/PinjamanSaya');
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || 'Gagal update peminjaman');
+    }
   };
 
   const handleBatal = () => {
@@ -93,45 +137,38 @@ function EditPinjaman() {
       <div className="Edit-pinjaman-content">
         <div className="form-card">
           <form onSubmit={handleSubmit} className="peminjaman-form">
-            
+
             {/* Nama Barang & Kategori */}
             <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="namaBarang">Nama Barang<span className="required">*</span></label>
+              <div className="form-group full-width">
+                <label>Nama Barang</label>
                 <input
                   type="text"
-                  id="namaBarang"
                   name="namaBarang"
                   value={formData.namaBarang}
-                  onChange={handleInputChange}
-                  placeholder="Masukkan nama barang"
-                  required
+                  readOnly
+                  onClick={() => setShowBarangPopup(true)}
+                  placeholder="Klik untuk pilih barang"
                 />
               </div>
+
               <div className="form-group">
-                <label htmlFor="kategori">Kategori<span className="required"></span></label>
-                <select
-                  id="kategori"
+                <label>Kategori</label>
+                <input
+                  type="text"
                   name="kategori"
                   value={formData.kategori}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Pilih kategori</option>
-                  {kategoriOptions.map((kat, idx) => (
-                    <option key={idx} value={kat}>{kat}</option>
-                  ))}
-                </select>
+                  disabled
+                />
               </div>
             </div>
 
             {/* Jumlah & Tanggal */}
             <div className="form-row date-row">
               <div className="form-group">
-                <label htmlFor="jumlah">Jumlah Barang<span className="required"></span></label>
+                <label>Jumlah Barang</label>
                 <input
                   type="number"
-                  id="jumlah"
                   name="jumlah"
                   value={formData.jumlah}
                   onChange={handleInputChange}
@@ -141,41 +178,30 @@ function EditPinjaman() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="tanggalPinjam">Tanggal Pinjam<span className="required"></span></label>
-                <div className="input-with-icon">
-                  <FiCalendar className="input-icon"/>
-                  <input
-                    type="date"
-                    id="tanggalPinjam"
-                    name="tanggalPinjam"
-                    value={formData.tanggalPinjam}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
+                <label>Tanggal Pinjam</label>
+                <input
+                  type="date"
+                  name="tanggalPinjam"
+                  value={formData.tanggalPinjam}
+                  onChange={handleInputChange}
+                />
               </div>
 
               <div className="form-group">
-                <label htmlFor="tanggalKembali">Tanggal Kembali<span className="required"></span></label>
-                <div className="input-with-icon">
-                  <FiCalendar className="input-icon"/>
-                  <input
-                    type="date"
-                    id="tanggalKembali"
-                    name="tanggalKembali"
-                    value={formData.tanggalKembali}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
+                <label>Tanggal Kembali</label>
+                <input
+                  type="date"
+                  name="tanggalKembali"
+                  value={formData.tanggalKembali}
+                  onChange={handleInputChange}
+                />
               </div>
             </div>
 
             {/* Keterangan */}
             <div className="form-group full-width">
-              <label htmlFor="keterangan">Keterangan</label>
+              <label>Keterangan</label>
               <textarea
-                id="keterangan"
                 name="keterangan"
                 value={formData.keterangan}
                 onChange={handleInputChange}
@@ -186,12 +212,33 @@ function EditPinjaman() {
 
             {/* Buttons */}
             <div className="form-actions">
-              <button type="button" className="btn-batal" onClick={handleBatal}>Batal</button>
-              <button type="submit" className="btn-simpan">Simpan</button>
+              <button type="button" className="btn-batal" onClick={handleBatal}>
+                Batal
+              </button>
+              <button type="submit" className="btn-simpan">
+                Simpan
+              </button>
             </div>
           </form>
         </div>
       </div>
+
+      {/* Popup Barang */}
+      {showBarangPopup && (
+        <div className="popup-barang">
+          <div className="popup-content">
+            <h3>Pilih Barang</h3>
+            <button className="close-btn" onClick={() => setShowBarangPopup(false)}>X</button>
+            <ul className="barang-list">
+              {Array.isArray(barangList) && barangList.map(barang => (
+                <li key={barang.id} onClick={() => handleSelectBarang(barang)}>
+                  {barang.nama_barang} - {barang.kategori?.nama_kategori}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
