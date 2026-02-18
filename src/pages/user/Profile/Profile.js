@@ -1,7 +1,7 @@
-// src/pages/user/Profile.jsx
+// src/pages/user/Profile/Profile.js
 import React, { useState, useEffect } from 'react';
 import './Profile.css';
-import { fetchUserProfile } from '../../services/userServices';
+import { fetchUserProfile } from '../../../services/userServices';
 
 const Profile = () => {
   const [profileData, setProfileData] = useState(null);
@@ -15,18 +15,19 @@ const Profile = () => {
     const getProfile = async () => {
       try {
         const data = await fetchUserProfile();
+        // Pastikan ambil data sesuai structure BE
         const formatted = {
-          namaLengkap: data.name,
-          namaPengguna: data.username || data.name,
-          email: data.email,
+          namaLengkap: data?.name || '',
+          namaPengguna: data?.username || data?.name || '',
+          email: data?.email || '',
           kataSandi: '••••••••',
-          foto: data.avatar || 'profile-picture.jpg',
+          foto: data?.avatar || 'profile-picture.jpg',
         };
         setProfileData(formatted);
         setFormData(formatted);
-        setRole(data.role || 'user');
+        setRole(data?.role || 'user');
       } catch (err) {
-        console.error(err);
+        console.error('Gagal fetch profil', err);
         setError('Gagal memuat profil');
       } finally {
         setLoading(false);
