@@ -1,25 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Actionmodal.css';
 
 function ActionModal({ isOpen, onClose, onApply, status, itemData }) {
-  const [aksiStatus, setAksiStatus] = React.useState('');
+  const [aksiStatus, setAksiStatus] = useState('');
+
+  // Reset saat modal ditutup / dibuka
+  useEffect(() => {
+    if (!isOpen) setAksiStatus('');
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const isTerlambat = status === 'Terlambat';
-  const isDisabled = status === 'Disetujui'; // Hanya Disetujui yang disabled
-  const canApprove = status === 'Peminjaman' || status === 'Pengembalian' || status === 'Terlambat'; // Semua bisa approve kecuali Disetujui
+  const normalizedStatus = status?.toLowerCase();
+  const isTerlambat = normalizedStatus === 'terlambat';
+  const isDisabled = normalizedStatus === 'disetujui';
+
+  const canApprove = ['pending', 'peminjaman', 'pengembalian', 'terlambat'].includes(normalizedStatus);
 
   const handleCheckboxChange = (value) => {
     setAksiStatus(aksiStatus === value ? '' : value);
   };
 
   const handleApply = () => {
-    if ((canApprove || isTerlambat) && !isDisabled && aksiStatus) {
-      onApply(aksiStatus, itemData);
-      setAksiStatus('');
-      onClose();
-    }
+    if (!aksiStatus) return;
+    // Kirim ke parent function tanpa close modal dulu, parent yang close
+    onApply(aksiStatus, itemData);
   };
 
   const handleReset = () => {
@@ -46,7 +51,7 @@ function ActionModal({ isOpen, onClose, onApply, status, itemData }) {
               checked={aksiStatus === 'Diterima'}
               onChange={() => handleCheckboxChange('Diterima')}
               className="action-checkbox-input"
-              disabled={isDisabled}
+              disabled={isDisabled || !canApprove}
             />
             <span className={`action-checkbox-custom ${aksiStatus === 'Diterima' ? (isTerlambat ? 'checked-danger' : 'checked') : ''}`}>
               {aksiStatus === 'Diterima' && (
@@ -64,7 +69,7 @@ function ActionModal({ isOpen, onClose, onApply, status, itemData }) {
               checked={aksiStatus === 'Ditolak'}
               onChange={() => handleCheckboxChange('Ditolak')}
               className="action-checkbox-input"
-              disabled={isDisabled}
+              disabled={isDisabled || !canApprove}
             />
             <span className={`action-checkbox-custom ${aksiStatus === 'Ditolak' ? (isTerlambat ? 'checked-danger' : 'checked') : ''}`}>
               {aksiStatus === 'Ditolak' && (

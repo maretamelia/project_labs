@@ -129,16 +129,10 @@
   font-weight: 600;
 }
 
-.date-row {
-  display: flex;
-  gap: 40px;
-  margin-top: -8px;
-  margin-bottom: 8px;
-}
-
-.date-row .date {
-  font-size: 13px;
-  color: #666;
+.date-item .value {
+  display: block;
+  margin-top: 9px;
+  padding-left: 24px;
 }
 
 .description-section {
@@ -173,4 +167,36 @@
     max-width: 200px;
     margin: 0 auto;
   }
+}
+/* Wrapper agar button ke kanan */
+.product-details {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Button container supaya ke kanan */
+.btn-kembalikan {
+  align-self: flex-end;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #2563eb; /* biru */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover */
+.btn-kembalikan:hover:not(:disabled) {
+  background-color: #1e40af;
+  transform: translateY(-2px);
+}
+
+/* Disabled state */
+.btn-kembalikan:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.8;
 }

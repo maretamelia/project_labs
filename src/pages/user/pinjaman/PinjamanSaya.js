@@ -19,7 +19,7 @@ const STATUS_MAP = {
   disetujui: 'Disetujui',
   ditolak: 'Ditolak',
   dikembalikan: 'Dikembalikan',
-  pengembalian: 'Dipinjam',
+  dikembalikan: 'Selesai',
 };
 
 const STATUS_LIST = Object.values(STATUS_MAP);
