@@ -22,7 +22,7 @@ import RiwayatPeminjaman from './pages/user/pinjaman/RiwayatPeminjaman';
 import DetailPeminjaman from './pages/user/DetailPeminjaman/DetailPeminjaman';
 import SOP from './pages/user/sop/SOP';
 import DaftarBarang from './pages/user/DaftarBarang/DaftarBarang';
-import Profile from './pages/Profile/Profile';
+import Profile from './pages/user/Profile/Profile';
 
 // ================= AUTH =================
 import Login from './pages/autentikasi/Login';
@@ -184,11 +184,10 @@ export default function RouteIndex() {
         }
       />
 
-      {/* ================= PROFILE (BISA DIAKSES SEMUA LOGIN) ================= */}
       <Route
-        path="/profile"
+        path="/user/Profile"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute role="user">
             <Profile />
           </ProtectedRoute>
         }

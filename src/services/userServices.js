@@ -17,5 +17,5 @@ export const fetchUserProfile = async () => {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  return response.data;
+  return response.data.data;
 };
