@@ -217,9 +217,9 @@ function AddProductModal({ isOpen, onClose, onSelectProduct }) {
               </div>
 
               <div className="product-image-box">
-                {barang.gambar ? (
+                {barang.image ? (
                   <img
-                    src={`http://localhost:8000/storage/${barang.gambar}`}
+                    src={`http://localhost:8000/storage/${barang.image}`}
                     alt={barang.nama_barang}
                     className="product-image"
                   />

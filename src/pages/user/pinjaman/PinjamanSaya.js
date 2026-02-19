@@ -19,7 +19,8 @@ const STATUS_MAP = {
   disetujui: 'Disetujui',
   ditolak: 'Ditolak',
   dikembalikan: 'Dikembalikan',
-  dikembalikan: 'Selesai',
+  selesai: 'Selesai',
+  pending_back: 'Proses Pengembalian',
 };
 
 const STATUS_LIST = Object.values(STATUS_MAP);
@@ -346,7 +347,10 @@ tanggalKembali: item.tanggal_pengembalian
 
       <DetailPinjaman
         isOpen={isDetailPopupOpen}
-        onClose={() => setIsDetailPopupOpen(false)}
+        onClose={() => {
+          setIsDetailPopupOpen(false);
+          setSelectedPinjaman(null);
+        }}
         data={selectedPinjaman}
       />
     </div>

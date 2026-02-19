@@ -135,6 +135,11 @@
   color: #C62828;
 }
 
+.status-badge.uknown {
+  background: #FFEBEE;
+  color: gray;
+}
+
 /* Footer */
 .detail-footer {
   display: flex;

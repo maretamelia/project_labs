@@ -1,29 +1,37 @@
 import React from 'react';
 import './DetailPinjaman.css';
 
-const DetailPinjaman = ({ isOpen, onClose, data }) => {
-  if (!isOpen) return null;
+const STATUS_MAP = {
+  pending: 'Menunggu',
+  disetujui: 'Disetujui',
+  ditolak: 'Ditolak',
+  dikembalikan: 'Dikembalikan',
+  selesai: 'Selesai',
+  pending_back: 'Proses Pengembalian',
+};
 
+const DetailPinjaman = ({ isOpen, onClose, data }) => {
+  if (!isOpen || !data) return null;
+
+  // Handle data structure yang mungkin sudah di-map atau raw
+  const pinjaman = data.raw || data;
+  
   const getStatusClass = (status) => {
     if (!status) return '';
     return status.toLowerCase();
   };
 
-  const today = new Date();
-  const tanggalKembali = data?.tanggal_pengembalian
-  ? new Date(data.tanggal_pengembalian)
-  : null;
-const todayStr = today.toISOString().split("T")[0];
-const kembaliStr = data?.tanggal_pengembalian?.split("T")[0];
+  // const today = new Date();
+  // const tanggalKembali = pinjaman?.tanggal_pengembalian
+  // ? new Date(pinjaman.tanggal_pengembalian)
+  // : null;
+// const todayStr = today.toISOString().split("T")[0];
+// const kembaliStr = pinjaman?.tanggal_pengembalian?.split("T")[0];
 
-const bolehKembalikan =
-  data?.status?.toLowerCase() === "disetujui" &&
-  kembaliStr &&
-  todayStr >= kembaliStr;
-    console.log("STATUS:", data?.status);
-    console.log("tanggalKembali:", tanggalKembali);
-    console.log("today:", today);
-    console.log("bolehKembalikan:", bolehKembalikan);
+// const bolehKembalikan =
+//   pinjaman?.status?.toLowerCase() === "disetujui" &&
+//   kembaliStr &&
+//   todayStr >= kembaliStr;
 
   return (
     <div className="popup-overlay" onClick={onClose}>
@@ -33,31 +41,31 @@ const bolehKembalikan =
         <div className="popup-body">
           <div className="product-image">
             <img
-              src={data?.barang?.gambar || '/placeholder-image.jpg'}
-              alt={data?.barang?.nama_barang}
+              src={pinjaman?.barang?.image ? `http://localhost:8000/storage/${pinjaman?.barang?.image}` : '/placeholder-image.jpg'}
+              alt={pinjaman?.barang?.nama_barang}
             />
           </div>
 
           <div className="product-details">
             <h2 className="product-title">
-              {data?.barang?.nama_barang || 'Nama Barang'}
+              {pinjaman?.barang?.nama_barang || 'Nama Barang'}
             </h2>
 
-            <span className={`status-badge ${getStatusClass(data?.status)}`}>
-              {data?.status || 'Menunggu'}
+            <span className={`status-badge ${getStatusClass(pinjaman?.status)}`}>
+              {STATUS_MAP[pinjaman?.status] || pinjaman?.status || 'Menunggu'}
             </span>
 
             <div className="detail-row">
               <span className="icon">📦</span>
               <span className="label">Jumlah:</span>
-              <span className="value">{data?.jumlah || '0'} pcs</span>
+              <span className="value">{pinjaman?.jumlah ?? '0'} pcs</span>
             </div>
 
             <div className="detail-row">
               <span className="icon">🏷️</span>
               <span className="label">Kategori Produk:</span>
               <span className="value">
-                {data?.barang?.kategori?.nama_kategori || 'Tidak ada kategori'}
+                {pinjaman?.barang?.kategori?.nama_kategori || 'Tidak ada kategori'}
               </span>
             </div>
 
@@ -66,7 +74,7 @@ const bolehKembalikan =
                 <span className="icon">🕒</span>
                 <span className="label">Tanggal Peminjaman</span>
                 <span className="value">
-                  {data?.tanggal_peminjaman?.split('T')[0] || '-'}
+                  {pinjaman?.tanggal_peminjaman ? pinjaman?.tanggal_peminjaman?.split('T')[0] : '-'}
                 </span>
               </div>
 
@@ -74,7 +82,7 @@ const bolehKembalikan =
                 <span className="icon">🕒</span>
                 <span className="label">Tanggal Kembali</span>
                 <span className="value">
-                  {data?.tanggal_pengembalian?.split('T')[0] || '-'}
+                  {pinjaman?.tanggal_pengembalian ? pinjaman?.tanggal_pengembalian?.split('T')[0] : '-'}
                 </span>
               </div>
             </div>
@@ -82,17 +90,17 @@ const bolehKembalikan =
             <div className="description-section">
               <p className="description-label">Keterangan:</p>
               <p className="description-text">
-                {data?.keterangan || 'Tidak ada keterangan'}
+                {pinjaman?.keterangan || 'Tidak ada keterangan'}
               </p>
             </div>
 
             <button
               className="btn-kembalikan"
-              disabled={!bolehKembalikan}
+              disabled={pinjaman.status !== 'disetujui'}
               onClick={async () => {
                 try {
                   const res = await fetch(
-                      `http://localhost:8000/api/user/pinjaman/${data.id}/return`,
+                      `http://localhost:8000/api/user/pinjaman/${pinjaman.id}/return`,
                     {
                       method: "POST",
                       headers: {

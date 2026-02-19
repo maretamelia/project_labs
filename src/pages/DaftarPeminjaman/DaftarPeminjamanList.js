@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PageHeader from '../../components/PageHeader';
 import SearchBar from '../../components/SearchBar';
 import Pagination from '../../components/Pagination';
-import FilterModal from '../../components/FilterModal';
 import ActionModal from '../../components/Actionmodal';
 import './DaftarPeminjamanList.css';
 import { getDaftarPeminjamanAdmin, approvePeminjaman, rejectPeminjaman } from '../../services/pinjamanServices';
@@ -11,12 +10,21 @@ function DaftarPeminjamanList() {
   const [peminjamanData, setPeminjamanData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  // const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const itemsPerPage = 6;
+
+  const STATUS_MAP = {
+    pending: 'Menunggu',
+    disetujui: 'Disetujui',
+    ditolak: 'Ditolak',
+    dikembalikan: 'Dikembalikan',
+    selesai: 'Selesai',
+    pending_back: 'Proses Pengembalian',
+  };
 
   useEffect(() => {
     fetchPeminjaman();
@@ -71,12 +79,14 @@ function DaftarPeminjamanList() {
   const getStatusClass = (status) => {
     const s = (status ?? '').toLowerCase().trim();
     switch (s) {
-      case 'peminjaman': return 'status peminjaman';
-      case 'pengembalian': return 'status pengembalian';
-      case 'terlambat': return 'status terlambat';
-      case 'disetujui': return 'status disetujui';
-      case 'ditolak': return 'status ditolak';
-      default: return 'status';
+      case 'pending': return 'status-badge menunggu';
+      case 'pending_back': return 'status-badge menunggu';
+      case 'dikembalikan': return 'status-badge dikembalikan';
+      case 'terlambat': return 'status-badge terlambat';
+      case 'disetujui': return 'status-badge disetujui';
+      case 'ditolak': return 'status-badge ditolak';
+      case 'dipinjam': return 'status-badge dipinjam';
+      default: return 'status-badge uknown';
     }
   };
 
@@ -101,7 +111,7 @@ function DaftarPeminjamanList() {
         <SearchBar
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
-          onOpenFilter={() => setIsFilterOpen(true)}
+          // onOpenFilter={() => setIsFilterOpen(true)}
           placeholder="Cari data peminjaman..."
         />
       </div>
@@ -127,20 +137,22 @@ function DaftarPeminjamanList() {
               {currentItems.map((item, index) => (
                 <tr key={item.id}>
                   <td>{indexOfFirstItem + index + 1}</td>
-                  <td>{item.user?.nama ?? '-'}</td>
+                  <td>{item.user?.name ?? '-'}</td>
                   <td>{item.barang?.nama_barang ?? '-'}</td>
-                  <td>{item.jumlah}</td>
+                  <td>{item.jumlah} pcs</td>
                   <td>{formatDate(item.tanggal_peminjaman)}</td>
                   <td>{formatDate(item.tanggal_pengembalian)}</td>
                   <td>
                     <span className={getStatusClass(item.status)}>
-                      {item.status}
+                      {STATUS_MAP[item.status] || item.status}
                     </span>
                   </td>
                   <td>
-                    <button className="btn-action" onClick={() => handleActionClick(item)}>
-                      ⋮
-                    </button>
+                    {item.status === 'pending' || item.status === 'pending_back' ? (
+                      <button className="btn-action" onClick={() => handleActionClick(item)}>
+                        ⋮
+                      </button>
+                    ) : <span>-</span>}
                   </td>
                 </tr>
               ))}

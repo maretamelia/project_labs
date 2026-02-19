@@ -13,9 +13,9 @@ function ActionModal({ isOpen, onClose, onApply, status, itemData }) {
 
   const normalizedStatus = status?.toLowerCase();
   const isTerlambat = normalizedStatus === 'terlambat';
-  const isDisabled = normalizedStatus === 'disetujui';
+  const isDisabled = normalizedStatus === 'selesai';
 
-  const canApprove = ['pending', 'peminjaman', 'pengembalian', 'terlambat'].includes(normalizedStatus);
+  const canApprove = ['pending', 'pending_back'].includes(normalizedStatus);
 
   const handleCheckboxChange = (value) => {
     setAksiStatus(aksiStatus === value ? '' : value);
