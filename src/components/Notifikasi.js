@@ -71,15 +71,15 @@ const Notifikasi = ({ isOpen, onClose, notifications = [], onMarkAllRead, onDele
           ) : (
             notifications.map(notif => (
               <div key={notif.id} className="notif-item">
-                <div className="notif-icon" style={{ backgroundColor: notif.iconBg }}>
-                  {notif.icon}
+                <div className="notif-icon" style={{ backgroundColor: notif.title.includes('Terlambat') || notif.title.includes('Menolak') ? '#F44336' : '#2196F3' }}>
+                  {notif.title.includes('Terlambat') || notif.title.includes('Menolak') ? '⚠️' : '🔔'}
                 </div>
                 <div className="notif-content">
                   <h3 className="notif-title">{notif.title}</h3>
-                  <p className="notif-message">{notif.message}</p>
+                  <p className="notif-message">{notif.body}</p>
                 </div>
                 <div className="notif-meta">
-                  <span className="notif-time">{notif.time}</span>
+                  <span className="notif-time">{new Date(notif.created_at).toLocaleString()}</span>
                   <div className="notif-options-wrapper">
                     <button 
                       className="notif-options"

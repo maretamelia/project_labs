@@ -5,39 +5,7 @@ import './Navbar.css';
 import Notifikasi from './Notifikasi';
 import Usermenu from './Usermenu';
 
-// Static notifications - defined outside component to avoid dependency issues
-const adminNotifications = [
-  {
-    id: 1,
-    icon: '📋',
-    iconBg: '#2196F3',
-    title: 'Pengajuan Peminjaman Baru',
-    message: 'Ada 5 pengajuan peminjaman yang menunggu persetujuan.',
-    time: '5 minutes ago',
-    isRead: false,
-  },
-  {
-    id: 2,
-    icon: '⚠️',
-    iconBg: '#F44336',
-    title: 'Pengembalian Terlambat',
-    message: 'Mahasiswa A terlambat mengembalikan Arduino UNO.',
-    time: '1 hour ago',
-    isRead: false,
-  },
-];
 
-const userNotifications = [
-  {
-    id: 1,
-    icon: '💬',
-    iconBg: '#2196F3',
-    title: 'Peminjaman Disetujui',
-    message: 'Peminjaman kamu telah disetujui.',
-    time: '1 week ago',
-    isRead: false,
-  },
-];
 
 function Navbar({ onMenuToggle }) {
   const navigate = useNavigate();
@@ -89,14 +57,56 @@ function Navbar({ onMenuToggle }) {
   // ================= NOTIFIKASI =================
   const [notifications, setNotifications] = useState([]);
 
-  // Set notifications based on user role
-  useEffect(() => {
-    const initialNotifications = userData.role.toLowerCase() === 'admin' ? adminNotifications : userNotifications;
-    setNotifications(initialNotifications);
-  }, [userData.role]);
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  // Fetch notifications from API
+  const fetchNotifications = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
-  const handleMarkAllRead = () => setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    try {
+      const response = await axios.get('http://localhost:8000/api/profile/notification', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setNotifications(response.data.data || []);
+    } catch (err) {
+      console.error('Gagal mengambil notifikasi', err);
+    }
+  };
+
+  // Fetch notifications on component mount
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+
+  // Mark notification as read
+  const handleMarkAsRead = async (notificationId) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      await axios.post(
+        `http://localhost:8000/api/profile/notification/${notificationId}/read`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      // Update notification in state
+      setNotifications(prev =>
+        prev.map(n => (n.id === notificationId ? { ...n, is_read: true } : n))
+      );
+    } catch (err) {
+      console.error('Gagal menandai notifikasi sebagai dibaca', err);
+    }
+  };
+
+  const handleMarkAllRead = () => {
+    notifications.forEach(n => {
+      if (!n.is_read) handleMarkAsRead(n.id);
+    });
+  };
+
   const handleDeleteNotification = (id) => setNotifications(prev => prev.filter(n => n.id !== id));
 
   // ================= RENDER =================
