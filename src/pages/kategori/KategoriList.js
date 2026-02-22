@@ -10,6 +10,7 @@ import {
   updateKategori,
   deleteKategori
 } from '../../services/kategoriservices';
+import Swal from 'sweetalert2';
 import './KategoriList.css';
 
 function KategoriList() {
@@ -64,19 +65,32 @@ function KategoriList() {
 
   // ===== Tambah Kategori =====
   const handleAddKategori = async () => {
-    if (!namaKategori.trim()) return;
+  if (!namaKategori.trim()) return;
 
-    try {
-      const response = await createKategori({ nama_kategori: namaKategori });
-      const newKategori = response.data.data;
-      setKategori([newKategori, ...kategori]);
-      setNamaKategori('');
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error('Gagal menambah kategori:', error);
-      alert('Gagal menambah kategori');
-    }
-  };
+  try {
+    const response = await createKategori({ nama_kategori: namaKategori });
+    const newKategori = response.data.data;
+    setKategori([newKategori, ...kategori]);
+    setNamaKategori('');
+    setIsModalOpen(false);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil',
+      text: 'Kategori berhasil ditambahkan',
+      timer: 2000,
+      showConfirmButton: false
+    });
+  } catch (error) {
+    console.error('Gagal menambah kategori:', error);
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: error.response?.data?.message || 'Gagal menambah kategori'
+    });
+  }
+};
 
   // ===== Edit Kategori =====
   const handleEditClick = (k) => {
@@ -85,36 +99,73 @@ function KategoriList() {
   };
 
   const handleUpdateKategori = async () => {
-    if (!editKategori || !editKategori.nama_kategori?.trim()) return;
+  if (!editKategori || !editKategori.nama_kategori?.trim()) return;
 
-    try {
-      const response = await updateKategori(editKategori.id, {
-        nama_kategori: editKategori.nama_kategori
-      });
-      const updatedKategori = response.data.data;
-      setKategori(kategori.map(k =>
-        k.id === updatedKategori.id ? updatedKategori : k
-      ));
-      setIsEditModalOpen(false);
-      setEditKategori(null);
-    } catch (error) {
-      console.error('Gagal mengupdate kategori:', error);
-      alert('Gagal mengupdate kategori');
-    }
-  };
+  try {
+    const response = await updateKategori(editKategori.id, {
+      nama_kategori: editKategori.nama_kategori
+    });
+    const updatedKategori = response.data.data;
+    setKategori(kategori.map(k =>
+      k.id === updatedKategori.id ? updatedKategori : k
+    ));
+    setIsEditModalOpen(false);
+    setEditKategori(null);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil',
+      text: 'Kategori berhasil diupdate',
+      timer: 2000,
+      showConfirmButton: false
+    });
+  } catch (error) {
+    console.error('Gagal mengupdate kategori:', error);
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: error.response?.data?.message || 'Gagal mengupdate kategori'
+    });
+  }
+};
+
 
   // ===== Delete Kategori =====
   const handleDelete = async (id) => {
-    if (!window.confirm('Yakin ingin menghapus kategori ini?')) return;
+  const confirm = await Swal.fire({
+    title: 'Yakin?',
+    text: "Kategori ini akan dihapus!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Ya, hapus!'
+  });
 
-    try {
-      await deleteKategori(id);
-      setKategori(kategori.filter(k => k.id !== id));
-    } catch (error) {
-      console.error('Gagal menghapus kategori:', error);
-      alert('Gagal menghapus kategori');
-    }
-  };
+  if (!confirm.isConfirmed) return;
+
+  try {
+    await deleteKategori(id);
+    setKategori(kategori.filter(k => k.id !== id));
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil',
+      text: 'Kategori berhasil dihapus',
+      timer: 2000,
+      showConfirmButton: false
+    });
+  } catch (error) {
+    console.error('Gagal menghapus kategori:', error);
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: error.response?.data?.message || 'Gagal menghapus kategori'
+    });
+  }
+};
 
   // ===== Filter/Search/Pagination =====
   const filteredKategori = kategori.filter(k =>

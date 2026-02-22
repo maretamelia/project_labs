@@ -1,29 +1,30 @@
+/* ============================================
+   SIDEBAR
+   ============================================ */
 .sidebar {
   width: 250px;
   min-height: 100vh;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  position: fixed;  /* ✅ INI PENYEBABNYA! */
+  position: fixed;
   left: 0;
   top: 0;
   border-right: 1px solid #e5e7eb;
   z-index: 100;
   padding: 0;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, width 0.3s ease;
 }
 
-/* Sidebar Closed State */
 .sidebar.closed {
   transform: translateX(-100%);
 }
 
-/* Sidebar Open State */
 .sidebar.open {
   transform: translateX(0);
 }
 
-/* Sidebar Header - Logo & Branding (Sama tinggi dengan navbar - 65px) */
+/* Sidebar Header */
 .sidebar-header {
   padding: 0 20px;
   border-bottom: 1px solid #e5e7eb;
@@ -86,7 +87,7 @@
   gap: 5px;
 }
 
-/* Sidebar Item - Minimalis & Clean */
+/* Sidebar Items */
 .sidebar-item {
   display: flex;
   align-items: center;
@@ -107,7 +108,6 @@
   color: #1f2937;
 }
 
-/* Active State - HANYA yang diklik jadi ungu */
 .sidebar-item.active {
   background: linear-gradient(135deg, #b57edc 0%, #d89ee8 100%);
   color: white;
@@ -119,7 +119,6 @@
   background: linear-gradient(135deg, #a06bc9 0%, #c88dd6 100%);
 }
 
-/* Icon - Simpel */
 .sidebar-icon {
   font-size: 18px;
   display: flex;
@@ -129,7 +128,6 @@
   flex-shrink: 0;
 }
 
-/* Text */
 .sidebar-text {
   flex: 1;
   white-space: nowrap;
@@ -137,18 +135,14 @@
   text-overflow: ellipsis;
 }
 
-/* Hover Effect */
 .sidebar-item:hover .sidebar-icon {
   transform: scale(1.05);
   transition: transform 0.2s;
 }
 
-
 /* ============================================
-   🔥 MAIN CONTENT - INI YANG HARUS DIUBAH!
+   MAIN CONTENT
    ============================================ */
-
-/* ROOT CONTAINER */
 .app-container {
   display: flex;
   width: 100%;
@@ -157,25 +151,22 @@
   background-color: #f9fafb;
 }
 
-/* MAIN CONTENT - Sesuaikan dengan sidebar fixed */
 .main-content {
   flex: 1;
-  margin-left: 250px;        /* ✅ HARUS sama dengan width sidebar */
-  transition: margin-left 0.3s ease;
+  margin-left: 250px;
+  transition: margin-left 0.3s ease, width 0.3s ease;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  width: calc(100% - 250px); /* ✅ PENTING: kurangi lebar sidebar */
+  width: calc(100% - 250px);
   box-sizing: border-box;
 }
 
-/* Kalau sidebar ditutup/collapsed */
 .main-content.sidebar-closed {
-  margin-left: 0;            /* ✅ Gak ada margin */
-  width: 100%;               /* ✅ Full width */
+  margin-left: 0;
+  width: 100%;
 }
 
-/* Content Wrapper */
 .content-wrapper {
   padding: 24px;
   flex: 1;
@@ -185,7 +176,6 @@
   overflow-x: hidden;
 }
 
-/* Toolbar */
 .toolbar {
   display: flex;
   justify-content: space-between;
@@ -233,7 +223,6 @@
   width: 100%;
 }
 
-/* Item Card */
 .item-card {
   background: white;
   border-radius: 12px;
@@ -249,7 +238,6 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
-/* Item Image */
 .item-image {
   width: 100%;
   height: 200px;
@@ -268,7 +256,6 @@
   transform: scale(1.05);
 }
 
-/* Item Info */
 .item-info {
   padding: 16px;
   flex: 1;
@@ -287,7 +274,6 @@
   margin: 0;
 }
 
-/* Item Actions */
 .item-actions {
   display: flex;
   gap: 8px;
@@ -347,11 +333,53 @@
   transform: translateY(-1px);
 }
 
+/* ============================================
+   PAGINATION
+   ============================================ */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.page-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.page-btn:hover:not(:disabled) {
+  background-color: #f7fafc;
+  border-color: #6b46c1;
+  color: #6b46c1;
+}
+
+.page-btn.active {
+  background-color: #6b46c1;
+  color: white;
+  border-color: #6b46c1;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 /* ============================================
-   📱 RESPONSIVE
+   RESPONSIVE
    ============================================ */
-
 @media (max-width: 1200px) {
   .items-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -395,10 +423,9 @@
     margin: 0;
   }
 
-  /* ✅ Main content sesuaikan */
   .main-content {
-    margin-left: 70px;         /* ✅ Sesuai sidebar collapsed */
-    width: calc(100% - 70px);  /* ✅ Kurangi 70px */
+    margin-left: 70px;
+    width: calc(100% - 70px);
   }
 
   .main-content.sidebar-closed {

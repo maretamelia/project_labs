@@ -11,6 +11,7 @@ import EditIcon from '../../../assets/icons/edit.svg';
 import LihatDetailIcon from '../../../assets/icons/lihatdetail.svg';
 import { FiTrash2 } from 'react-icons/fi';
 import { getPinjamanSaya, deletePinjaman } from '../../../services/pinjamanServices';
+import Swal from 'sweetalert2';
 
 
 /* ================= KONVERSI STATUS ================= */
@@ -32,7 +33,6 @@ function PinjamanSaya() {
   /* ================= STATE ================= */
   const [pinjaman, setPinjaman] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -48,35 +48,35 @@ function PinjamanSaya() {
     status: [],
   });
 
-const fetchPinjaman = async () => {
-  setLoading(true);
-  try {
-    const list = await getPinjamanSaya();
+  /* ================= FETCH DATA ================= */
+  const fetchPinjaman = async () => {
+    setLoading(true);
+    try {
+      const list = await getPinjamanSaya();
 
-    const mappedData = list.map(item => ({
-      id: item.id,
-      nama: item.barang?.nama_barang || '-', 
-      jumlah: item.jumlah ?? 0,
-      tanggalPinjam: item.tanggal_peminjaman
-  ? new Date(item.tanggal_peminjaman).toLocaleDateString('id-ID')
-  : '-',
-tanggalKembali: item.tanggal_pengembalian
-  ? new Date(item.tanggal_pengembalian).toLocaleDateString('id-ID')
-  : '-',
-      statusRaw: item.status,
-      statusLabel: STATUS_MAP[item.status] || item.status,
-      raw: item,
-    }));
+      const mappedData = list.map(item => ({
+        id: item.id,
+        nama: item.barang?.nama_barang || '-',
+        jumlah: item.jumlah ?? 0,
+        tanggalPinjam: item.tanggal_peminjaman
+          ? new Date(item.tanggal_peminjaman).toLocaleDateString('id-ID')
+          : '-',
+        tanggalKembali: item.tanggal_pengembalian
+          ? new Date(item.tanggal_pengembalian).toLocaleDateString('id-ID')
+          : '-',
+        statusRaw: item.status,
+        statusLabel: STATUS_MAP[item.status] || item.status,
+        raw: item,
+      }));
 
-    setPinjaman(mappedData);
-  } catch (error) {
-    console.error('Gagal mengambil data pinjaman:', error);
-    setPinjaman([]);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      setPinjaman(mappedData);
+    } catch (error) {
+      console.error('Gagal mengambil data pinjaman:', error);
+      setPinjaman([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchPinjaman();
@@ -124,17 +124,35 @@ tanggalKembali: item.tanggal_pengembalian
   };
 
   const handleDelete = async (id) => {
-  if (!window.confirm('Yakin ingin membatalkan peminjaman ini?')) return;
+  const result = await Swal.fire({
+    title: 'Yakin ingin membatalkan peminjaman ini?',
+    text: "Data yang dibatalkan tidak bisa dikembalikan!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, batalkan',
+    cancelButtonText: 'Batal',
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+  });
+
+  if (!result.isConfirmed) return;
 
   try {
     await deletePinjaman(id);
-    alert('Peminjaman berhasil dibatalkan');
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil',
+      text: 'Peminjaman berhasil dibatalkan',
+    });
     fetchPinjaman();
   } catch (error) {
-    alert('Gagal menghapus peminjaman');
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: error.response?.data?.message || 'Gagal menghapus peminjaman',
+    });
   }
 };
-
 
   const handleSelectProduct = barang => {
     navigate('/user/pinjaman/create', {
@@ -158,16 +176,19 @@ tanggalKembali: item.tanggal_pengembalian
 
     const itemDate = new Date(item.tanggalPinjam);
     const matchStartDate =
-      !filterValues.startDate ||
-      itemDate >= new Date(filterValues.startDate);
+      !filterValues.startDate || itemDate >= new Date(filterValues.startDate);
 
     const matchEndDate =
-      !filterValues.endDate ||
-      itemDate <= new Date(filterValues.endDate);
+      !filterValues.endDate || itemDate <= new Date(filterValues.endDate);
 
     const matchStatus =
       filterValues.status.length === 0 ||
       filterValues.status.includes(item.statusLabel);
+
+    // exclude status selesai, terlambat, ditolak
+    const excludeStatuses = !['selesai', 'terlambat', 'ditolak'].includes(
+      item.statusRaw.toLowerCase()
+    );
 
     return (
       matchSearch &&
@@ -175,17 +196,19 @@ tanggalKembali: item.tanggal_pengembalian
       matchMax &&
       matchStartDate &&
       matchEndDate &&
-      matchStatus
+      matchStatus &&
+      excludeStatuses
     );
   });
 
+  /* ================= PAGINATION ================= */
   const paginatedData = filteredData.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
 
-  const getStatusClass = status =>
-    status.toLowerCase().replace(/\s/g, '-');
+  /* ================= STATUS CLASS ================= */
+  const getStatusClass = status => status.toLowerCase().replace(/\s/g, '-');
 
   /* ================= RENDER ================= */
   return (
@@ -257,32 +280,33 @@ tanggalKembali: item.tanggal_pengembalian
                     </span>
                   </td>
                   <td className="aksi-cell">
-            {/* EDIT hanya jika pending */}
-            {item.statusRaw === 'pending' && (
-              <button
-                className="aksi-btn edit-btn"
-                onClick={() => handleEdit(item)}
-              >
-                <img src={EditIcon} alt="Edit" />
-              </button>
-            )}
-            {/* DETAIL selalu ada */}
-            <button
-              className="aksi-btn view-btn"
-              onClick={() => handleDetail(item)}
-            >
-              <img src={LihatDetailIcon} alt="Detail" />
-            </button>
+                    {/* EDIT hanya jika pending */}
+                    {item.statusRaw === 'pending' && (
+                      <button
+                        className="aksi-btn edit-btn"
+                        onClick={() => handleEdit(item)}
+                      >
+                        <img src={EditIcon} alt="Edit" />
+                      </button>
+                    )}
+                    {/* DETAIL selalu ada */}
+                    <button
+                      className="aksi-btn view-btn"
+                      onClick={() => handleDetail(item)}
+                    >
+                      <img src={LihatDetailIcon} alt="Detail" />
+                    </button>
 
-            {/* DELETE hanya jika pending */}
-            {item.statusRaw === 'pending' && (
-                <button
-                className="aksi-btn delete-btn"
-                onClick={() => handleDelete(item.id)} >
-                <FiTrash2 size />
-              </button>
-               )}
-          </td>
+                    {/* DELETE hanya jika pending */}
+                    {item.statusRaw === 'pending' && (
+                      <button
+                        className="aksi-btn delete-btn"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        <FiTrash2 size={18} />
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))
             )}
@@ -305,9 +329,7 @@ tanggalKembali: item.tanggal_pengembalian
                 <input
                   type="date"
                   value={filterValues[key]}
-                  onChange={e =>
-                    handleFilterChange(key, e.target.value)
-                  }
+                  onChange={e => handleFilterChange(key, e.target.value)}
                   className="filter-input"
                 />
               </div>

@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import PageHeader from '../../components/PageHeader';
-import './RiwayatPeminjamanAdmin.css';
 import SearchBar from '../../components/SearchBar';
 import Pagination from '../../components/Pagination';
 import FilterModal from '../../components/FilterModal';
 import DetailPeminjamanModal from './DetailPeminjamanAdmin';
 import { BsThreeDots } from 'react-icons/bs';
+import { getRiwayatPeminjamanAdmin } from '../../services/pinjamanServices';
+import './RiwayatPeminjamanAdmin.css';
 
 function RiwayatPeminjamanAdmin() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,126 +25,93 @@ function RiwayatPeminjamanAdmin() {
   });
 
   const ITEMS_PER_PAGE = 5;
+  const [riwayatData, setRiwayatData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const [riwayatData] = useState([
-    {
-      id: 1,
-      namaPeminjam: 'Alzel Danendra',
-      namaBarang: 'Proyektor',
-      jumlah: 1,
-      tanggalPinjam: '2025-05-13',
-      tanggalKembali: '2025-05-15',
-      status: 'Ditolak'
-    },
-    {
-      id: 2,
-      namaPeminjam: 'Algioziel Malik',
-      namaBarang: 'Laptop',
-      jumlah: 1,
-      tanggalPinjam: '2025-05-10',
-      tanggalKembali: '2025-05-12',
-      status: 'Selesai'
-    },
-    {
-      id: 3,
-      namaPeminjam: 'Mikaila Anjasmana',
-      namaBarang: 'Kamera',
-      jumlah: 2,
-      tanggalPinjam: '2025-05-08',
-      tanggalKembali: '2025-05-10',
-      status: 'Selesai'
-    },
-    {
-      id: 4,
-      namaPeminjam: 'Jingga',
-      namaBarang: 'Speaker',
-      jumlah: 1,
-      tanggalPinjam: '2025-05-06',
-      tanggalKembali: '2025-05-08',
-      status: 'Selesai'
+  /* ================= FORMAT TANGGAL ================= */
+  const formatTanggal = (tanggal) => {
+    if (!tanggal) return '-';
+    const date = new Date(tanggal);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  /* ================= FETCH DATA ================= */
+  useEffect(() => {
+    fetchRiwayat();
+  }, []);
+
+  const fetchRiwayat = async () => {
+    setLoading(true);
+    try {
+      const data = await getRiwayatPeminjamanAdmin();
+      setRiwayatData(data || []);
+    } catch (err) {
+      console.error(err);
+      alert('Gagal mengambil data riwayat!');
+    } finally {
+      setLoading(false);
     }
-  ]);
-
-  /* ===== HANDLER ===== */
-  const handleFilterChange = (key, value) => {
-    setFilterValues(prev => ({
-      ...prev,
-      [key]: value
-    }));
   };
 
-  const handleApplyFilter = () => {
-    setCurrentPage(1);
-    setIsFilterOpen(false);
-  };
+  /* ================= FILTER ================= */
+  const filteredData = useMemo(() => {
+    return riwayatData.filter(item => {
 
-  const handleResetFilter = () => {
-    setFilterValues({
-      startDate: '',
-      endDate: '',
-      minJumlah: '',
-      maxJumlah: ''
+      const namaBarang = item?.barang?.nama_barang?.toLowerCase() || '';
+      const namaUser = item?.user?.name?.toLowerCase() || '';
+      const search = searchTerm.toLowerCase();
+
+      const matchSearch =
+        namaBarang.includes(search) ||
+        namaUser.includes(search);
+
+      const matchMin =
+        filterValues.minJumlah === '' ||
+        item.jumlah >= Number(filterValues.minJumlah);
+
+      const matchMax =
+        filterValues.maxJumlah === '' ||
+        item.jumlah <= Number(filterValues.maxJumlah);
+
+      const itemDate = new Date(item.tanggal_peminjaman);
+
+      const startDate = filterValues.startDate
+        ? new Date(filterValues.startDate)
+        : null;
+
+      const endDate = filterValues.endDate
+        ? new Date(filterValues.endDate + 'T23:59:59')
+        : null;
+
+      const matchStartDate =
+        !startDate || itemDate >= startDate;
+
+      const matchEndDate =
+        !endDate || itemDate <= endDate;
+
+      return matchSearch && matchMin && matchMax && matchStartDate && matchEndDate;
     });
-    setCurrentPage(1);
-  };
+  }, [riwayatData, searchTerm, filterValues]);
 
-  /* ===== FILTER LOGIC ===== */
-  const filteredData = riwayatData.filter(item => {
-    const matchSearch =
-      item.namaBarang.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.namaPeminjam.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchMin =
-      filterValues.minJumlah === '' ||
-      item.jumlah >= Number(filterValues.minJumlah);
-
-    const matchMax =
-      filterValues.maxJumlah === '' ||
-      item.jumlah <= Number(filterValues.maxJumlah);
-
-    const itemDate = new Date(item.tanggalPinjam);
-
-    const matchStartDate =
-      filterValues.startDate === '' ||
-      itemDate >= new Date(filterValues.startDate);
-
-    const matchEndDate =
-      filterValues.endDate === '' ||
-      itemDate <= new Date(filterValues.endDate);
-
-    return (
-      matchSearch &&
-      matchMin &&
-      matchMax &&
-      matchStartDate &&
-      matchEndDate
-    );
-  });
-
-  /* ===== PAGINATION ===== */
+  /* ================= PAGINATION ================= */
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedData = filteredData.slice(
-    startIndex,
-    startIndex + ITEMS_PER_PAGE
-  );
+  const paginatedData = filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  /* ===== AKSI ===== */
+  /* ================= DETAIL ================= */
   const handleDetail = (item) => {
-    setSelectedData(item);
+    setSelectedData({
+      namaPeminjam: item?.user?.name || '-',
+      namaBarang: item?.barang?.nama_barang || '-',
+      jumlah: item?.jumlah || 0,
+      tanggalPinjam: formatTanggal(item?.tanggal_peminjaman),
+      tanggalKembali: formatTanggal(item?.tanggal_pengembalian),
+      status: item?.status || '-'
+    });
     setIsDetailModalOpen(true);
     setOpenMenuId(null);
-  };
-
-  const handleCloseDetailModal = () => {
-    setIsDetailModalOpen(false);
-    setSelectedData(null);
-  };
-
-  const handleHapus = (id) => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-      // console.log('Hapus peminjaman id:', id);
-      setOpenMenuId(null);
-    }
   };
 
   const toggleMenu = (id) => {
@@ -152,10 +120,7 @@ function RiwayatPeminjamanAdmin() {
 
   return (
     <div className="riwayat-page">
-      <PageHeader
-        title="Riwayat Peminjaman"
-        subtitle="Daftar Riwayat Peminjaman"
-      />
+      <PageHeader title="Riwayat Peminjaman" subtitle="Daftar Riwayat Peminjaman" />
 
       <SearchBar
         placeholder="Cari nama barang atau peminjam..."
@@ -167,139 +132,89 @@ function RiwayatPeminjamanAdmin() {
         onOpenFilter={() => setIsFilterOpen(true)}
       />
 
-      <div className="riwayat-table-wrapper">
-        <table className="riwayat-table">
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>Nama</th>
-              <th>Nama Barang</th>
-              <th>Jumlah</th>
-              <th>Tanggal Pinjam</th>
-              <th>Tanggal Kembali</th>
-              <th>Status</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {paginatedData.length === 0 ? (
+      {loading ? (
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</div>
+      ) : (
+        <div className="riwayat-table-wrapper">
+          <table className="riwayat-table">
+            <thead>
               <tr>
-                <td colSpan="8" className="empty-table">
-                  Data tidak ditemukan
-                </td>
+                <th>No</th>
+                <th>Nama</th>
+                <th>Nama Barang</th>
+                <th>Jumlah</th>
+                <th>Tanggal Pinjam</th>
+                <th>Tanggal Kembali</th>
+                <th>Status</th>
+                <th>Aksi</th>
               </tr>
-            ) : (
-              paginatedData.map((item, index) => (
-                <tr key={item.id}>
-                  <td>{startIndex + index + 1}</td>
-                  <td>{item.namaPeminjam}</td>
-                  <td>{item.namaBarang}</td>
-                  <td>{item.jumlah}</td>
-                  <td>{item.tanggalPinjam}</td>
-                  <td>{item.tanggalKembali}</td>
-                  <td>
-                    <span className={`status-badge ${item.status.toLowerCase()}`}>
-                      {item.status}
-                    </span>
-                  </td>
-                  <td className="aksi-cell">
-                    <div className="aksi-menu-wrapper">
-                      <button
-                        className="aksi-btn-ellipsis"
-                        onClick={() => toggleMenu(item.id)}
-                      >
-                        <BsThreeDots />
-                      </button>
+            </thead>
 
-                      {openMenuId === item.id && (
-                        <div className="aksi-dropdown-menu">
-                          <button
-                            className="aksi-dropdown-item detail"
-                            onClick={() => handleDetail(item)}
-                          >
-                            Detail
-                          </button>
-                          <button
-                            className="aksi-dropdown-item hapus"
-                            onClick={() => handleHapus(item.id)}
-                          >
-                            Hapus
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </td>
+            <tbody>
+              {paginatedData.length === 0 ? (
+                <tr>
+                  <td colSpan="8" className="empty-table">Data tidak ditemukan</td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                paginatedData.map((item, index) => (
+                  <tr key={item.id}>
+                    <td>{startIndex + index + 1}</td>
+                    <td>{item?.user?.name || '-'}</td>
+                    <td>{item?.barang?.nama_barang || '-'}</td>
+                    <td>{item?.jumlah || 0}</td>
+                    <td>{formatTanggal(item?.tanggal_peminjaman)}</td>
+                    <td>{formatTanggal(item?.tanggal_pengembalian)}</td>
+                    <td>
+                      <span className={`status-badge ${item?.status?.toLowerCase() || ''}`}>
+                        {item?.status || '-'}
+                      </span>
+                    </td>
+                    <td className="aksi-cell">
+                      <div className="aksi-menu-wrapper">
+                        <button
+                          className="aksi-btn-ellipsis"
+                          onClick={() => toggleMenu(item.id)}
+                        >
+                          <BsThreeDots />
+                        </button>
 
-      {/* FILTER MODAL */}
+                        {openMenuId === item.id && (
+                          <div className="aksi-dropdown-menu">
+                            <button
+                              className="aksi-dropdown-item detail"
+                              onClick={() => handleDetail(item)}
+                            >
+                              Detail
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
-        onApply={handleApplyFilter}
-        onReset={handleResetFilter}
-      >
-        <div className="filter-section">
-          <div className="filter-section-title">Tanggal</div>
-          <div className="filter-row">
-            <div className="filter-field">
-              <label>Dari</label>
-              <input
-                type="date"
-                value={filterValues.startDate}
-                onChange={(e) =>
-                  handleFilterChange('startDate', e.target.value)
-                }
-              />
-            </div>
-
-            <div className="filter-field">
-              <label>Ke</label>
-              <input
-                type="date"
-                value={filterValues.endDate}
-                onChange={(e) =>
-                  handleFilterChange('endDate', e.target.value)
-                }
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="filter-section">
-          <div className="filter-section-title">Jumlah Barang</div>
-          <div className="filter-row">
-            <div className="filter-field">
-              <label>Min</label>
-              <input
-                type="number"
-                placeholder="0"
-                value={filterValues.minJumlah}
-                onChange={(e) =>
-                  handleFilterChange('minJumlah', e.target.value)
-                }
-              />
-            </div>
-
-            <div className="filter-field">
-              <label>Max</label>
-              <input
-                type="number"
-                placeholder="999"
-                value={filterValues.maxJumlah}
-                onChange={(e) =>
-                  handleFilterChange('maxJumlah', e.target.value)
-                }
-              />
-            </div>
-          </div>
-        </div>
-      </FilterModal>
+        onApply={() => {
+          setCurrentPage(1);
+          setIsFilterOpen(false);
+        }}
+        onReset={() => {
+          setFilterValues({
+            startDate: '',
+            endDate: '',
+            minJumlah: '',
+            maxJumlah: ''
+          });
+          setCurrentPage(1);
+        }}
+      />
 
       <Pagination
         currentPage={currentPage}
@@ -311,7 +226,10 @@ function RiwayatPeminjamanAdmin() {
       <DetailPeminjamanModal
         isOpen={isDetailModalOpen}
         data={selectedData}
-        onClose={handleCloseDetailModal}
+        onClose={() => {
+          setIsDetailModalOpen(false);
+          setSelectedData(null);
+        }}
       />
     </div>
   );

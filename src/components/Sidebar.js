@@ -1,15 +1,14 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './Sidebar.css';
-
-// Tambahkan di sini
 import { MdDashboard, MdInventory, MdCategory, MdAssignment, MdHistory } from 'react-icons/md';
 
 function Sidebar({ isOpen = true }) {
   const location = useLocation();
 
-  const isActive = (path) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
+  // 🔥 Active checker yang lebih aman
+  const isActive = (basePath) => {
+    return location.pathname.startsWith(basePath);
   };
 
   return (
@@ -25,7 +24,9 @@ function Sidebar({ isOpen = true }) {
       </div>
 
       <nav className="sidebar-nav">
-       <Link
+
+        {/* ================= DASHBOARD ================= */}
+        <Link
           to="/dashboard-admin"
           className={`sidebar-item ${isActive('/dashboard-admin') ? 'active' : ''}`}
         >
@@ -33,25 +34,42 @@ function Sidebar({ isOpen = true }) {
           <span className="sidebar-text">Dashboard</span>
         </Link>
 
-        <Link to="/data-barang" className={`sidebar-item ${isActive('/data-barang') ? 'active' : ''}`}>
+        {/* ================= DATA BARANG ================= */}
+        <Link
+          to="/data-barang"
+          className={`sidebar-item ${isActive('/data-barang') ? 'active' : ''}`}
+        >
           <span className="sidebar-icon"><MdInventory /></span>
           <span className="sidebar-text">Data Barang</span>
         </Link>
 
-        <Link to="/kategori" className={`sidebar-item ${isActive('/kategori') ? 'active' : ''}`}>
+        {/* ================= KATEGORI ================= */}
+        <Link
+          to="/kategori"
+          className={`sidebar-item ${isActive('/kategori') ? 'active' : ''}`}
+        >
           <span className="sidebar-icon"><MdCategory /></span>
           <span className="sidebar-text">Kategori Barang</span>
         </Link>
 
-        <Link to="/daftar-peminjaman" className={`sidebar-item ${isActive('/daftar-peminjaman') ? 'active' : ''}`}>
+        {/* ================= DAFTAR PEMINJAMAN ================= */}
+        <Link
+          to="/daftar-peminjaman"
+          className={`sidebar-item ${isActive('/daftar-peminjaman') ? 'active' : ''}`}
+        >
           <span className="sidebar-icon"><MdAssignment /></span>
           <span className="sidebar-text">Daftar Peminjaman</span>
         </Link>
 
-        <Link to="/riwayat-peminjaman" className={`sidebar-item ${isActive('/riwayat-peminjaman') ? 'active' : ''}`}>
+        {/* ================= RIWAYAT PEMINJAMAN ================= */}
+        <Link
+          to="/riwayat-peminjaman"
+          className={`sidebar-item ${isActive('/riwayat-peminjaman') ? 'active' : ''}`}
+        >
           <span className="sidebar-icon"><MdHistory /></span>
           <span className="sidebar-text">Riwayat Peminjaman</span>
         </Link>
+
       </nav>
     </div>
   );

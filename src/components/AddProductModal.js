@@ -110,20 +110,21 @@ function AddProductModal({ isOpen, onClose, onSelectProduct }) {
 
   /* ================= HANDLERS ================= */
   const handleNext = () => {
-    if (!selectedBarang) {
-      alert('Silakan pilih barang terlebih dahulu');
-      return;
-    }
+  if (!selectedBarang) {
+    alert('Silakan pilih barang terlebih dahulu');
+    return;
+  }
 
-    onSelectProduct({
-      barang_id: selectedBarang.id,
-      nama_barang: selectedBarang.nama_barang,
-      stok: selectedBarang.stok,
-      satuan: selectedBarang.satuan,
-    });
+  onSelectProduct({
+  id: selectedBarang.id,
+  nama_barang: selectedBarang.nama_barang,
+  kategori: selectedBarang.kategori, // ⬅️ kirim OBJECT
+  stok: selectedBarang.stok,
+  satuan: selectedBarang.satuan,
+});
 
-    handleClose();
-  };
+  handleClose();
+};
 
   const handleClose = () => {
     setSearchTerm('');

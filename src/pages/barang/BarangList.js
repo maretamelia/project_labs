@@ -6,6 +6,7 @@ import SearchBar from '../../components/SearchBar';
 import Pagination from '../../components/Pagination'; // Import komponen pagination yang sama
 import FilterModal from '../../components/FilterModal';
 import { getBarangs, deleteBarang } from '../../services/barangservices';
+import Swal from 'sweetalert2';
 import './BarangList.css';
 
 function DataBarang() {
@@ -55,15 +56,42 @@ function DataBarang() {
   }, [searchTerm, filterValues]);
 
   const handleDeleteItem = async (id) => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus barang ini?')) {
+  Swal.fire({
+    title: 'Yakin hapus?',
+    text: 'Barang akan dihapus permanen!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Ya, hapus!',
+    cancelButtonText: 'Batal'
+  }).then(async (result) => {
+    if (result.isConfirmed) {
       try {
         await deleteBarang(id);
-        setItems(items.filter(item => item.id !== id));
+
+        setItems(prevItems =>
+          prevItems.filter(item => item.id !== id)
+        );
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: 'Barang berhasil dihapus',
+          timer: 1500,
+          showConfirmButton: false
+        });
+
       } catch (error) {
-        alert('Gagal menghapus barang');
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal!',
+          text: error.response?.data?.message || 'Gagal menghapus barang'
+        });
       }
     }
-  };
+  });
+};
 
   // Logika Filter
   const filteredItems = items.filter(item => {

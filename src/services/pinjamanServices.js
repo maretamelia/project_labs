@@ -144,3 +144,33 @@ export const rejectPeminjaman = async (id, alasan) => {
   });
   return response.data;
 };
+// ==============================
+// GET RIWAYAT PEMINJAMAN USER
+// ==============================
+export const getRiwayatPinjamanSaya = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/user/peminjaman/riwayat`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+    });
+    return response.data.data;
+  } catch (error) {
+    console.error('Error fetch riwayat user:', error.response?.data || error.message);
+    throw error;
+  }
+};
+// ==============================
+// GET RIWAYAT PEMINJAMAN ADMIN
+// ==============================
+export const getRiwayatPeminjamanAdmin = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(`${API_URL}/admin/peminjaman/riwayat`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+    });
+    return response.data.data; // karena API return { success, data }
+  } catch (error) {
+    console.error('Error fetch riwayat admin:', error.response?.data || error.message);
+    throw error;
+  }
+};

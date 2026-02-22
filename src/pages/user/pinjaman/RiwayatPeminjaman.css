@@ -97,25 +97,6 @@ text-align-last: center;
 }
 
 /* =====================
-   AKSI BUTTON
-===================== */
-.aksi-btn1 {
-  background: #0059FF;
-  border: none;
-  border-radius: 6px;
-  padding: 6px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.aksi-icon {
-  width: 18px;
-  height: 18px;
-}
-
-/* =====================
    FILTER MODAL (FINAL)
 ===================== */
 .filter-section {
@@ -247,3 +228,10 @@ text-align-last: center;
     align-items: flex-start;
   }
 }
+.aksi-icon {
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  object-fit: contain;
+}
+

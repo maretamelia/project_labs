@@ -1,7 +1,10 @@
+// CreatePinjaman.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './CreatePinjaman.css';
 import { createPinjaman } from '../../../services/pinjamanServices';
+import Swal from 'sweetalert2';
+
 
 function CreatePinjaman() {
   const navigate = useNavigate();
@@ -21,48 +24,67 @@ function CreatePinjaman() {
   const [errors, setErrors] = useState({ jumlah: '' });
   const [loading, setLoading] = useState(false);
 
-  // Populate form data
+  // ===============================
+  // AUTO ISI DATA BARANG
+  // ===============================
   useEffect(() => {
     if (!selectedBarang) return;
+
+    console.log("Selected Barang:", selectedBarang);
+
     setFormData(prev => ({
       ...prev,
-      namaBarang: selectedBarang.nama_barang ?? selectedBarang.nama ?? '',
-      kategori: selectedBarang.kategori ?? '',
-      barang_id: selectedBarang.barang_id ?? ''
+      namaBarang: selectedBarang.nama_barang || '',
+      kategori: selectedBarang.kategori?.nama_kategori || '',
+      barang_id: selectedBarang.id || ''
     }));
   }, [selectedBarang]);
 
+  // ===============================
+  // HANDLE INPUT
+  // ===============================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
 
     if (name === 'jumlah') {
       setErrors(prev => ({ ...prev, jumlah: '' }));
     }
   };
 
+  // ===============================
+  // HANDLE SUBMIT
+  // ===============================
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validasi wajib
     if (
       !formData.barang_id ||
-      !formData.jumlah||
+      !formData.jumlah ||
       !formData.tanggal_peminjaman ||
-      !formData.tanggal_pengembalian
+      !formData.tanggal_pengembalian ||
+      !formData.keterangan.trim()
     ) {
-      alert('Mohon lengkapi semua field yang wajib diisi!');
+      alert('Mohon lengkapi semua field wajib!');
       return;
     }
 
-    // Validasi jumlah
     if (Number(formData.jumlah) < 1) {
-      setErrors(prev => ({ ...prev, jumlah: 'Jumlah barang harus lebih dari 0' }));
+      setErrors(prev => ({
+        ...prev,
+        jumlah: 'Jumlah barang harus lebih dari 0'
+      }));
       return;
     }
 
-    // Validasi tanggal
-    if (new Date(formData.tanggal_pengembalian) < new Date(formData.tanggal_peminjaman)) {
+    if (
+      new Date(formData.tanggal_pengembalian) <
+      new Date(formData.tanggal_peminjaman)
+    ) {
       alert('Tanggal kembali tidak boleh sebelum tanggal peminjaman!');
       return;
     }
@@ -70,32 +92,68 @@ function CreatePinjaman() {
     submitPinjaman();
   };
 
+  // ===============================
+  // SUBMIT KE BACKEND
+  // ===============================
   const submitPinjaman = async () => {
-    setLoading(true);
-    try {
-      await createPinjaman({
-        barang_id: formData.barang_id,
-        jumlah: formData.jumlah,
-        tanggal_peminjaman: formData.tanggal_peminjaman,
-        tanggal_pengembalian: formData.tanggal_pengembalian,
-        keterangan: formData.keterangan,
-      });
+  setLoading(true);
+  try {
+    await createPinjaman({
+      barang_id: formData.barang_id,
+      jumlah: formData.jumlah,
+      tanggal_peminjaman: formData.tanggal_peminjaman,
+      tanggal_pengembalian: formData.tanggal_pengembalian,
+      keterangan: formData.keterangan,
+    });
 
-      alert('Peminjaman berhasil dibuat!');
-      navigate('/user/PinjamanSaya');
-    } catch (err) {
-      console.error('Gagal membuat peminjaman:', err);
-      alert(err.response?.data?.message || 'Gagal membuat peminjaman');
-    } finally {
-      setLoading(false);
-    }
-  };
+    await Swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: 'Peminjaman berhasil dibuat!',
+      confirmButtonText: 'OK'
+    });
 
-  const handleBatal = () => {
-    if (window.confirm('Apakah Anda yakin ingin membatalkan? Data yang sudah diisi akan hilang.')) {
-      navigate('/user/PinjamanSaya');
-    }
-  };
+    navigate('/user/PinjamanSaya');
+  } catch (err) {
+    console.error(err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: err.response?.data?.message || 'Gagal membuat peminjaman',
+      confirmButtonText: 'OK'
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  const handleBatal = async () => {
+  const result = await Swal.fire({
+    title: 'Yakin?',
+    text: "Apakah Anda ingin membatalkan peminjaman?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, batal',
+    cancelButtonText: 'Tidak',
+    reverseButtons: true
+  });
+
+  if (result.isConfirmed) {
+    navigate('/user/PinjamanSaya');
+  }
+};
+
+
+  // ===============================
+  // AMBIL GAMBAR DINAMIS
+  // ===============================
+  const imageField =
+    selectedBarang?.gambar ||
+    selectedBarang?.image ||
+    selectedBarang?.foto ||
+    selectedBarang?.foto_barang ||
+    null;
 
   return (
     <div className="create-pinjaman-page">
@@ -106,35 +164,50 @@ function CreatePinjaman() {
 
       <div className="create-pinjaman-container">
         <div className="form-card">
-          <div className="form-card-header">
-            <h2 className="form-card-title">Data Produk Pinjaman</h2>
-            <p className="form-card-subtitle">Tambah data peminjaman</p>
-          </div>
 
+          {/* =================== KATEGORI + IMAGE =================== */}
           {formData.kategori && (
             <div className="kategori-bar">
               <div className="kategori-item">
-                <div className="kategori-icon">📦</div>
-                <span className="kategori-label">Kategori:</span>
-                <span className="kategori-value">{formData.kategori}</span>
+
+                {imageField && (
+                  <img
+                    src={`http://localhost:8000/storage/${imageField}`}
+                    alt="barang"
+                    className="kategori-image"
+                  />
+                )}
+
+                <div className="kategori-info">
+                  <span className="kategori-label">Kategori: </span>
+                  <span className="kategori-value">
+                    {formData.kategori}
+                  </span>
+                </div>
+
               </div>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="peminjaman-form">
+
+            {/* NAMA BARANG */}
             <div className="form-group full-width">
               <label>Nama Barang</label>
-              <input 
-                type="text" 
-                value={selectedBarang?.nama_barang ?? ''} 
-                readOnly 
+              <input
+                type="text"
+                value={formData.namaBarang}
+                readOnly
+                required
                 className="readonly-input"
               />
             </div>
 
+            {/* JUMLAH & TANGGAL */}
             <div className="form-row-three-col">
+
               <div className="form-group">
-                <label>Jumlah Barang <span className="required">*</span></label>
+                <label>Jumlah Barang</label>
                 <input
                   type="number"
                   name="jumlah"
@@ -149,7 +222,7 @@ function CreatePinjaman() {
               </div>
 
               <div className="form-group">
-                <label>Tanggal Peminjaman <span className="required">*</span></label>
+                <label>Tanggal Peminjaman</label>
                 <input
                   type="date"
                   name="tanggal_peminjaman"
@@ -160,7 +233,7 @@ function CreatePinjaman() {
               </div>
 
               <div className="form-group">
-                <label>Tanggal Kembali <span className="required">*</span></label>
+                <label>Tanggal Kembali</label>
                 <input
                   type="date"
                   name="tanggal_pengembalian"
@@ -169,8 +242,10 @@ function CreatePinjaman() {
                   required
                 />
               </div>
+
             </div>
 
+            {/* KETERANGAN */}
             <div className="form-group full-width">
               <label>Keterangan</label>
               <textarea
@@ -178,17 +253,30 @@ function CreatePinjaman() {
                 value={formData.keterangan}
                 onChange={handleInputChange}
                 rows="4"
+                required
+                placeholder="Tambahkan keterangan"
               />
             </div>
 
+            {/* BUTTON */}
             <div className="form-actions">
-              <button type="button" className="btn-batal" onClick={handleBatal}>
+              <button
+                type="button"
+                className="btn-batal"
+                onClick={handleBatal}
+              >
                 Batal
               </button>
-              <button type="submit" className="btn-simpan" disabled={loading}>
+
+              <button
+                type="submit"
+                className="btn-simpan"
+                disabled={loading}
+              >
                 {loading ? 'Menyimpan...' : 'Simpan'}
               </button>
             </div>
+
           </form>
         </div>
       </div>

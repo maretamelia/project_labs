@@ -11,7 +11,7 @@ function DetailPeminjamanAdmin({ isOpen, data, onClose }) {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="modal-header">
-          <h2 className="modal-title">Detail Barang</h2>
+          <h2 className="modal-title">Detail Peminjaman</h2>
           <button className="modal-close-btn" onClick={onClose}>
             <IoClose />
           </button>

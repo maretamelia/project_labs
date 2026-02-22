@@ -1,22 +1,24 @@
-/* ROOT CONTAINER FIX */
+/* ============================================
+   ROOT CONTAINER FIX
+   ============================================ */
+
 .app-container {
   display: flex;
   width: 100%;
   min-height: 100vh;
   overflow-x: hidden;
   background-color: #f9fafb;
-  position: relative; /* ✅ tambahkan ini */
+  position: relative;
 }
-
 
 .main-content {
   flex: 1;
-  margin-left: 0;              /* ✅ UBAH jadi 0, biar gak dobel */
+  margin-left: 0;
   transition: all 0.3s ease;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  width: 100%;                 /* ✅ UBAH jadi 100% */
+  width: 100%;
   box-sizing: border-box;
 }
 
@@ -25,7 +27,6 @@
   margin-left: 0;
   width: 100%;
 }
-
 
 /* Content Wrapper */
 .content-wrapper1 {
@@ -37,7 +38,6 @@
   overflow-x: hidden;
 }
 
-
 /* Toolbar */
 .toolbar {
   display: flex;
@@ -45,7 +45,7 @@
   align-items: center;
   margin-bottom: 30px;
   gap: 20px;
-  flex-wrap: wrap; /* ✅ tambahkan ini biar responsive */
+  flex-wrap: wrap;
 }
 
 /* Button Add Item */
@@ -83,7 +83,7 @@
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
   margin-bottom: 30px;
-  width: 100%; /* ✅ pastikan gak overflow */
+  width: 100%;
 }
 
 /* Item Card */
@@ -200,59 +200,7 @@
   transform: translateY(-1px);
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
-  .items-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .main-content {
-    margin-left: 0;
-  }
-
-  .content-wrapper {
-    padding: 20px 15px;
-  }
-
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .btn-add-item {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .items-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 16px;
-  }
-
-  .item-image {
-    height: 160px;
-  }
-}
-
-@media (max-width: 480px) {
-  .items-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .item-actions {
-    flex-wrap: wrap;
-  }
-
-  .btn-detail {
-    width: 100%;
-  }
-
-  .btn-icon {
-    flex: 1;
-  }
-}
+/* Pagination */
 .pagination {
   display: flex;
   justify-content: center;
@@ -292,4 +240,61 @@
 .page-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+
+  .content-wrapper1 {
+    padding: 20px 15px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-add-item {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .item-image {
+    height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .items-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .item-actions {
+    flex-wrap: wrap;
+  }
+
+  .btn-detail {
+    width: 100%;
+  }
+
+  .btn-icon {
+    flex: 1;
+  }
 }

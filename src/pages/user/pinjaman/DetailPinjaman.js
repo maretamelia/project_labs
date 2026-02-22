@@ -1,5 +1,7 @@
 import React from 'react';
 import './DetailPinjaman.css';
+import Swal from 'sweetalert2';
+
 
 const STATUS_MAP = {
   pending: 'Menunggu',
@@ -99,28 +101,44 @@ const DetailPinjaman = ({ isOpen, onClose, data }) => {
               disabled={pinjaman.status !== 'disetujui'}
               onClick={async () => {
                 try {
-                  const res = await fetch(
-                      `http://localhost:8000/api/user/pinjaman/${pinjaman.id}/return`,
-                    {
-                      method: "POST",
-                      headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        "Content-Type": "application/json",
-                      },
-                    }
-                  );
+  const res = await fetch(
+    `http://localhost:8000/api/user/pinjaman/${pinjaman.id}/return`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
-                  const result = await res.json();
+  const result = await res.json();
 
-                  if (result.success) {
-                    alert("Menunggu persetujuan admin");
-                    onClose();
-                    window.location.reload();
-                  }
-                } catch (err) {
-                  console.error(err);
-                }
-              }}
+  if (result.success) {
+    await Swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: 'Menunggu persetujuan admin',
+      confirmButtonText: 'OK'
+    });
+
+    onClose();
+
+    // Pilihan: jika pakai SPA, update state, atau pakai navigate
+    // navigate('/user/PinjamanSaya');
+    window.location.reload(); // bisa tetap kalau ingin full reload
+  }
+} catch (err) {
+  console.error(err);
+
+  Swal.fire({
+    icon: 'error',
+    title: 'Gagal',
+    text: 'Terjadi kesalahan, silakan coba lagi',
+    confirmButtonText: 'OK'
+  });
+}
+ }}
             >
               Dikembalikan
             </button>

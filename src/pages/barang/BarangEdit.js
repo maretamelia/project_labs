@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { FiUpload } from 'react-icons/fi';
 import { getBarang, updateBarang } from '../../services/barangservices';
 import { getKategoris } from '../../services/kategoriservices';
+import Swal from 'sweetalert2';
 import './BarangCreate.css';
 
 function EditBarang() {
@@ -81,17 +82,31 @@ function EditBarang() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      // Pastikan category_id dikirim sebagai angka lagi saat masuk ke FormData di service
-      await updateBarang(id, formData);
-      alert('Barang berhasil diperbarui!');
-      navigate('/data-barang'); 
-    } catch (error) {
-      console.error('Gagal update:', error);
-      alert('Gagal menyimpan perubahan.');
-    }
-  };
+  e.preventDefault();
+
+  try {
+    const response = await updateBarang(id, formData);
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: response?.data?.message || 'Barang berhasil diperbarui!',
+      confirmButtonColor: '#D098CC'
+    });
+
+    navigate('/data-barang');
+
+  } catch (error) {
+    console.error('Gagal update:', error);
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal!',
+      text: error.response?.data?.message || 'Gagal menyimpan perubahan.',
+      confirmButtonColor: '#d33'
+    });
+  }
+};
 
   const handleCancel = () => navigate('/data-barang');
 

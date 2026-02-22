@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FiUpload } from 'react-icons/fi';
 import { getKategoris } from '../../services/kategoriservices';
 import { createBarang, getBarangs } from '../../services/barangservices';
+import Swal from 'sweetalert2';
 import './BarangCreate.css';
 
 function TambahBarang() {
@@ -92,21 +93,33 @@ function TambahBarang() {
   const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    await createBarang({
+    const response = await createBarang({
       nama_barang: formData.nama,
-      category_id: parseInt(formData.kategori), // wajib integer
+      category_id: parseInt(formData.kategori),
       stok: parseInt(formData.stok),
       deskripsi: formData.deskripsi,
       image: formData.image,
     });
 
-    alert('Barang berhasil ditambahkan');
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil',
+      text: response.data.message,
+      confirmButtonColor: '#D098CC'
+    });
+
     navigate('/data-barang');
+
   } catch (err) {
-    console.error('Gagal menambahkan barang:', err.message);
-    alert('Gagal menambahkan barang: ' + err.message);
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: err.response?.data?.message || 'Terjadi kesalahan',
+      confirmButtonColor: '#d33'
+    });
   }
 };
+
 
   const handleCancel = () => navigate('/data-barang');
 

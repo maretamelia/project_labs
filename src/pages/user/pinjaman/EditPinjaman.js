@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getDetailPinjaman, updatePinjaman } from '../../../services/pinjamanServices';
-import { getBarangsUser } from '../../../services/barangservices'; // sesuaikan nama file
+import AddProductModal from '../../../components/AddProductModal';
 import './EditPinjaman.css';
+import Swal from 'sweetalert2';
 
 function EditPinjaman() {
   const navigate = useNavigate();
@@ -20,18 +21,18 @@ function EditPinjaman() {
 
   const [barangId, setBarangId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAddProduct, setShowAddProduct] = useState(false);
 
-  // Popup state
-  const [showBarangPopup, setShowBarangPopup] = useState(false);
-  const [barangList, setBarangList] = useState([]);
-
-  // Ambil detail peminjaman
+  // ===============================
+  // FETCH DETAIL PINJAMAN
+  // ===============================
   useEffect(() => {
     const fetchDetail = async () => {
       try {
         const detail = await getDetailPinjaman(id);
 
         setBarangId(detail?.barang?.id);
+
         setFormData({
           namaBarang: detail?.barang?.nama_barang || '',
           kategori: detail?.barang?.kategori?.nama_kategori || '',
@@ -56,63 +57,90 @@ function EditPinjaman() {
     fetchDetail();
   }, [id, navigate]);
 
-  // Ambil daftar barang untuk popup
-  useEffect(() => {
-    const fetchBarang = async () => {
-      try {
-        const response = await getBarangsUser();
-        // pastikan barangList selalu array
-        setBarangList(Array.isArray(response.data) ? response.data : []);
-      } catch (error) {
-        console.error('Gagal ambil daftar barang', error);
-        setBarangList([]);
-      }
-    };
-    fetchBarang();
-  }, []);
-
+  // ===============================
+  // HANDLE INPUT
+  // ===============================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // ===============================
+  // HANDLE PILIH BARANG
+  // ===============================
   const handleSelectBarang = (barang) => {
+    setBarangId(barang.id);
+
     setFormData(prev => ({
       ...prev,
       namaBarang: barang.nama_barang,
       kategori: barang.kategori?.nama_kategori || ''
     }));
-    setBarangId(barang.id);
-    setShowBarangPopup(false);
+
+    setShowAddProduct(false);
   };
 
+  // ===============================
+  // HANDLE SUBMIT
+  // ===============================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!barangId || !formData.jumlah) {
+    // VALIDASI REQUIRED
+    if (
+      !barangId ||
+      !formData.jumlah ||
+      !formData.tanggalPinjam ||
+      !formData.tanggalKembali ||
+      !formData.keterangan.trim()
+    ) {
       alert('Mohon lengkapi semua field wajib!');
       return;
     }
 
-    try {
-      await updatePinjaman(id, {
-        barang_id: barangId,
-        jumlah: formData.jumlah,
-        tanggal_peminjaman: formData.tanggalPinjam,
-        tanggal_pengembalian: formData.tanggalKembali,
-        keterangan: formData.keterangan
-      });
+try {
+  await updatePinjaman(id, {
+    barang_id: barangId,
+    jumlah: formData.jumlah,
+    tanggal_peminjaman: formData.tanggalPinjam,
+    tanggal_pengembalian: formData.tanggalKembali,
+    keterangan: formData.keterangan
+  });
 
-      alert('Peminjaman berhasil diupdate!');
-      navigate('/user/PinjamanSaya');
-    } catch (error) {
-      console.error(error);
-      alert(error.response?.data?.message || 'Gagal update peminjaman');
-    }
+  // Swal untuk sukses
+  await Swal.fire({
+    icon: 'success',
+    title: 'Berhasil!',
+    text: 'Peminjaman berhasil diupdate!',
+    confirmButtonText: 'OK'
+  });
+
+  navigate('/user/PinjamanSaya');
+} catch (error) {
+  console.error(error);
+
+  // Swal untuk error
+  Swal.fire({
+    icon: 'error',
+    title: 'Gagal',
+    text: error.response?.data?.message || 'Gagal update peminjaman',
+    confirmButtonText: 'OK'
+  });
+}
   };
 
-  const handleBatal = () => {
-    if (window.confirm('Apakah Anda yakin ingin membatalkan? Perubahan tidak akan disimpan.')) {
+  const handleBatal = async () => {
+    const result = await Swal.fire({
+      title: 'Yakin?',
+      text: "Apakah Anda ingin membatalkan peminjaman?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, batal',
+      cancelButtonText: 'Tidak',
+      reverseButtons: true
+    });
+  
+    if (result.isConfirmed) {
       navigate('/user/PinjamanSaya');
     }
   };
@@ -138,7 +166,7 @@ function EditPinjaman() {
         <div className="form-card">
           <form onSubmit={handleSubmit} className="peminjaman-form">
 
-            {/* Nama Barang & Kategori */}
+            {/* =================== BARANG =================== */}
             <div className="form-row">
               <div className="form-group full-width">
                 <label>Nama Barang</label>
@@ -147,8 +175,10 @@ function EditPinjaman() {
                   name="namaBarang"
                   value={formData.namaBarang}
                   readOnly
-                  onClick={() => setShowBarangPopup(true)}
+                  required
+                  onClick={() => setShowAddProduct(true)}
                   placeholder="Klik untuk pilih barang"
+                  style={{ cursor: 'pointer' }}
                 />
               </div>
 
@@ -156,14 +186,13 @@ function EditPinjaman() {
                 <label>Kategori</label>
                 <input
                   type="text"
-                  name="kategori"
                   value={formData.kategori}
                   disabled
                 />
               </div>
             </div>
 
-            {/* Jumlah & Tanggal */}
+            {/* =================== JUMLAH & TANGGAL =================== */}
             <div className="form-row date-row">
               <div className="form-group">
                 <label>Jumlah Barang</label>
@@ -184,6 +213,7 @@ function EditPinjaman() {
                   name="tanggalPinjam"
                   value={formData.tanggalPinjam}
                   onChange={handleInputChange}
+                  required
                 />
               </div>
 
@@ -194,11 +224,12 @@ function EditPinjaman() {
                   name="tanggalKembali"
                   value={formData.tanggalKembali}
                   onChange={handleInputChange}
+                  required
                 />
               </div>
             </div>
 
-            {/* Keterangan */}
+            {/* =================== KETERANGAN =================== */}
             <div className="form-group full-width">
               <label>Keterangan</label>
               <textarea
@@ -206,11 +237,12 @@ function EditPinjaman() {
                 value={formData.keterangan}
                 onChange={handleInputChange}
                 rows="4"
-                placeholder="Tambahkan keterangan (opsional)"
+                required
+                placeholder="Tambahkan keterangan"
               />
             </div>
 
-            {/* Buttons */}
+            {/* =================== BUTTON =================== */}
             <div className="form-actions">
               <button type="button" className="btn-batal" onClick={handleBatal}>
                 Batal
@@ -223,21 +255,13 @@ function EditPinjaman() {
         </div>
       </div>
 
-      {/* Popup Barang */}
-      {showBarangPopup && (
-        <div className="popup-barang">
-          <div className="popup-content">
-            <h3>Pilih Barang</h3>
-            <button className="close-btn" onClick={() => setShowBarangPopup(false)}>X</button>
-            <ul className="barang-list">
-              {Array.isArray(barangList) && barangList.map(barang => (
-                <li key={barang.id} onClick={() => handleSelectBarang(barang)}>
-                  {barang.nama_barang} - {barang.kategori?.nama_kategori}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+      {/* =================== ADD PRODUCT MODAL =================== */}
+      {showAddProduct && (
+        <AddProductModal
+          isOpen={showAddProduct}
+          onClose={() => setShowAddProduct(false)}
+          onSelectProduct={handleSelectBarang}
+        />
       )}
     </div>
   );
