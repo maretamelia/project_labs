@@ -107,7 +107,25 @@ function Navbar({ onMenuToggle }) {
     });
   };
 
-  const handleDeleteNotification = (id) => setNotifications(prev => prev.filter(n => n.id !== id));
+  // Delete notification via API
+  const handleDeleteNotification = async (notificationId) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      await axios.post(
+        `http://localhost:8000/api/profile/notification/${notificationId}/read`,
+        {},
+        { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' } }
+      );
+      
+      // Remove notification from state
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    } catch (err) {
+      console.error('Gagal menghapus notifikasi', err);
+      alert('Gagal menghapus notifikasi');
+    }
+  };
 
   // ================= RENDER =================
   return (

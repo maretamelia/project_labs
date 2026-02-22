@@ -34,9 +34,9 @@ const Notifikasi = ({ isOpen, onClose, notifications = [], onMarkAllRead, onDele
     setOpenMenuId(null); 
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (onDeleteNotification) {
-      onDeleteNotification(notifToDelete);
+      await onDeleteNotification(notifToDelete);
     }
     setShowDeleteConfirm(false);
     setNotifToDelete(null);
