@@ -4,7 +4,6 @@ import LihatDetailIcon from '../../../assets/icons/lihatdetail.svg';
 import './RiwayatPeminjaman.css';
 import SearchBar from '../../../components/SearchBar';
 import Pagination from '../../../components/Pagination';
-import FilterModal from '../../../components/FilterModal';
 import DetailPinjaman from './DetailPinjaman';
 
 function RiwayatPeminjaman() {
@@ -15,8 +14,8 @@ function RiwayatPeminjaman() {
 
   const ITEMS_PER_PAGE = 5;
 
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filterValues, setFilterValues] = useState({
+  const [setIsFilterOpen] = useState(false);
+  const [filterValues] = useState({
     startDate: '',
     endDate: '',
     minJumlah: '',

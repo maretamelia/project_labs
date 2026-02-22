@@ -185,9 +185,9 @@ export default function RouteIndex() {
       />
 
       <Route
-        path="/user/Profile"
+        path="/Profile"
         element={
-          <ProtectedRoute role="user">
+          <ProtectedRoute>
             <Profile />
           </ProtectedRoute>
         }
