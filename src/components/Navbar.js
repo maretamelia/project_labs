@@ -1,13 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Navbar.css';
 import Notifikasi from './Notifikasi';
 import Usermenu from './Usermenu';
 
-function Navbar({ userName = 'Grisella', userRole = 'Admin', userAvatar, onMenuToggle }) {
+// Static notifications - defined outside component to avoid dependency issues
+const adminNotifications = [
+  {
+    id: 1,
+    icon: '📋',
+    iconBg: '#2196F3',
+    title: 'Pengajuan Peminjaman Baru',
+    message: 'Ada 5 pengajuan peminjaman yang menunggu persetujuan.',
+    time: '5 minutes ago',
+    isRead: false,
+  },
+  {
+    id: 2,
+    icon: '⚠️',
+    iconBg: '#F44336',
+    title: 'Pengembalian Terlambat',
+    message: 'Mahasiswa A terlambat mengembalikan Arduino UNO.',
+    time: '1 hour ago',
+    isRead: false,
+  },
+];
+
+const userNotifications = [
+  {
+    id: 1,
+    icon: '💬',
+    iconBg: '#2196F3',
+    title: 'Peminjaman Disetujui',
+    message: 'Peminjaman kamu telah disetujui.',
+    time: '1 week ago',
+    isRead: false,
+  },
+];
+
+function Navbar({ onMenuToggle }) {
   const navigate = useNavigate();
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [userData, setUserData] = useState({
+    name: 'Guest',
+    role: 'user',
+    image: null,
+  });
+
+  // ================= GET USER DATA =================
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    console.log("Navbar user:", user);
+    if (user) {
+      setUserData({
+        name: user.name || 'Guest',
+        role: user.role || 'user',
+        image: user.image ? `http://localhost:8000/storage/${user.image}` : null,
+      });
+    }
+  }, []);
 
   // ================= LOGOUT =================
   const handleLogout = async () => {
@@ -35,41 +87,13 @@ function Navbar({ userName = 'Grisella', userRole = 'Admin', userAvatar, onMenuT
   };
 
   // ================= NOTIFIKASI =================
-  const adminNotifications = [
-    {
-      id: 1,
-      icon: '📋',
-      iconBg: '#2196F3',
-      title: 'Pengajuan Peminjaman Baru',
-      message: 'Ada 5 pengajuan peminjaman yang menunggu persetujuan.',
-      time: '5 minutes ago',
-      isRead: false,
-    },
-    {
-      id: 2,
-      icon: '⚠️',
-      iconBg: '#F44336',
-      title: 'Pengembalian Terlambat',
-      message: 'Mahasiswa A terlambat mengembalikan Arduino UNO.',
-      time: '1 hour ago',
-      isRead: false,
-    },
-  ];
+  const [notifications, setNotifications] = useState([]);
 
-  const userNotifications = [
-    {
-      id: 1,
-      icon: '💬',
-      iconBg: '#2196F3',
-      title: 'Peminjaman Disetujui',
-      message: 'Peminjaman kamu telah disetujui.',
-      time: '1 week ago',
-      isRead: false,
-    },
-  ];
-
-  const initialNotifications = userRole.toLowerCase() === 'admin' ? adminNotifications : userNotifications;
-  const [notifications, setNotifications] = useState(initialNotifications);
+  // Set notifications based on user role
+  useEffect(() => {
+    const initialNotifications = userData.role.toLowerCase() === 'admin' ? adminNotifications : userNotifications;
+    setNotifications(initialNotifications);
+  }, [userData.role]);
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const handleMarkAllRead = () => setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
@@ -93,10 +117,10 @@ function Navbar({ userName = 'Grisella', userRole = 'Admin', userAvatar, onMenuT
 
         {/* USER MENU */}
         <Usermenu
-          userName={userName}
-          userRole={userRole}
-          userAvatar={userAvatar}
-          onLogout={handleLogout} // tombol logout
+          userName={userData.name}
+          userRole={userData.role}
+          userAvatar={userData.image}
+          onLogout={handleLogout}
         />
       </div>
 

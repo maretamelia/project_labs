@@ -116,6 +116,7 @@ const Profile = () => {
         foto: result.avatar || (imagePreview || profileData.foto),
       };
 
+      localStorage.setItem('user', JSON.stringify(result));
       setProfileData(updatedData);
       setFormData(updatedData);
       setImageFile(null);
@@ -154,11 +155,13 @@ const Profile = () => {
       <div className="profile-card">
         {/* Kiri - Foto Profil */}
         <div className="profile-left">
-          <img
-            src={imagePreview || profileData.foto}
-            alt={profileData.namaLengkap}
-            className="profile-avatar"
-          />
+          {imagePreview || profileData.foto ? (
+            <img
+              src={imagePreview || profileData.foto}
+              alt={profileData.namaLengkap}
+              className="profile-avatar"
+            />
+          ) : <div className="user-menu-avatar placeholder">{profileData.namaLengkap.charAt(0).toUpperCase()}</div>}
           {isEditing && (
             <>
               <button 
