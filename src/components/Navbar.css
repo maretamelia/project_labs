@@ -9,6 +9,8 @@
   top: 0;
   z-index: 100;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  gap: 10px;
 }
 
 /* Hamburger Button */
@@ -21,6 +23,11 @@
   color: #333;
   transition: background-color 0.2s;
   border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
 }
 
 .hamburger-btn:hover {
@@ -50,6 +57,11 @@
   color: #333;
   transition: background-color 0.2s;
   border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
 }
 
 .notification-btn:hover {
@@ -121,6 +133,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .user-avatar img {
@@ -135,7 +148,22 @@
   font-weight: 600;
 }
 
-/* Responsive */
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* TABLET (768px - 1024px) */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 12px 20px;
+  }
+
+  .navbar-right {
+    gap: 12px;
+  }
+}
+
+/* TABLET/MOBILE (max-width: 768px) */
 @media (max-width: 768px) {
   .navbar {
     padding: 12px 15px;
@@ -148,5 +176,43 @@
   .user-avatar {
     width: 35px;
     height: 35px;
+  }
+
+  .navbar-right {
+    gap: 8px;
+  }
+
+  .notification-btn,
+  .hamburger-btn {
+    padding: 6px 8px;
+  }
+}
+
+/* SMALL MOBILE (max-width: 480px) */
+@media (max-width: 480px) {
+  .navbar {
+    padding: 10px 12px;
+  }
+
+  .hamburger-btn {
+    font-size: 20px;
+    min-width: 36px;
+    height: 36px;
+  }
+
+  .notification-btn {
+    font-size: 18px;
+    min-width: 36px;
+    height: 36px;
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .navbar-right {
+    gap: 6px;
   }
 }

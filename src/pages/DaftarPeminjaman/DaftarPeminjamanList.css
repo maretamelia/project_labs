@@ -1,20 +1,25 @@
 .peminjaman-container {
   width: 100%;
+  overflow-x: hidden;
 }
 
 .peminjaman-controls {
   margin-bottom: 16px;
+  width: 100%;
 }
 
 .table-wrapper {
   background: #ffffff;
   border-radius: 12px;
   padding: 16px;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .peminjaman-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px;
 }
 
 .peminjaman-table th,
@@ -23,47 +28,63 @@
   font-size: 14px;
   text-align: left;
   vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .peminjaman-table thead th {
   border-bottom: 2px solid #e5e7eb;
   font-weight: 600;
   color: #374151;
+  background-color: #f9fafb;
 }
 
-.peminjaman-table tbody tr:not(:last-child) td {
-  border-bottom: 1px solid #f1f5f9;
+.peminjaman-table tbody tr:hover {
+  background-color: #f9fafb;
 }
 
-.status {
+.status-badge {
   display: inline-block;
   padding: 4px 12px;
-  border-radius: 999px;
+  border-radius: 12px;
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
 }
 
-.status.peminjaman {
-  background: #e7f8ee;
-  color: #1a9b56;
+.status-badge.menunggu {
+  background: #fef3c7;
+  color: #92400e;
 }
 
-.status.pengembalian {
-  background: #eef2f7;
-  color: #5b6b82;
+.status-badge.disetujui {
+  background: #d1fae5;
+  color: #065f46;
 }
 
-.status.terlambat {
-  background: #fdeaea;
-  color: #d93025;
+.status-badge.dikembalikan {
+  background: #dbeafe;
+  color: #0c4a6e;
 }
 
-.status.disetujui {
-  background: #10b981;
-  color: #ffffff;
+.status-badge.ditolak {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
+.status-badge.terlambat {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.status-badge.dipinjam {
+  background: #c7d2fe;
+  color: #3730a3;
+}
+
+.status-badge.selesai {
+  background: #bbf7d0;
+  color: #165e31;
+}
 
 .btn-action {
   background: transparent;
@@ -72,12 +93,12 @@
   cursor: pointer;
   color: #6b7280;
   padding: 4px 8px;
+  transition: color 0.2s;
 }
 
 .btn-action:hover {
   color: #111827;
 }
-
 
 .filter-section {
   margin-bottom: 20px;
@@ -90,14 +111,12 @@
   margin-bottom: 12px;
 }
 
-/* GRID 2 KOLOM */
 .filter-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
-/* FIELD */
 .filter-field {
   display: flex;
   flex-direction: column;
@@ -110,7 +129,6 @@
   font-weight: 500;
 }
 
-/* INPUT */
 .filter-field input {
   height: 40px;
   padding: 8px 12px;
@@ -125,11 +143,10 @@
 
 .filter-field input:focus {
   outline: none;
-  border-color: #D098CC;
+  border-color: #d098cc;
   box-shadow: 0 0 0 3px rgba(208, 152, 204, 0.15);
 }
 
-/* STATUS CHECKBOX */
 .filter-checkbox-group {
   display: flex;
   flex-direction: column;
@@ -151,14 +168,123 @@
   accent-color: #2563eb;
   cursor: pointer;
 }
+
 .filter-modal input[type="checkbox"] {
   width: 16px;
   height: 16px;
   cursor: pointer;
 }
 
-@media (max-width: 768px) {
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* TABLET (768px - 1024px) */
+@media (max-width: 1024px) {
+  .peminjaman-table th,
+  .peminjaman-table td {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .status-badge {
+    padding: 3px 10px;
+    font-size: 11px;
+  }
+
   .filter-row {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* MOBILE (max-width: 768px) */
+@media (max-width: 768px) {
+  .table-wrapper {
+    padding: 12px;
+    overflow-x: auto;
+  }
+
+  .peminjaman-table {
+    min-width: 400px;
+    font-size: 12px;
+  }
+
+  .peminjaman-table th,
+  .peminjaman-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .peminjaman-table thead th {
+    font-size: 11px;
+  }
+
+  .status-badge {
+    padding: 2px 8px;
+    font-size: 10px;
+  }
+
+  .btn-action {
+    font-size: 16px;
+    padding: 2px 4px;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .filter-field input {
+    height: 36px;
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .filter-checkbox {
+    font-size: 12px;
+    gap: 8px;
+  }
+}
+
+/* SMALL MOBILE (max-width: 480px) */
+@media (max-width: 480px) {
+  .table-wrapper {
+    padding: 8px;
+  }
+
+  .peminjaman-table {
+    min-width: 300px;
+    font-size: 11px;
+  }
+
+  .peminjaman-table th,
+  .peminjaman-table td {
+    padding: 6px;
+    font-size: 11px;
+  }
+
+  .peminjaman-table thead th {
+    font-size: 10px;
+  }
+
+  .status-badge {
+    padding: 2px 6px;
+    font-size: 9px;
+  }
+
+  .filter-field input {
+    height: 32px;
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  .filter-checkbox {
+    font-size: 11px;
+  }
+
+  .filter-checkbox input {
+    width: 14px;
+    height: 14px;
   }
 }

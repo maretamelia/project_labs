@@ -15,6 +15,8 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  width: 100%;
 }
 
 /* ===== PROFILE CARD ===== */
@@ -35,6 +37,10 @@ body {
 .profile-left {
   flex-shrink: 0;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .profile-avatar {
@@ -43,6 +49,7 @@ body {
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #e0e0e0;
+  display: block;
 }
 
 /* Edit Icon di foto */
@@ -75,6 +82,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-width: 0;
 }
 
 .profile-section-title {
@@ -111,6 +119,7 @@ body {
   color: #333;
   background-color: #f8f8f8;
   transition: all 0.3s ease;
+  width: 100%;
 }
 
 .form-group input:focus {
@@ -136,6 +145,7 @@ body {
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 .btn-edit,
@@ -147,6 +157,8 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  padding: 10px 20px;
+  white-space: nowrap;
 }
 
 .btn-edit,
@@ -159,4 +171,176 @@ body {
 .btn-save:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(181, 126, 220, 0.3);
+}
+
+.btn-edit:disabled,
+.btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-cancel {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.btn-cancel:hover {
+  background-color: #d1d5db;
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* TABLET (768px - 1024px) */
+@media (max-width: 1024px) {
+  .profile-page-container {
+    padding: 20px;
+  }
+
+  .profile-card {
+    padding: 24px;
+    gap: 30px;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .profile-section-title {
+    font-size: 18px;
+  }
+
+  .profile-grid {
+    gap: 16px 24px;
+  }
+}
+
+/* MOBILE (max-width: 768px) */
+@media (max-width: 768px) {
+  .profile-page-container {
+    padding: 16px;
+    align-items: center;
+    justify-content: center;
+    min-height: auto;
+  }
+
+  .profile-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    gap: 24px;
+  }
+
+  .profile-left {
+    width: 100%;
+  }
+
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .edit-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    bottom: -2px;
+    right: -2px;
+  }
+
+  .profile-right {
+    width: 100%;
+    text-align: left;
+  }
+
+  .profile-section-title {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-group label {
+    font-size: 12px;
+  }
+
+  .form-group input {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .profile-footer {
+    justify-content: stretch;
+    gap: 8px;
+  }
+
+  .btn-edit,
+  .btn-save,
+  .btn-cancel {
+    flex: 1;
+    font-size: 13px;
+    padding: 8px 12px;
+    min-width: 0;
+  }
+}
+
+/* SMALL MOBILE (max-width: 480px) */
+@media (max-width: 480px) {
+  .profile-page-container {
+    padding: 12px;
+  }
+
+  .profile-card {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .edit-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+
+  .profile-section-title {
+    font-size: 14px;
+  }
+
+  .form-group label {
+    font-size: 12px;
+  }
+
+  .form-group input {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+  .btn-edit,
+  .btn-save,
+  .btn-cancel {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .profile-footer {
+    flex-direction: column;
+  }
+
+  .btn-edit,
+  .btn-save,
+  .btn-cancel {
+    width: 100%;
+  }
 }

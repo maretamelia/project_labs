@@ -3,6 +3,7 @@
   gap: 10px;
   flex: 1;
   max-width: 600px;
+  width: 100%;
 }
 
 .search-container {
@@ -16,14 +17,19 @@
   flex: 1;
   padding: 12px 20px;
   border: 1px solid #ddd;
-  border-right: none; /* biar nyambung ke tombol */
-  border-radius: 8px 0 0 8px; /* bulat kiri saja */
+  border-right: none;
+  border-radius: 8px 0 0 8px;
   font-size: 14px;
   outline: none;
+  transition: border-color 0.2s;
 }
 
 .search-input:focus {
   border-color: #b57edc;
+}
+
+.search-input::placeholder {
+  color: #999;
 }
 
 .search-icon {
@@ -31,15 +37,16 @@
   background-color: #b57edc;
   color: white;
   border: 1px solid #b57edc;
-  border-radius: 0 8px 8px 0; /* bulat kanan saja */
+  border-radius: 0 8px 8px 0;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.2s;
 }
 
 .filter-btn {
-  margin-left: 8px; /* Jarak antara search icon dan filter icon */
+  margin-left: 8px;
 }
 
 .search-icon,
@@ -53,6 +60,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.2s;
+  min-width: 44px;
+  height: 44px;
 }
 
 .search-icon:hover,
@@ -64,4 +74,113 @@
 .filter-btn svg {
   width: 20px;
   height: 20px;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* TABLET (768px - 1024px) */
+@media (max-width: 1024px) {
+  .search-wrapper {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .search-container {
+    max-width: 100%;
+  }
+
+  .search-input {
+    font-size: 13px;
+    padding: 10px 16px;
+  }
+
+  .search-icon,
+  .filter-btn {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+  }
+}
+
+/* MOBILE (max-width: 768px) */
+@media (max-width: 768px) {
+  .search-wrapper {
+    max-width: 100%;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .search-container {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .search-input {
+    font-size: 12px;
+    padding: 8px 12px;
+    height: 36px;
+  }
+
+  .search-icon,
+  .filter-btn {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+    min-width: 36px;
+  }
+
+  .filter-btn {
+    margin-left: 4px;
+  }
+
+  .search-icon svg,
+  .filter-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* SMALL MOBILE (max-width: 480px) */
+@media (max-width: 480px) {
+  .search-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .search-container {
+    width: 100%;
+  }
+
+  .search-input {
+    font-size: 12px;
+    padding: 6px 10px;
+    height: 32px;
+    border-radius: 6px 0 0 6px;
+  }
+
+  .search-icon,
+  .filter-btn {
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    border-radius: 4px;
+    min-width: 32px;
+  }
+
+  .search-icon {
+    border-radius: 0 6px 6px 0;
+  }
+
+  .filter-btn {
+    margin-left: 4px;
+  }
+
+  .search-icon svg,
+  .filter-btn svg {
+    width: 14px;
+    height: 14px;
+  }
 }
