@@ -129,7 +129,7 @@ function DaftarPeminjamanList() {
       if (!alasan) return;
 
       const response = await rejectPeminjaman(itemData.id, alasan);
-      const updatedItem = response?.data?.data;
+      const updatedItem = response?.data;
 
     if (updatedItem) {
       setPeminjamanData(prev =>
