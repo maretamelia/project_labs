@@ -51,7 +51,7 @@ function Navbar({ onMenuToggle }) {
   // ================= GET USER DATA =================
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
-    console.log("Navbar user:", user);
+    
     if (user) {
       setUserData({
         name: user.name || 'Guest',

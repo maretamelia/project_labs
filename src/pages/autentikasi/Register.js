@@ -60,7 +60,6 @@ export default function Register() {
         navigate('/login'); // default role user
       }, 1000);
     } catch (err) {
-      console.log(err.response?.data);
       const msg = err.response?.data?.message || 'Gagal registrasi, silakan coba lagi!';
       showAlert(msg, 'error');
     }

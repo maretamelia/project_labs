@@ -30,8 +30,6 @@ function CreatePinjaman() {
   useEffect(() => {
     if (!selectedBarang) return;
 
-    console.log("Selected Barang:", selectedBarang);
-
     setFormData(prev => ({
       ...prev,
       namaBarang: selectedBarang.nama_barang || '',

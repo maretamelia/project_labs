@@ -43,8 +43,6 @@ function AddProductModal({ isOpen, onClose, onSelectProduct }) {
           list = res.data.data.data;
         }
 
-        console.log('Barang list:', list);
-
         setBarangList(list);
         setCurrentPage(1); 
       } catch (err) {
