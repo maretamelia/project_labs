@@ -242,6 +242,7 @@ function TambahBarang() {
                 onChange={handleInputChange}
                 className="form-textarea"
                 rows="4"
+                required
               />
             </div>
 

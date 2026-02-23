@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
+import { FiTrash2, FiPlus } from 'react-icons/fi';
 import PageHeader from '../../components/PageHeader';
 import SearchBar from '../../components/SearchBar';
 import Pagination from '../../components/Pagination'; // Import komponen pagination yang sama
@@ -143,8 +143,12 @@ function DataBarang() {
                     <button className="btn-detail" onClick={() => navigate(`/barang/${item.id}`)}>
                       Selengkapnya
                     </button>
-                    <button className="btn-icon btn-edit" onClick={() => navigate(`/barang/edit/${item.id}`)}>
-                      <FiEdit2 />
+                    <button 
+                      className="btn-icon btn-edit" 
+                      onClick={() => navigate(`/barang/edit/${item.id}`)}
+                      title="Edit Barang"
+                    >
+                      ✎
                     </button>
                     <button className="btn-icon btn-delete" onClick={() => handleDeleteItem(item.id)}>
                       <FiTrash2 />
@@ -169,13 +173,56 @@ function DataBarang() {
       </div>
 
       {/* Filter Modal (Opsional, sesuaikan isinya) */}
+      {/* Filter Modal */}
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
         onApply={() => setIsFilterOpen(false)}
-        onReset={() => setFilterValues({ kategori: 'All', minStock: '', maxStock: '' })}
+        onReset={() =>
+          setFilterValues({
+            kategori: 'All',
+            minStock: '',
+            maxStock: '',
+          })
+        }
       >
-        {/* Isi field filter kamu di sini */}
+        <div className="filter-section">
+          <div className="filter-section-title">Rentang Stok</div>
+
+          <div className="filter-row">
+            <div className="filter-field">
+              <label>Min</label>
+              <input
+                type="number"
+                className="filter-input"
+                value={filterValues.minStock}
+                onChange={(e) =>
+                  setFilterValues({
+                    ...filterValues,
+                    minStock: e.target.value,
+                  })
+                }
+              />
+              <small className="input-note">contoh: 0</small>
+            </div>
+
+            <div className="filter-field">
+              <label>Max</label>
+              <input
+                type="number"
+                className="filter-input"
+                value={filterValues.maxStock}
+                onChange={(e) =>
+                  setFilterValues({
+                    ...filterValues,
+                    maxStock: e.target.value,
+                  })
+                }
+              />
+              <small className="input-note">contoh: 100</small>
+            </div>
+          </div>
+        </div>
       </FilterModal>
     </div>
   );

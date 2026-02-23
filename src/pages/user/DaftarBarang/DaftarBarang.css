@@ -94,6 +94,13 @@
   cursor: pointer;
 }
 
+.input-note {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+  display: block;
+}
+
 /* Pagination Styling */
 .pagination {
   display: flex;

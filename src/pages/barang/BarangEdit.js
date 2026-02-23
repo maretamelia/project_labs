@@ -220,6 +220,7 @@ function EditBarang() {
                 onChange={handleInputChange}
                 className="form-textarea"
                 rows="4"
+                required
               />
             </div>
 

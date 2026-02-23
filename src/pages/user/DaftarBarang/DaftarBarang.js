@@ -14,15 +14,15 @@ function DaftarBarang() {
   const [selectedBarang, setSelectedBarang] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Search & Pagination States
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8; // Memastikan 2 baris (4 atas, 4 bawah)
+  const itemsPerPage = 8;
 
   const [filterValues, setFilterValues] = useState({
-    minStok: '',
-    maxStok: ''
+    minStock: '',
+    maxStock: ''
   });
+
   useEffect(() => {
     fetchBarang();
   }, []);
@@ -39,16 +39,26 @@ function DaftarBarang() {
     }
   };
 
-  // Logic Filtering
-  const filteredBarang = barangList.filter((item) => {
-    const matchesSearch = item.nama_barang.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesMin = filterValues.minStok === '' || item.stok >= parseInt(filterValues.minStok);
-    const matchesMax = filterValues.maxStok === '' || item.stok <= parseInt(filterValues.maxStok);
-    return matchesSearch && matchesMin && matchesMax;
-  })
-  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  // Filtering
+  const filteredBarang = barangList
+    .filter((item) => {
+      const matchesSearch = item.nama_barang
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
-  // Logic Pagination
+      const matchesMin =
+        filterValues.minStock === '' ||
+        item.stok >= parseInt(filterValues.minStock);
+
+      const matchesMax =
+        filterValues.maxStock === '' ||
+        item.stok <= parseInt(filterValues.maxStock);
+
+      return matchesSearch && matchesMin && matchesMax;
+    })
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  // Pagination
   const totalPages = Math.ceil(filteredBarang.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -69,36 +79,47 @@ function DaftarBarang() {
         <div className="toolbar">
           <SearchBar
             searchTerm={searchTerm}
-            onSearchChange={(v) => { setSearchTerm(v); setCurrentPage(1); }}
+            onSearchChange={(v) => {
+              setSearchTerm(v);
+              setCurrentPage(1);
+            }}
             onOpenFilter={() => setIsFilterOpen(true)}
             placeholder="Cari alat atau bahan..."
           />
         </div>
 
-        {/* ITEMS GRID - Menggunakan struktur CSS kamu */}
         <div className="items-grid">
           {currentItems.length > 0 ? (
             currentItems.map((item) => (
               <div key={item.id} className="item-card">
                 <div className="item-image">
                   {item.image ? (
-                    <img 
-                      src={`http://localhost:8000/storage/${item.image}`} 
-                      alt={item.nama_barang} 
+                    <img
+                      src={`http://localhost:8000/storage/${item.image}`}
+                      alt={item.nama_barang}
                     />
                   ) : (
-                    <div style={{ padding: '20px', textAlign: 'center', color: '#ccc' }}>No Image</div>
+                    <div style={{ padding: '20px', textAlign: 'center', color: '#ccc' }}>
+                      No Image
+                    </div>
                   )}
                 </div>
-                
+
                 <div className="item-info">
                   <h3 className="item-name">{item.nama_barang}</h3>
-                  <p className="item-stock">Kategori: {item.kategori?.nama_kategori || 'Umum'}</p>
-                  <p className="item-stock">Tersedia: <strong>{item.stok} unit</strong></p>
+                  <p className="item-stock">
+                    Kategori: {item.kategori?.nama_kategori || 'Umum'}
+                  </p>
+                  <p className="item-stock">
+                    Tersedia: <strong>{item.stok} unit</strong>
+                  </p>
                 </div>
 
                 <div className="item-actions">
-                  <button className="btn-detail" onClick={() => handleLihatDetail(item)}>
+                  <button
+                    className="btn-detail"
+                    onClick={() => handleLihatDetail(item)}
+                  >
                     Lihat Detail
                   </button>
                 </div>
@@ -111,7 +132,6 @@ function DaftarBarang() {
           )}
         </div>
 
-        {/* PAGINATION */}
         {filteredBarang.length > 0 && (
           <Pagination
             currentPage={currentPage}
@@ -123,38 +143,58 @@ function DaftarBarang() {
         )}
       </div>
 
-      <DetailDaftarBarang 
+      <DetailDaftarBarang
         isOpen={isDetailPopupOpen}
         onClose={() => setIsDetailPopupOpen(false)}
         data={selectedBarang}
       />
 
+      {/* Filter Modal */}
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
         onApply={() => setIsFilterOpen(false)}
-        onReset={() => setFilterValues({ minStok: '', maxStok: '' })}
+        onReset={() =>
+          setFilterValues({
+            minStock: '',
+            maxStock: '',
+          })
+        }
       >
         <div className="filter-section">
           <div className="filter-section-title">Rentang Stok</div>
+
           <div className="filter-row">
             <div className="filter-field">
               <label>Min</label>
-              <input 
-                type="number" 
-                className="filter-input" 
-                value={filterValues.minStok}
-                onChange={(e) => setFilterValues({...filterValues, minStok: e.target.value})}
+              <input
+                type="number"
+                className="filter-input"
+                value={filterValues.minStock}
+                onChange={(e) =>
+                  setFilterValues({
+                    ...filterValues,
+                    minStock: e.target.value,
+                  })
+                }
               />
+              <small className="input-note">contoh: 0</small>
             </div>
+
             <div className="filter-field">
               <label>Max</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 className="filter-input"
-                value={filterValues.maxStok}
-                onChange={(e) => setFilterValues({...filterValues, maxStok: e.target.value})}
+                value={filterValues.maxStock}
+                onChange={(e) =>
+                  setFilterValues({
+                    ...filterValues,
+                    maxStock: e.target.value,
+                  })
+                }
               />
+              <small className="input-note">contoh: 100</small>
             </div>
           </div>
         </div>
