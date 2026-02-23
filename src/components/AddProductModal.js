@@ -228,7 +228,7 @@ function AddProductModal({ isOpen, onClose, onSelectProduct }) {
               </div>
 
               <div className="product-details">
-                <h4 className="product-title">{barang.nama_barang}</h4>
+                <h4 className="product-title1">{barang.nama_barang}</h4>
                 <p className="product-stock-info">
                   <span className="stock-label">Stok:</span>{' '}
                   {barang.stok} {barang.satuan}
