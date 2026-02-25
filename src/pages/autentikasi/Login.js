@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 import './style.css';
 import { login } from '../../services/authservices';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [alert, setAlert] = useState({ message: '', type: '' });
   const navigate = useNavigate();
 
@@ -49,18 +51,13 @@ export default function Login() {
     try {
       const res = await login(email, password);
 
-      /**
-       * ===========================
-       * 🔥 SIMPAN DATA LOGIN 🔥
-       * ===========================
-       */
+      /* ================= SIMPAN DATA LOGIN ================= */
       localStorage.setItem('token', res.token);
-      localStorage.setItem('role', res.user.role); // ⬅️ INI PENTING
+      localStorage.setItem('role', res.user.role);
       localStorage.setItem('user', JSON.stringify(res.user));
 
       showAlert('Login berhasil', 'success');
 
-      // REDIRECT SESUAI ROLE
       const role = res.user.role.toLowerCase();
       if (role === 'admin') {
         navigate('/dashboard-admin', { replace: true });
@@ -103,14 +100,24 @@ export default function Login() {
             />
           </div>
 
-          <div className="form-group">
+          <div className="form-group password-group">
             <label>Password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+
+              <span
+                className="toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FiEyeOff /> : <FiEye />}
+              </span>
+            </div>
           </div>
 
           <button type="submit" className="button">
@@ -121,6 +128,9 @@ export default function Login() {
             Belum punya akun? <Link to="/register">Daftar</Link>
           </div>
         </form>
+         </div>
+      <div className="autorizer">
+        © 2026 Sistem Peminjaman Laboratorium — Dibuat oleh mareta & sofi
       </div>
     </div>
   );
