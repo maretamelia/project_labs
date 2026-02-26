@@ -3,6 +3,7 @@ import axios from 'axios';
 import LihatDetailIcon from '../../../assets/icons/lihatdetail.svg';
 import './RiwayatPeminjaman.css';
 import SearchBar from '../../../components/SearchBar';
+import FilterModal from '../../../components/FilterModal';
 import Pagination from '../../../components/Pagination';
 import DetailPinjaman from './DetailPinjaman';
 
@@ -14,14 +15,14 @@ function RiwayatPeminjaman() {
 
   const ITEMS_PER_PAGE = 5;
 
-  const [setIsFilterOpen] = useState(false);
-  const [filterValues] = useState({
-    startDate: '',
-    endDate: '',
-    minJumlah: '',
-    maxJumlah: '',
-    status: []
-  });
+  const [isFilterOpen, setIsFilterOpen] = useState(false); // ✅
+  const [filterValues, setFilterValues] = useState({
+  startDate: '',
+  endDate: '',
+  minJumlah: '',
+  maxJumlah: '',
+  status: []
+});
 
   const [riwayatData, setRiwayatData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -186,6 +187,25 @@ function RiwayatPeminjaman() {
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
         data={selectedData}
+      />
+      <FilterModal
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        filterValues={filterValues}
+        onFilterChange={(key, value) =>
+          setFilterValues(prev => ({ ...prev, [key]: value }))
+        }
+        onApply={() => { setCurrentPage(1); setIsFilterOpen(false); }}
+        onReset={() => {
+          setFilterValues({ startDate: '', endDate: '', minJumlah: '', maxJumlah: '', status: [] });
+          setCurrentPage(1);
+        }}
+        showStatus={true}
+        statusOptions={[
+          { value: 'ditolak', label: 'Ditolak' },
+          { value: 'terlambat', label: 'Terlambat' },
+          { value: 'selesai', label: 'Selesai' },
+        ]}
       />
     </div>
   );

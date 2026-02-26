@@ -4,8 +4,8 @@ import SearchBar from '../../components/SearchBar';
 import Pagination from '../../components/Pagination';
 import FilterModal from '../../components/FilterModal';
 import DetailPeminjamanModal from './DetailPeminjamanAdmin';
-import ExportModal from '../../components/ExportModal'; 
-import { BsThreeDotsVertical, BsDownload } from 'react-icons/bs'; // Menggunakan ikon vertikal
+import ExportModal from '../../components/ExportModal';
+import { BsThreeDotsVertical, BsDownload } from 'react-icons/bs';
 import { getRiwayatPeminjamanAdmin } from '../../services/pinjamanServices';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -18,7 +18,7 @@ function RiwayatPeminjamanAdmin() {
   const [openMenuId, setOpenMenuId] = useState(null);
 
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false); 
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -26,7 +26,8 @@ function RiwayatPeminjamanAdmin() {
     startDate: '',
     endDate: '',
     minJumlah: '',
-    maxJumlah: ''
+    maxJumlah: '',
+    status: ''
   });
 
   const ITEMS_PER_PAGE = 5;
@@ -61,64 +62,28 @@ function RiwayatPeminjamanAdmin() {
     }
   };
 
-  /* ================= EXPORT LOGIC ================= */
-  const handleExportExcel = () => {
-    const dataToExport = filteredData.map((item, index) => ({
-      No: index + 1,
-      Nama: item?.user?.name || '-',
-      "Nama Barang": item?.barang?.nama_barang || '-',
-      Jumlah: item?.jumlah || 0,
-      "Tanggal Pinjam": formatTanggal(item?.tanggal_peminjaman),
-      "Tanggal Kembali": formatTanggal(item?.tanggal_pengembalian),
-      Status: item?.status || '-'
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Riwayat");
-    XLSX.writeFile(workbook, `Riwayat_Peminjaman_${new Date().getTime()}.xlsx`);
-    setIsExportModalOpen(false);
-  };
-
-  const handleExportPDF = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text("Riwayat Peminjaman - LABORATORIUM SIJA", 14, 15);
-    doc.setFontSize(10);
-    doc.text(`Dicetak pada: ${new Date().toLocaleString()}`, 14, 22);
-    
-    const tableColumn = ["No", "Nama", "Nama Barang", "Jumlah", "Tanggal Pinjam", "Tanggal Kembali", "Status"];
-    const tableRows = filteredData.map((item, index) => [
-      index + 1,
-      item?.user?.name || '-',
-      item?.barang?.nama_barang || '-',
-      item?.jumlah || 0,
-      formatTanggal(item?.tanggal_peminjaman),
-      formatTanggal(item?.tanggal_pengembalian),
-      item?.status || '-'
-    ]);
-
-    autoTable(doc, {
-      head: [tableColumn],
-      body: tableRows,
-      startY: 30,
-      theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 3 },
-      headStyles: { 
-        fillColor: [128, 128, 128], 
-        textColor: [255, 255, 255], 
-        fontStyle: 'bold',
-        halign: 'center' 
-      },
-      columnStyles: {
-        0: { halign: 'center', cellWidth: 10 }, 
-        3: { halign: 'center' }, 
-      }
+  /* ================= FILTER ================= */
+  const filteredData = useMemo(() => {
+    return riwayatData.filter(item => {
+      const namaBarang = item?.barang?.nama_barang?.toLowerCase() || '';
+      const namaUser = item?.user?.name?.toLowerCase() || '';
+      const search = searchTerm.toLowerCase();
+      const matchSearch = namaBarang.includes(search) || namaUser.includes(search);
+      const matchMin = filterValues.minJumlah === '' || item.jumlah >= Number(filterValues.minJumlah);
+      const matchMax = filterValues.maxJumlah === '' || item.jumlah <= Number(filterValues.maxJumlah);
+      const itemDate = new Date(item.tanggal_peminjaman);
+      const startDate = filterValues.startDate ? new Date(filterValues.startDate) : null;
+      const endDate = filterValues.endDate ? new Date(filterValues.endDate + 'T23:59:59') : null;
+      const matchStartDate = !startDate || itemDate >= startDate;
+      const matchEndDate = !endDate || itemDate <= endDate;
+      const matchStatus = filterValues.status === '' || item?.status?.toLowerCase() === filterValues.status.toLowerCase();
+      return matchSearch && matchMin && matchMax && matchStartDate && matchEndDate && matchStatus;
     });
-    
-    doc.save(`Riwayat_Peminjaman_${new Date().getTime()}.pdf`);
-    setIsExportModalOpen(false);
-  };
+  }, [riwayatData, searchTerm, filterValues]);
+
+  /* ================= PAGINATION ================= */
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedData = filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   /* ================= ACTION HANDLERS ================= */
   const handleDetail = (item) => {
@@ -136,11 +101,8 @@ function RiwayatPeminjamanAdmin() {
 
   const handleHapus = (id) => {
     if (window.confirm("Apakah Anda yakin ingin menghapus data riwayat ini?")) {
-      // Panggil fungsi API hapus di sini jika ada
       console.log("Menghapus data ID:", id);
       setOpenMenuId(null);
-      // Contoh filter lokal setelah hapus:
-      // setRiwayatData(riwayatData.filter(item => item.id !== id));
     }
   };
 
@@ -148,25 +110,48 @@ function RiwayatPeminjamanAdmin() {
     setOpenMenuId(openMenuId === id ? null : id);
   };
 
-  /* ================= FILTER & PAGINATION ================= */
-  const filteredData = useMemo(() => {
-    return riwayatData.filter(item => {
-      const namaBarang = item?.barang?.nama_barang?.toLowerCase() || '';
-      const namaUser = item?.user?.name?.toLowerCase() || '';
-      const search = searchTerm.toLowerCase();
-      const matchSearch = namaBarang.includes(search) || namaUser.includes(search);
-      const matchMin = filterValues.minJumlah === '' || item.jumlah >= Number(filterValues.minJumlah);
-      const matchMax = filterValues.maxJumlah === '' || item.jumlah <= Number(filterValues.maxJumlah);
-      const itemDate = new Date(item.tanggal_peminjaman);
-      const startDate = filterValues.startDate ? new Date(filterValues.startDate) : null;
-      const endDate = filterValues.endDate ? new Date(filterValues.endDate + 'T23:59:59') : null;
-      return matchSearch && matchMin && matchMax && (!startDate || itemDate >= startDate) && (!endDate || itemDate <= endDate);
+  /* ================= EXPORT ================= */
+  const handleExportExcel = () => {
+    const exportData = filteredData.map((item, index) => ({
+      No: index + 1,
+      Nama: item?.user?.name || '-',
+      'Nama Barang': item?.barang?.nama_barang || '-',
+      Jumlah: item?.jumlah || 0,
+      'Tanggal Pinjam': formatTanggal(item?.tanggal_peminjaman),
+      'Tanggal Kembali': formatTanggal(item?.tanggal_pengembalian),
+      Status: item?.status || '-'
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Riwayat Peminjaman');
+    XLSX.writeFile(wb, 'riwayat-peminjaman.xlsx');
+    setIsExportModalOpen(false);
+  };
+
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+    doc.text('Riwayat Peminjaman', 14, 16);
+
+    autoTable(doc, {
+      head: [['No', 'Nama', 'Nama Barang', 'Jumlah', 'Tgl Pinjam', 'Tgl Kembali', 'Status']],
+      body: filteredData.map((item, index) => [
+        index + 1,
+        item?.user?.name || '-',
+        item?.barang?.nama_barang || '-',
+        item?.jumlah || 0,
+        formatTanggal(item?.tanggal_peminjaman),
+        formatTanggal(item?.tanggal_pengembalian),
+        item?.status || '-'
+      ]),
+      startY: 22
     });
-  }, [riwayatData, searchTerm, filterValues]);
 
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedData = filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    doc.save('riwayat-peminjaman.pdf');
+    setIsExportModalOpen(false);
+  };
 
+  /* ================= RENDER ================= */
   return (
     <div className="riwayat-page">
       <PageHeader title="Riwayat Peminjaman" subtitle="Daftar Riwayat Peminjaman" />
@@ -181,7 +166,6 @@ function RiwayatPeminjamanAdmin() {
           }}
           onOpenFilter={() => setIsFilterOpen(true)}
         />
-        
         <button className="export-btn-main" onClick={() => setIsExportModalOpen(true)}>
           <BsDownload /> Export
         </button>
@@ -204,7 +188,6 @@ function RiwayatPeminjamanAdmin() {
                 <th>Aksi</th>
               </tr>
             </thead>
-
             <tbody>
               {paginatedData.length === 0 ? (
                 <tr>
@@ -232,7 +215,6 @@ function RiwayatPeminjamanAdmin() {
                         >
                           <BsThreeDotsVertical />
                         </button>
-
                         {openMenuId === item.id && (
                           <div className="aksi-dropdown-menu">
                             <button
@@ -262,11 +244,21 @@ function RiwayatPeminjamanAdmin() {
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
+        filterValues={filterValues}
+        onFilterChange={(key, value) =>
+          setFilterValues(prev => ({ ...prev, [key]: value }))
+        }
         onApply={() => { setCurrentPage(1); setIsFilterOpen(false); }}
         onReset={() => {
-          setFilterValues({ startDate: '', endDate: '', minJumlah: '', maxJumlah: '' });
+          setFilterValues({ startDate: '', endDate: '', minJumlah: '', maxJumlah: '', status: '' });
           setCurrentPage(1);
         }}
+        showStatus={true}
+        statusOptions={[
+          { value: 'ditolak', label: 'Ditolak' },
+          { value: 'terlambat', label: 'Terlambat' },
+          { value: 'selesai', label: 'Selesai' },
+        ]}
       />
 
       <Pagination
@@ -282,7 +274,7 @@ function RiwayatPeminjamanAdmin() {
         onClose={() => { setIsDetailModalOpen(false); setSelectedData(null); }}
       />
 
-      <ExportModal 
+      <ExportModal
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         onExportExcel={handleExportExcel}
