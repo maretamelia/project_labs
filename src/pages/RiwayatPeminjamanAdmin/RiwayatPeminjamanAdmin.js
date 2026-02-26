@@ -21,7 +21,8 @@ function RiwayatPeminjamanAdmin() {
     startDate: '',
     endDate: '',
     minJumlah: '',
-    maxJumlah: ''
+    maxJumlah: '',
+    status: ''
   });
 
   const ITEMS_PER_PAGE = 5;
@@ -86,13 +87,14 @@ function RiwayatPeminjamanAdmin() {
         ? new Date(filterValues.endDate + 'T23:59:59')
         : null;
 
-      const matchStartDate =
-        !startDate || itemDate >= startDate;
+      const matchStartDate = !startDate || itemDate >= startDate;
+      const matchEndDate = !endDate || itemDate <= endDate;
 
-      const matchEndDate =
-        !endDate || itemDate <= endDate;
+      const matchStatus =
+        filterValues.status === '' ||
+        item?.status?.toLowerCase() === filterValues.status.toLowerCase();
 
-      return matchSearch && matchMin && matchMax && matchStartDate && matchEndDate;
+      return matchSearch && matchMin && matchMax && matchStartDate && matchEndDate && matchStatus;
     });
   }, [riwayatData, searchTerm, filterValues]);
 
@@ -201,6 +203,10 @@ function RiwayatPeminjamanAdmin() {
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
+        filterValues={filterValues}
+        onFilterChange={(key, value) =>
+          setFilterValues(prev => ({ ...prev, [key]: value }))
+        }
         onApply={() => {
           setCurrentPage(1);
           setIsFilterOpen(false);
@@ -210,10 +216,17 @@ function RiwayatPeminjamanAdmin() {
             startDate: '',
             endDate: '',
             minJumlah: '',
-            maxJumlah: ''
+            maxJumlah: '',
+            status: ''
           });
           setCurrentPage(1);
         }}
+        showStatus={true}
+       statusOptions={[
+  { value: 'ditolak', label: 'Ditolak' },
+  { value: 'terlambat', label: 'Terlambat' },
+  { value: 'selesai', label: 'Selesai' },
+]}
       />
 
       <Pagination

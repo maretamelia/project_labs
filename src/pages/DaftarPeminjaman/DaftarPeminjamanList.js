@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import PageHeader from '../../components/PageHeader';
 import SearchBar from '../../components/SearchBar';
 import Pagination from '../../components/Pagination';
 import ActionModal from '../../components/Actionmodal';
+import FilterModal from '../../components/FilterModal';
 import DetailPeminjamanModal from '../RiwayatPeminjamanAdmin/DetailPeminjamanAdmin';
 import './DaftarPeminjamanList.css';
 import { getDaftarPeminjamanAdmin, approvePeminjaman, rejectPeminjaman } from '../../services/pinjamanServices';
@@ -16,6 +17,12 @@ function DaftarPeminjamanList() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filterValues, setFilterValues] = useState({
+    startDate: '',
+    endDate: '',
+    status: ''
+  });
 
   const itemsPerPage = 6;
 
@@ -52,13 +59,10 @@ function DaftarPeminjamanList() {
   const handleActionClick = (item) => {
     if (!item) return;
 
-    // pending / pending_back → modal approve
     if (['pending', 'pending_back'].includes(item.status)) {
       setSelectedItem(item);
       setIsActionModalOpen(true);
-    } 
-    // disetujui → modal detail
-    else if (item.status === 'disetujui') {
+    } else if (item.status === 'disetujui') {
       setSelectedItem({
         namaPeminjam: item.user?.name,
         namaBarang: item.barang?.nama_barang,
@@ -72,96 +76,93 @@ function DaftarPeminjamanList() {
   };
 
   const handleActionApply = async (aksiStatus, itemData) => {
-  if (!itemData) return;
+    if (!itemData) return;
 
-  try {
-    if (aksiStatus === 'Diterima') {
-      // Tutup modal approve dulu
-      setIsActionModalOpen(false);
-      setSelectedItem(null);
+    try {
+      if (aksiStatus === 'Diterima') {
+        setIsActionModalOpen(false);
+        setSelectedItem(null);
 
-      const confirmResult = await Swal.fire({
-        title: 'Konfirmasi',
-        text: 'Apakah Anda yakin ingin menerima peminjaman ini?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, terima',
-        cancelButtonText: 'Batal',
-        reverseButtons: true
-      });
-
-      if (!confirmResult.isConfirmed) return;
-
-      const response = await approvePeminjaman(itemData.id);
-      const updatedItem = response?.data;
-
-      if (updatedItem) {
-        setPeminjamanData(prev =>
-          prev.map(p => p?.id === itemData.id ? { ...p, status: updatedItem.status } : p)
-        );
-
-        await Swal.fire({
-          icon: 'success',
-          title: 'Berhasil!',
-          text: `Peminjaman berhasil diproses! Status: ${updatedItem.status}`,
-          confirmButtonText: 'OK'
+        const confirmResult = await Swal.fire({
+          title: 'Konfirmasi',
+          text: 'Apakah Anda yakin ingin menerima peminjaman ini?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, terima',
+          cancelButtonText: 'Batal',
+          reverseButtons: true
         });
+
+        if (!confirmResult.isConfirmed) return;
+
+        const response = await approvePeminjaman(itemData.id);
+        const updatedItem = response?.data;
+
+        if (updatedItem) {
+          setPeminjamanData(prev =>
+            prev.map(p => p?.id === itemData.id ? { ...p, status: updatedItem.status } : p)
+          );
+
+          await Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: `Peminjaman berhasil diproses! Status: ${updatedItem.status}`,
+            confirmButtonText: 'OK'
+          });
+        }
+
+      } else if (aksiStatus === 'Ditolak') {
+        setIsActionModalOpen(false);
+        setSelectedItem(null);
+
+        const { value: alasan } = await Swal.fire({
+          title: 'Alasan Penolakan',
+          input: 'text',
+          inputLabel: 'Masukkan alasan penolakan',
+          inputPlaceholder: 'Contoh: Barang sedang rusak',
+          showCancelButton: true,
+          confirmButtonText: 'Tolak',
+          cancelButtonText: 'Batal',
+          inputValidator: (value) => {
+            if (!value) return 'Alasan tidak boleh kosong!';
+          }
+        });
+
+        if (!alasan) return;
+
+        const response = await rejectPeminjaman(itemData.id, alasan);
+        const updatedItem = response?.data;
+
+        if (updatedItem) {
+          setPeminjamanData(prev =>
+            prev
+              .map(p =>
+                p?.id === itemData.id
+                  ? { ...p, status: updatedItem.status, keterangan: updatedItem.keterangan }
+                  : p
+              )
+              .filter(p => p?.status !== 'ditolak')
+          );
+
+          await Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: 'Peminjaman ditolak dan masuk riwayat!',
+            confirmButtonText: 'OK'
+          });
+        }
       }
 
-    } else if (aksiStatus === 'Ditolak') {
-      // Tutup modal approve dulu
-      setIsActionModalOpen(false);
-      setSelectedItem(null);
-
-      const { value: alasan } = await Swal.fire({
-        title: 'Alasan Penolakan',
-        input: 'text',
-        inputLabel: 'Masukkan alasan penolakan',
-        inputPlaceholder: 'Contoh: Barang sedang rusak',
-        showCancelButton: true,
-        confirmButtonText: 'Tolak',
-        cancelButtonText: 'Batal',
-        inputValidator: (value) => {
-          if (!value) return 'Alasan tidak boleh kosong!';
-        }
-      });
-
-      if (!alasan) return;
-
-      const response = await rejectPeminjaman(itemData.id, alasan);
-      const updatedItem = response?.data;
-
-    if (updatedItem) {
-      setPeminjamanData(prev =>
-        prev
-          .map(p =>
-            p?.id === itemData.id
-              ? { ...p, status: updatedItem.status, keterangan: updatedItem.keterangan }
-              : p
-          )
-          .filter(p => p?.status !== 'ditolak') // row langsung hilang dari daftar
-      );
-
-      await Swal.fire({
-        icon: 'success',
-        title: 'Berhasil!',
-        text: 'Peminjaman ditolak dan masuk riwayat!',
+    } catch (err) {
+      console.error('Gagal melakukan aksi:', err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Gagal melakukan aksi. Cek console untuk detail.',
         confirmButtonText: 'OK'
       });
     }
-    }
-
-  } catch (err) {
-    console.error('Gagal melakukan aksi:', err);
-    Swal.fire({
-      icon: 'error',
-      title: 'Gagal',
-      text: 'Gagal melakukan aksi. Cek console untuk detail.',
-      confirmButtonText: 'OK'
-    });
-  }
-};
-
+  };
 
   // =========================
   // UTILS
@@ -201,13 +202,28 @@ function DaftarPeminjamanList() {
   // =========================
   // FILTER & PAGINATION
   // =========================
-  const filteredData = peminjamanData.filter(item => {
-    if (!item) return false;
-    return (
-      item.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.barang?.nama_barang?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  const filteredData = useMemo(() => {
+    return peminjamanData.filter(item => {
+      if (!item) return false;
+
+      const matchSearch =
+        item.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.barang?.nama_barang?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const itemDate = new Date(item.tanggal_peminjaman);
+      const startDate = filterValues.startDate ? new Date(filterValues.startDate) : null;
+      const endDate = filterValues.endDate ? new Date(filterValues.endDate + 'T23:59:59') : null;
+
+      const matchStartDate = !startDate || itemDate >= startDate;
+      const matchEndDate = !endDate || itemDate <= endDate;
+
+      const matchStatus =
+        filterValues.status === '' ||
+        item.status?.toLowerCase() === filterValues.status.toLowerCase();
+
+      return matchSearch && matchStartDate && matchEndDate && matchStatus;
+    });
+  }, [peminjamanData, searchTerm, filterValues]);
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -223,8 +239,9 @@ function DaftarPeminjamanList() {
       <div className="peminjaman-controls">
         <SearchBar
           searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
+          onSearchChange={(val) => { setSearchTerm(val); setCurrentPage(1); }}
           placeholder="Cari data peminjaman..."
+          onOpenFilter={() => setIsFilterOpen(true)}
         />
       </div>
 
@@ -279,6 +296,26 @@ function DaftarPeminjamanList() {
         </div>
       )}
 
+      <FilterModal
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        filterValues={filterValues}
+        onFilterChange={(key, value) =>
+          setFilterValues(prev => ({ ...prev, [key]: value }))
+        }
+        onApply={() => { setCurrentPage(1); setIsFilterOpen(false); }}
+        onReset={() => {
+          setFilterValues({ startDate: '', endDate: '', status: '' });
+          setCurrentPage(1);
+        }}
+        showStatus={true}
+        statusOptions={[
+  { value: 'pending', label: 'Menunggu' },
+  { value: 'disetujui', label: 'Disetujui' },
+  { value: 'pending_back', label: 'Proses Pengembalian' },
+]}
+      />
+
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
@@ -287,7 +324,6 @@ function DaftarPeminjamanList() {
         onPageChange={setCurrentPage}
       />
 
-      {/* Modal Approve */}
       <ActionModal
         isOpen={isActionModalOpen}
         onClose={() => { setIsActionModalOpen(false); setSelectedItem(null); }}
@@ -296,7 +332,6 @@ function DaftarPeminjamanList() {
         itemData={selectedItem}
       />
 
-      {/* Modal Detail Peminjaman */}
       <DetailPeminjamanModal
         isOpen={isDetailModalOpen}
         data={selectedItem}
