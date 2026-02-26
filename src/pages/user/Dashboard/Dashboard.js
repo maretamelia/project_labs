@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FiBox, FiClock, FiCheckCircle, FiUpload } from 'react-icons/fi';
 import { getUserDashboardData } from '../../../services/dashboardUserService'; 
 import './Dashboard.css';
+import ModalSOP from './ModalSOP';
 
 function Dashboard() {
   const navigate = useNavigate();

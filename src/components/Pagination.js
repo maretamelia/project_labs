@@ -13,7 +13,7 @@ function Pagination({ currentPage, totalPages, currentItems, totalItems, onPageC
           disabled={currentPage === 1}
           className="pagination-btn"
         >
-          Previous
+          Sebelumnya
         </button>
         {[...Array(totalPages)].map((_, i) => (
           <button
@@ -29,7 +29,7 @@ function Pagination({ currentPage, totalPages, currentItems, totalItems, onPageC
           disabled={currentPage === totalPages}
           className="pagination-btn"
         >
-          Next
+          Selanjutnya
         </button>
       </div>
     </div>

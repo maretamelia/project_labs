@@ -43,7 +43,7 @@ const Usermenu = ({ userName, userRole, userAvatar, onLogout }) => {
       {open && (
         <div className="user-menu-dropdown">
           <button type="button" className="user-menu-item" onClick={handleProfileClick}>
-            Profile
+            Profil
           </button>
 
           <button

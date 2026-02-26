@@ -145,7 +145,7 @@ function AddProductModal({ isOpen, onClose, onSelectProduct }) {
 
         {/* Header */}
         <div className="modal-header-top">
-          <h2 className="modal-title">Add Product</h2>
+          <h2 className="modal-title">Pilih Produk</h2>
           <button className="modal-close" onClick={handleClose}>
             <FiX size={24} />
           </button>
@@ -271,7 +271,7 @@ function AddProductModal({ isOpen, onClose, onSelectProduct }) {
         {/* Footer */}
         <div className="modal-footer-section">
           <button className="btn-batal" onClick={handleClose}>Batal</button>
-          <button className="btn-next" onClick={handleNext}>Next</button>
+          <button className="btn-next" onClick={handleNext}>Selanjutnya</button>
         </div>
 
       </div>
