@@ -169,7 +169,7 @@ export default function Register() {
         
       </div>
       <div className="autorizer">
-        © 2026 Sistem Peminjaman Laboratorium — Dibuat oleh mareta & sofi
+        Sistem Peminjaman Laboratorium SIJA © 2026 — Developed by Mareta & Sofi
       </div>
     </div>
   );

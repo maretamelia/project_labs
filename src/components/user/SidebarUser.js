@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './SidebarUser.css';
-import { MdDashboard, MdInventory, MdAssignment, MdHistory, MdManageAccounts } from 'react-icons/md';
+import { MdDashboard, MdInventory, MdAssignment, MdHistory } from 'react-icons/md';
 
 function SidebarUser({ isOpen = true }) {
   const location = useLocation();
