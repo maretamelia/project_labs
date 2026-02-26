@@ -58,14 +58,6 @@ function SidebarUser({ isOpen = true }) {
           <span className="sidebar-icon"><MdHistory /></span>
           <span className="sidebar-text">Riwayat Peminjaman</span>
         </Link>
-
-        <Link
-          to="/user/sop"
-          className={`sidebar-item ${isActive('/user/sop') ? 'active' : ''}`}
-        >
-          <span className="sidebar-icon"><MdManageAccounts /></span>
-          <span className="sidebar-text">SOP</span>
-        </Link>
       </nav>
     </div>
   );
