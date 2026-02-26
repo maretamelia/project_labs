@@ -1,9 +1,9 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Authorizer from '../components/Footer'; 
-import './UserLayout.css';
+import './AdminLayout.css';
 
-export default function UserLayout() {
+export default function AdminLayout() {
   return (
     <div className="layout-wrapper">
       <div className="main-container">

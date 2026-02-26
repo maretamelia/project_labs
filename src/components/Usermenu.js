@@ -19,9 +19,15 @@ const Usermenu = ({ userName, userRole, userAvatar, onLogout }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleProfileClick = () => {
+const handleProfileClick = () => {
     const role = userRole.toLowerCase();
-    navigate(role === 'admin' ? '/Profile' : 'Profile');
+    
+    if (role === 'admin') {
+      navigate('/Profile');
+    } else if (role === 'user') {
+      navigate('/user/Profile'); 
+    }
+    
     setOpen(false);
   };
 

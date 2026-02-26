@@ -1,8 +1,11 @@
-// src/RouteIndex.js
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './routes/ProtectedRoute';
-import { Navigate } from 'react-router-dom';
+
+// Import Layouts
+import AdminLayout from './layouts/AdminLayout';
+import UserLayout from './layouts/UserLayout';
+
 // ================= ADMIN PAGES =================
 import KategoriList from './pages/kategori/KategoriList';
 import BarangList from './pages/barang/BarangList';
@@ -12,6 +15,7 @@ import BarangDetail from './pages/barang/BarangDetail';
 import DaftarPeminjamanList from './pages/DaftarPeminjaman/DaftarPeminjamanList';
 import RiwayatPeminjamanAdmin from './pages/RiwayatPeminjamanAdmin/RiwayatPeminjamanAdmin';
 import DashboardAdmin from './pages/Dashboard/DashboardAdmin';
+
 
 // ================= USER PAGES =================
 import Dashboard from './pages/user/Dashboard/Dashboard';
@@ -24,175 +28,49 @@ import SOP from './pages/user/sop/SOP';
 import DaftarBarang from './pages/user/DaftarBarang/DaftarBarang';
 import Profile from './pages/user/Profile/Profile';
 
-// ================= AUTH =================
+// ================= AUTH & EXTRA =================
 import Login from './pages/autentikasi/Login';
 import Register from './pages/autentikasi/Register';
+import NotFound from './pages/NotFound';
 
 export default function RouteIndex() {
   return (
     <Routes>
-
-      <Route path="/" element={<Navigate to={"/login"} replace/>} />
-
-      {/* ================= AUTH ================= */}
+      {/* DEFAULT & AUTH (Tanpa Layout/Footer) */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* ================= ADMIN ================= */}
-      <Route
-        path="/dashboard-admin"
-        element={
-          <ProtectedRoute role="admin">
-            <DashboardAdmin />
-          </ProtectedRoute>
-        }
-      />
+      {/* ================= GROUP ADMIN (Pakai AdminLayout) ================= */}
+      <Route element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
+        <Route path="/dashboard-admin" element={<DashboardAdmin />} />
+        <Route path="/kategori" element={<KategoriList />} />
+        <Route path="/data-barang" element={<BarangList />} />
+        <Route path="/barang/create" element={<BarangCreate />} />
+        <Route path="/barang/edit/:id" element={<BarangEdit />} />
+        <Route path="/barang/:id" element={<BarangDetail />} />
+        <Route path="/daftar-peminjaman" element={<DaftarPeminjamanList />} />
+        <Route path="/riwayat-peminjaman" element={<RiwayatPeminjamanAdmin />} />
+        <Route path="/Profile" 
+        element={<Profile />} />
+      </Route>
 
-      <Route
-        path="/kategori"
-        element={
-          <ProtectedRoute role="admin">
-            <KategoriList />
-          </ProtectedRoute>
-        }
-      />
 
-      <Route
-        path="/data-barang"
-        element={
-          <ProtectedRoute role="admin">
-            <BarangList />
-          </ProtectedRoute>
-        }
-      />
+      {/* ================= GROUP USER (Pakai UserLayout) ================= */}
+      <Route element={<ProtectedRoute role="user"><UserLayout /></ProtectedRoute>}>
+        <Route path="/user" element={<Dashboard />} />
+        <Route path="/user/DaftarBarang" element={<DaftarBarang />} />
+        <Route path="/user/PinjamanSaya" element={<PinjamanSaya />} />
+        <Route path="/user/pinjaman/create" element={<CreatePinjaman />} />
+        <Route path="/user/EditPinjaman/:id" element={<EditPinjaman />} />
+        <Route path="/user/RiwayatPeminjaman" element={<RiwayatPeminjaman />} />
+        <Route path="/user/pinjaman/:id" element={<DetailPeminjaman />} />
+        <Route path="/user/sop" element={<SOP />} />
+        <Route path="/user/Profile" element={<Profile />} />
+      </Route>
 
-      <Route
-        path="/barang/create"
-        element={
-          <ProtectedRoute role="admin">
-            <BarangCreate />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/barang/edit/:id"
-        element={
-          <ProtectedRoute role="admin">
-            <BarangEdit />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/barang/:id"
-        element={
-          <ProtectedRoute role="admin">
-            <BarangDetail />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/daftar-peminjaman"
-        element={
-          <ProtectedRoute role="admin">
-            <DaftarPeminjamanList />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/riwayat-peminjaman"
-        element={
-          <ProtectedRoute role="admin">
-            <RiwayatPeminjamanAdmin />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* ================= USER ================= */}
-      <Route
-        path="/user"
-        element={
-          <ProtectedRoute role="user">
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/user/DaftarBarang"
-        element={
-          <ProtectedRoute role="user">
-            <DaftarBarang />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/user/PinjamanSaya"
-        element={
-          <ProtectedRoute role="user">
-            <PinjamanSaya />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/user/pinjaman/create"
-        element={
-          <ProtectedRoute role="user">
-            <CreatePinjaman />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/user/EditPinjaman/:id"
-        element={
-          <ProtectedRoute role="user">
-            <EditPinjaman />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/user/RiwayatPeminjaman"
-        element={
-          <ProtectedRoute role="user">
-            <RiwayatPeminjaman />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/user/pinjaman/:id"
-        element={
-          <ProtectedRoute role="user">
-            <DetailPeminjaman />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/user/sop"
-        element={
-          <ProtectedRoute role="user">
-            <SOP />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/Profile"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-
+      {/* ================= 404 ================= */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
