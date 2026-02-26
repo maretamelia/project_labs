@@ -6,10 +6,7 @@ import FilterModal from '../../components/FilterModal';
 import DetailPeminjamanModal from './DetailPeminjamanAdmin';
 import ExportModal from '../../components/ExportModal';
 import { BsThreeDotsVertical, BsDownload } from 'react-icons/bs';
-import { getRiwayatPeminjamanAdmin } from '../../services/pinjamanServices';
-import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { getRiwayatPeminjamanAdmin, exportRiwayatAdmin } from '../../services/pinjamanServices';
 import './RiwayatPeminjamanAdmin.css';
 
 function RiwayatPeminjamanAdmin() {
@@ -62,7 +59,7 @@ function RiwayatPeminjamanAdmin() {
     }
   };
 
-  /* ================= FILTER ================= */
+  /* ================= FILTER (Frontend Display) ================= */
   const filteredData = useMemo(() => {
     return riwayatData.filter(item => {
       const namaBarang = item?.barang?.nama_barang?.toLowerCase() || '';
@@ -111,44 +108,23 @@ function RiwayatPeminjamanAdmin() {
   };
 
   /* ================= EXPORT ================= */
-  const handleExportExcel = () => {
-    const exportData = filteredData.map((item, index) => ({
-      No: index + 1,
-      Nama: item?.user?.name || '-',
-      'Nama Barang': item?.barang?.nama_barang || '-',
-      Jumlah: item?.jumlah || 0,
-      'Tanggal Pinjam': formatTanggal(item?.tanggal_peminjaman),
-      'Tanggal Kembali': formatTanggal(item?.tanggal_pengembalian),
-      Status: item?.status || '-'
-    }));
-
-    const ws = XLSX.utils.json_to_sheet(exportData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Riwayat Peminjaman');
-    XLSX.writeFile(wb, 'riwayat-peminjaman.xlsx');
-    setIsExportModalOpen(false);
+  const handleExportExcel = async () => {
+    try {
+      // Mengirim filterValues agar backend hanya meng-export data yang difilter
+      await exportRiwayatAdmin(filterValues, 'excel');
+      setIsExportModalOpen(false);
+    } catch (err) {
+      alert("Gagal melakukan export Excel dari server.");
+    }
   };
 
-  const handleExportPDF = () => {
-    const doc = new jsPDF();
-    doc.text('Riwayat Peminjaman', 14, 16);
-
-    autoTable(doc, {
-      head: [['No', 'Nama', 'Nama Barang', 'Jumlah', 'Tgl Pinjam', 'Tgl Kembali', 'Status']],
-      body: filteredData.map((item, index) => [
-        index + 1,
-        item?.user?.name || '-',
-        item?.barang?.nama_barang || '-',
-        item?.jumlah || 0,
-        formatTanggal(item?.tanggal_peminjaman),
-        formatTanggal(item?.tanggal_pengembalian),
-        item?.status || '-'
-      ]),
-      startY: 22
-    });
-
-    doc.save('riwayat-peminjaman.pdf');
-    setIsExportModalOpen(false);
+  const handleExportPDF = async () => {
+    try {
+      await exportRiwayatAdmin(filterValues, 'pdf');
+      setIsExportModalOpen(false);
+    } catch (err) {
+      alert("Gagal melakukan export PDF dari server.");
+    }
   };
 
   /* ================= RENDER ================= */

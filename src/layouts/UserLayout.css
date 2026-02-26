@@ -14,29 +14,26 @@
   flex-direction: column;
   flex: 1;
   width: 100%;
-  min-width: 0; /* Mencegah overflow pada flex item */
+  min-width: 0; 
 }
 
 /* Area Konten - Tempat kartu barang & pagination */
 .content-area {
-  flex: 1; /* Ini kunci agar area konten menghabiskan sisa ruang */
-  padding: 30px; /* Padding sedikit diperlebar agar lebih lega */
-  display: flex;
+  flex: 1;
+  padding: 0px;
   flex-direction: column;
 }
 
 /* Footer Wrapper - Perbaikan posisi agar rapi di tengah */
 .footer-wrapper {
   width: 100%;
-  padding: 20px 0; /* Padding vertikal saja */
+  padding: 20px 0; 
   background-color: transparent; 
-  border-top: 1px solid #e5e7eb; /* Warna border yang lebih solid tapi soft */
-  
-  /* Kita ubah ke center agar seimbang dengan layout kartu di atasnya */
+  border-top: 1px solid #e5e7eb; 
   display: flex;
   justify-content: center; 
   align-items: center;
-  margin-top: auto; /* Memastikan footer nempel di paling bawah */
+  margin-top: auto; 
 }
 
 /* Gaya teks di dalam footer */

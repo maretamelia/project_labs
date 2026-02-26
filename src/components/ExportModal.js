@@ -1,6 +1,7 @@
 import React from 'react';
 import { IoClose } from 'react-icons/io5';
-import { RiFileExcel2Fill, RiFilePdfFill } from 'react-icons/ri';
+import { RiFileExcel2Fill} from 'react-icons/ri';
+import pdfIcon from '../assets/icons/pdf-icon.svg';
 import './ExportModal.css';
 
 const ExportModal = ({ isOpen, onClose, onExportExcel, onExportPDF }) => {
@@ -28,7 +29,7 @@ const ExportModal = ({ isOpen, onClose, onExportExcel, onExportPDF }) => {
           {/* Tombol PDF (Merah) */}
           <button className="export-option-card pdf" onClick={onExportPDF}>
             <div className="icon-wrapper">
-              <RiFilePdfFill size={60} />
+              <img src={pdfIcon} alt="PDF Icon" style={{ width: '60px', height: '60px' }} />
             </div>
             <span>Export PDF</span>
           </button>

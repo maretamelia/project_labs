@@ -1,4 +1,4 @@
-/* Container utama */
+ Container utama
 .kategori-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -118,7 +118,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -127,16 +128,22 @@
 
 .modal-content {
   background: white;
-  border-radius: 12px;
+  border-radius: 15px;
   width: 90%;
-  max-width: 400px;
+  max-width: 350px; 
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  animation: modalPop 0.3s ease-out;
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .modal-header {
-  background: linear-gradient(135deg, #b57edc 0%, #d89ee8 100%);
-  padding: 16px 20px;
+  background: #d89ee8; 
+  padding: 18px 20px;
   color: white;
 }
 
@@ -147,11 +154,11 @@
 }
 
 .modal-body {
-  padding: 24px 20px;
+  padding: 20px;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 0; 
 }
 
 .form-group label {
@@ -159,42 +166,38 @@
   margin-bottom: 8px;
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
-}
-
-.form-group label::after {
-  content: '*';
-  color: #ef4444;
-  margin-left: 2px;
+  color: #444;
 }
 
 .form-input {
   width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  padding: 12px 15px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  background-color: #fcfcfc;
   font-size: 14px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.3s;
   box-sizing: border-box;
 }
 
 .form-input:focus {
-  border-color: #b57edc;
+  border-color: #d89ee8;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(216, 158, 232, 0.2);
 }
 
 .modal-footer {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
-  margin-top: 24px;
-  padding-bottom: 20px; /* ⬅ kasih jarak ke bawah */
-  padding-right: 20px;  /* biar sejajar body */
+  padding: 0 20px 20px 20px; /* Padding bawah agar seimbang */
 }
 
+/* Tombol Batal & Tambah/Simpan */
 .btn-batal,
 .btn-tambah {
-  padding: 10px 24px;
+  padding: 10px 18px;
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -204,21 +207,22 @@
 }
 
 .btn-batal {
-  background-color: #6b7280;
-  color: white;
+  background-color: #f5f5f5;
+  color: #666;
 }
 
 .btn-batal:hover {
-  background-color: #4b5563;
+  background-color: #eeeeee;
 }
 
 .btn-tambah {
-  background: linear-gradient(135deg, #b57edc 0%, #d89ee8 100%);
+  background: #d89ee8;
   color: white;
 }
 
 .btn-tambah:hover {
-  background: linear-gradient(135deg, #a06bc9 0%, #c88dd6 100%);
+  background: #c488d4;
+  transform: translateY(-1px);
 }
 
 /* Responsive Design */

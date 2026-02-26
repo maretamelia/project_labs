@@ -174,3 +174,39 @@ export const getRiwayatPeminjamanAdmin = async () => {
     throw error;
   }
 };
+
+// Export Riwayat Pinjaman
+
+export const exportRiwayatAdmin = async (filters, format = 'excel') => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.post(`${API_URL}/admin/peminjaman/export`, {
+      ...filters,
+      format: format // bisa 'excel' atau 'pdf'
+    }, {
+      headers: { 
+        Authorization: `Bearer ${token}`, 
+        Accept: 'application/json' 
+      },
+      responseType: 'blob',
+    });
+
+    // Logika untuk mendownload file secara otomatis
+    const blob = new Blob([response.data]);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    
+    // Penamaan file otomatis
+    const fileName = `riwayat-peminjaman-${new Date().getTime()}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
+    link.setAttribute('download', fileName);
+    
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    
+  } catch (error) {
+    console.error('Error export riwayat:', error.response?.data || error.message);
+    throw error;
+  }
+};
