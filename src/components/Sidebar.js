@@ -21,8 +21,8 @@ function Sidebar({ isOpen = true }) {
         <div className="sidebar-logo">
           <div className="logo-icon">🔬</div>
           <div className="logo-text">
-            <span className="logo-title">LABS SIJA</span>
-            <span className="logo-subtitle">Management System</span>
+            <span className="logo-title">LABORATORIUM SIJA</span>
+            <span className="logo-subtitle">Manajemen Sistem</span>
           </div>
         </div>
       </div>

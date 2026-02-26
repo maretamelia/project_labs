@@ -156,7 +156,7 @@ function CreatePinjaman() {
   return (
     <div className="create-pinjaman-page">
       <div className="create-pinjaman-header">
-        <h1 className="create-pinjaman-title">Create Peminjaman</h1>
+        <h1 className="create-pinjaman-title">Tambah Peminjaman</h1>
         <p className="create-pinjaman-subtitle">Tambah data peminjaman</p>
       </div>
 

@@ -30,7 +30,7 @@ function Navbar({ onMenuToggle }) {
   }, []);
 
   // ================= LOGOUT =================
-  const handleLogout = async () => {
+const handleLogout = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
@@ -46,6 +46,7 @@ function Navbar({ onMenuToggle }) {
 
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('sop_seen'); // ← tambah ini
 
       navigate('/login');
     } catch (err) {

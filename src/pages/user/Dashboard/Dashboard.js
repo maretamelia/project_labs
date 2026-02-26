@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiBox, FiClock, FiCheckCircle, FiUpload } from 'react-icons/fi';
+import ModalSOP from './ModalSOP';
 import { getUserDashboardData } from '../../../services/dashboardUserService'; 
 import './Dashboard.css';
 
@@ -40,6 +41,9 @@ function Dashboard() {
 
   return (
     <div className="dashboard-page">
+
+      <ModalSOP />
+
       {/* STATS CARDS */}
       <div className="stats-container">
         {stats.map(stat => (
@@ -91,7 +95,7 @@ function Dashboard() {
         </table>
       </div>
 
-      {/* NOTIFIKASI CARDS - Sekarang sudah di dalam fungsi Dashboard */}
+      {/* NOTIFIKASI CARDS */}
       <div className="notification-cards">
         <div className="notif-card warning">
           <div className="notif-icon">⚠️</div>
@@ -125,6 +129,7 @@ function Dashboard() {
           </div>
         </div>
       </div>
+
     </div>
   );
 }
