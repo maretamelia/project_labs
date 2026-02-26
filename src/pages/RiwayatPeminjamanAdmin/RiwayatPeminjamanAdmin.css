@@ -1,10 +1,16 @@
 Main Container
+/* ==========================================================================
+   CONTAINER UTAMA
+   ========================================================================== */
 .riwayat-page {
   padding: 24px;
   background-color: #f3f4f6;
   min-height: 100vh;
 }
 
+/* ==========================================================================
+   HEADER SECTION (RIWAYAT HEADER)
+   ========================================================================== */
 .riwayat-header {
   background: linear-gradient(135deg, #b57edc 0%, #d89ee8 100%);
   padding: 24px;
@@ -26,80 +32,48 @@ Main Container
   opacity: 0.9;
 }
 
-/* Content Box */
-.riwayat-content {
-  background-color: white;
-  border-radius: 12px;
-  padding: 24px;
-}
-
-/* Search Wrapper */
-.riwayat-search-wrapper {
+/* ==========================================================================
+   SEARCH & EXPORT SECTION
+   ========================================================================== */
+.search-export-wrapper {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
 }
 
-.riwayat-search-box {
-  flex: 1;
-  display: flex;
-  gap: 0;
-  overflow: hidden;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-}
-
-.riwayat-search-input {
-  flex: 1;
-  padding: 10px 16px;
-  border: none;
-  outline: none;
-  font-size: 14px;
-}
-
-.riwayat-search-input::placeholder {
-  color: #9ca3af;
-}
-
-.riwayat-search-btn {
-  background: linear-gradient(to right, #ec4899, #d946ef);
+.export-btn-main {
+  background-color: #c678dd;
+  color: white;
   border: none;
   padding: 10px 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.riwayat-search-btn:hover {
-  opacity: 0.9;
-}
-
-.riwayat-filter-btn {
-  background-color: white;
-  border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 10px 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #6b7280;
+  gap: 8px;
+  font-weight: 500;
+  transition: background 0.3s ease;
 }
 
-.riwayat-filter-btn:hover {
-  background-color: #f9fafb;
+.export-btn-main:hover {
+  background-color: #a359bd;
 }
 
-/* Table */
+/* ==========================================================================
+   TABLE SECTION (CORE FIX)
+   ========================================================================== */
 .riwayat-table-wrapper {
   background: white;
-  border-radius: 10px;
-  overflow: hidden;
+  border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 24px;
-  margin-bottom: 24px;
-  text-align-last: left
+  margin: 24px 0;
+  /* PENTING: overflow visible agar dropdown tidak terpotong */
+  overflow: visible !important; 
+  position: relative;
+  /* Padding bottom untuk memberikan ruang menu pada baris terakhir */
+  padding-bottom: 80px; 
 }
 
 .riwayat-table {
@@ -129,22 +103,19 @@ Main Container
   text-align: center;
 }
 
-td.empty-table {
-  text-align: center;
-}
-
 .riwayat-table tbody tr:hover {
   background-color: #f9fafb;
 }
 
-/* Status Badge */
+/* ==========================================================================
+   STATUS BADGES
+   ========================================================================== */
 .status-badge {
   display: inline-block;
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
   font-weight: 500;
-  align-items: center;
 }
 
 .status-badge.ditolak {
@@ -157,26 +128,17 @@ td.empty-table {
   color: #059669;
 }
 
-/* Detail Button */
-.detail-btn {
-  background-color: #3b82f6;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.status-badge.pending {
+  background-color: #fef3c7;
+  color: #d97706;
 }
 
-.detail-btn:hover {
-  background-color: #2563eb;
-}
-
-/* Aksi Menu */
+/* ==========================================================================
+   DROPDOWN ACTION MENU (PERBAIKAN TITIK 3 BERDIRI)
+   ========================================================================== */
 .aksi-cell {
-  text-align: center;
   position: relative;
+  overflow: visible !important;
 }
 
 .aksi-menu-wrapper {
@@ -188,10 +150,10 @@ td.empty-table {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px 8px;
-  font-size: 20px;
+  padding: 8px;
+  font-size: 20px; /* Ukuran ikon BsThreeDotsVertical */
   color: #6b7280;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   transition: color 0.2s ease;
@@ -201,7 +163,6 @@ td.empty-table {
   color: #374151;
 }
 
-/* Dropdown Menu */
 .aksi-dropdown-menu {
   position: absolute;
   top: 100%;
@@ -209,10 +170,10 @@ td.empty-table {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  min-width: 120px;
-  z-index: 100;
-  margin-top: 4px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  min-width: 130px;
+  z-index: 9999; /* Layer paling atas */
+  margin-top: 5px;
   overflow: hidden;
 }
 
@@ -229,16 +190,12 @@ td.empty-table {
 }
 
 .aksi-dropdown-item:hover {
-  background-color: #f9fafb;
+  background-color: #f3f4f6;
 }
 
 .aksi-dropdown-item.detail {
-  color: #0099FF;
+  color: #aeaeaf;
   font-weight: 500;
-}
-
-.aksi-dropdown-item.detail:hover {
-  background-color: #f0f7ff;
 }
 
 .aksi-dropdown-item.hapus {
@@ -247,197 +204,30 @@ td.empty-table {
   border-top: 1px solid #f3f4f6;
 }
 
-.aksi-dropdown-item.hapus:hover {
-  background-color: #fee2e2;
-}
-
-/* Aksi Lama (untuk compatibility) */
-.aksi-btn {
-  background: #0059ff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 8px;
-  cursor: pointer;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.2s ease;
-}
-
-.aksi-btn:hover {
-  background-color: #0047cc;
-}
-
-.aksi-icon {
-  width: 18px;
-  height: 18px;
-  display: block;
-}
-
-/* Pagination */
-.riwayat-pagination {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 16px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.pagination-info {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0;
-}
-
-.pagination-controls {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.pagination-btn {
-  padding: 8px 12px;
-  border: 1px solid #e5e7eb;
-  background-color: white;
-  border-radius: 6px;
-  font-size: 14px;
-  color: #374151;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.pagination-btn:hover {
-  background-color: #f9fafb;
-}
-
-.pagination-number {
-  padding: 8px 12px;
-  border: 1px solid #e5e7eb;
-  background-color: white;
-  border-radius: 6px;
-  font-size: 14px;
-  color: #374151;
-  cursor: pointer;
-  min-width: 40px;
-  transition: background-color 0.2s ease;
-}
-
-.pagination-number:hover {
-  background-color: #f9fafb;
-}
-
-.pagination-number.active {
-  background-color: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
-}
-
-/* Responsive untuk Tablet dan Mobile */
+/* ==========================================================================
+   RESPONSIVE LAYOUT
+   ========================================================================== */
 @media (max-width: 1024px) {
-  .riwayat-table th,
-  .riwayat-table td {
+  .riwayat-table th, .riwayat-table td {
     padding: 10px 8px;
     font-size: 12px;
-  }
-
-  .riwayat-table-wrapper {
-    overflow-x: auto;
   }
 }
 
 @media (max-width: 768px) {
-  .riwayat-page {
-    padding: 16px;
-  }
-
-  .riwayat-header {
-    padding: 16px;
-  }
-
-  .riwayat-header-title {
-    font-size: 18px;
-  }
-
-  .riwayat-content {
-    padding: 16px;
+  .riwayat-page { padding: 16px; }
+  
+  .search-export-wrapper {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .riwayat-table-wrapper {
-    overflow-x: auto;
-    margin-top: 16px;
-    margin-bottom: 16px;
+    overflow-x: auto !important; /* Supaya tabel bisa di-swipe di HP */
+    padding-bottom: 100px;
   }
 
   .riwayat-table {
-    min-width: 900px;
-  }
-
-  .riwayat-table th,
-  .riwayat-table td {
-    padding: 10px 6px;
-    font-size: 11px;
-  }
-
-  .riwayat-pagination {
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
-  }
-
-  .pagination-info {
-    font-size: 12px;
-  }
-
-  .aksi-dropdown-menu {
-    position: fixed;
-    right: auto;
-    left: 50%;
-    transform: translateX(-50%);
-    top: auto;
-    bottom: auto;
-    min-width: 130px;
-  }
-}
-
-@media (max-width: 480px) {
-  .riwayat-page {
-    padding: 12px;
-  }
-
-  .riwayat-header {
-    padding: 12px;
-    margin-bottom: 16px;
-  }
-
-  .riwayat-header-title {
-    font-size: 16px;
-  }
-
-  .riwayat-header-subtitle {
-    font-size: 12px;
-  }
-
-  .riwayat-table {
-    min-width: 1000px;
-  }
-
-  .riwayat-table th,
-  .riwayat-table td {
-    padding: 8px 4px;
-    font-size: 10px;
-  }
-
-  .aksi-btn-ellipsis {
-    padding: 2px 4px;
-    font-size: 16px;
-  }
-
-  .aksi-dropdown-menu {
-    min-width: 110px;
-  }
-
-  .aksi-dropdown-item {
-    padding: 8px 12px;
+    min-width: 800px; /* Minimal lebar tabel di layar kecil */
   }
 }

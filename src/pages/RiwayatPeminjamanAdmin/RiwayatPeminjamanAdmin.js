@@ -4,8 +4,12 @@ import SearchBar from '../../components/SearchBar';
 import Pagination from '../../components/Pagination';
 import FilterModal from '../../components/FilterModal';
 import DetailPeminjamanModal from './DetailPeminjamanAdmin';
-import { BsThreeDots } from 'react-icons/bs';
+import ExportModal from '../../components/ExportModal'; 
+import { BsThreeDotsVertical, BsDownload } from 'react-icons/bs'; // Menggunakan ikon vertikal
 import { getRiwayatPeminjamanAdmin } from '../../services/pinjamanServices';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import './RiwayatPeminjamanAdmin.css';
 
 function RiwayatPeminjamanAdmin() {
@@ -14,6 +18,7 @@ function RiwayatPeminjamanAdmin() {
   const [openMenuId, setOpenMenuId] = useState(null);
 
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false); 
   const [selectedData, setSelectedData] = useState(null);
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -87,14 +92,13 @@ function RiwayatPeminjamanAdmin() {
         ? new Date(filterValues.endDate + 'T23:59:59')
         : null;
 
-      const matchStartDate = !startDate || itemDate >= startDate;
-      const matchEndDate = !endDate || itemDate <= endDate;
+      const matchStartDate =
+        !startDate || itemDate >= startDate;
 
-      const matchStatus =
-        filterValues.status === '' ||
-        item?.status?.toLowerCase() === filterValues.status.toLowerCase();
+      const matchEndDate =
+        !endDate || itemDate <= endDate;
 
-      return matchSearch && matchMin && matchMax && matchStartDate && matchEndDate && matchStatus;
+      return matchSearch && matchMin && matchMax && matchStartDate && matchEndDate;
     });
   }, [riwayatData, searchTerm, filterValues]);
 
@@ -102,7 +106,7 @@ function RiwayatPeminjamanAdmin() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedData = filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-  /* ================= DETAIL ================= */
+  /* ================= ACTION HANDLERS ================= */
   const handleDetail = (item) => {
     setSelectedData({
       namaPeminjam: item?.user?.name || '-',
@@ -116,23 +120,58 @@ function RiwayatPeminjamanAdmin() {
     setOpenMenuId(null);
   };
 
+  const handleHapus = (id) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus data riwayat ini?")) {
+      // Panggil fungsi API hapus di sini jika ada
+      console.log("Menghapus data ID:", id);
+      setOpenMenuId(null);
+      // Contoh filter lokal setelah hapus:
+      // setRiwayatData(riwayatData.filter(item => item.id !== id));
+    }
+  };
+
   const toggleMenu = (id) => {
     setOpenMenuId(openMenuId === id ? null : id);
   };
+
+  /* ================= FILTER & PAGINATION ================= */
+  const filteredData = useMemo(() => {
+    return riwayatData.filter(item => {
+      const namaBarang = item?.barang?.nama_barang?.toLowerCase() || '';
+      const namaUser = item?.user?.name?.toLowerCase() || '';
+      const search = searchTerm.toLowerCase();
+      const matchSearch = namaBarang.includes(search) || namaUser.includes(search);
+      const matchMin = filterValues.minJumlah === '' || item.jumlah >= Number(filterValues.minJumlah);
+      const matchMax = filterValues.maxJumlah === '' || item.jumlah <= Number(filterValues.maxJumlah);
+      const itemDate = new Date(item.tanggal_peminjaman);
+      const startDate = filterValues.startDate ? new Date(filterValues.startDate) : null;
+      const endDate = filterValues.endDate ? new Date(filterValues.endDate + 'T23:59:59') : null;
+      return matchSearch && matchMin && matchMax && (!startDate || itemDate >= startDate) && (!endDate || itemDate <= endDate);
+    });
+  }, [riwayatData, searchTerm, filterValues]);
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedData = filteredData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <div className="riwayat-page">
       <PageHeader title="Riwayat Peminjaman" subtitle="Daftar Riwayat Peminjaman" />
 
-      <SearchBar
-        placeholder="Cari nama barang atau peminjam..."
-        searchTerm={searchTerm}
-        onSearchChange={(value) => {
-          setSearchTerm(value);
-          setCurrentPage(1);
-        }}
-        onOpenFilter={() => setIsFilterOpen(true)}
-      />
+      <div className="search-export-wrapper">
+        <SearchBar
+          placeholder="Cari nama barang atau peminjam..."
+          searchTerm={searchTerm}
+          onSearchChange={(value) => {
+            setSearchTerm(value);
+            setCurrentPage(1);
+          }}
+          onOpenFilter={() => setIsFilterOpen(true)}
+        />
+        
+        <button className="export-btn-main" onClick={() => setIsExportModalOpen(true)}>
+          <BsDownload /> Export
+        </button>
+      </div>
 
       {loading ? (
         <div style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</div>
@@ -177,7 +216,7 @@ function RiwayatPeminjamanAdmin() {
                           className="aksi-btn-ellipsis"
                           onClick={() => toggleMenu(item.id)}
                         >
-                          <BsThreeDots />
+                          <BsThreeDotsVertical />
                         </button>
 
                         {openMenuId === item.id && (
@@ -187,6 +226,12 @@ function RiwayatPeminjamanAdmin() {
                               onClick={() => handleDetail(item)}
                             >
                               Detail
+                            </button>
+                            <button
+                              className="aksi-dropdown-item hapus"
+                              onClick={() => handleHapus(item.id)}
+                            >
+                              Hapus
                             </button>
                           </div>
                         )}
@@ -203,10 +248,6 @@ function RiwayatPeminjamanAdmin() {
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
-        filterValues={filterValues}
-        onFilterChange={(key, value) =>
-          setFilterValues(prev => ({ ...prev, [key]: value }))
-        }
         onApply={() => {
           setCurrentPage(1);
           setIsFilterOpen(false);
@@ -216,8 +257,7 @@ function RiwayatPeminjamanAdmin() {
             startDate: '',
             endDate: '',
             minJumlah: '',
-            maxJumlah: '',
-            status: ''
+            maxJumlah: ''
           });
           setCurrentPage(1);
         }}
@@ -239,10 +279,14 @@ function RiwayatPeminjamanAdmin() {
       <DetailPeminjamanModal
         isOpen={isDetailModalOpen}
         data={selectedData}
-        onClose={() => {
-          setIsDetailModalOpen(false);
-          setSelectedData(null);
-        }}
+        onClose={() => { setIsDetailModalOpen(false); setSelectedData(null); }}
+      />
+
+      <ExportModal 
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        onExportExcel={handleExportExcel}
+        onExportPDF={handleExportPDF}
       />
     </div>
   );

@@ -7,9 +7,13 @@ function Sidebar({ isOpen = true }) {
   const location = useLocation();
 
   // 🔥 Active checker yang lebih aman
-  const isActive = (basePath) => {
-    return location.pathname.startsWith(basePath);
-  };
+ const isActive = (basePath) => {
+  if (basePath === '/data-barang') {
+    return location.pathname.startsWith('/data-barang') || 
+           location.pathname.startsWith('/barang');
+  }
+  return location.pathname.startsWith(basePath);
+};
 
   return (
     <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
